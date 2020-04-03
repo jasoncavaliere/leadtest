@@ -10,9 +10,10 @@ ARG buildVersion=1.0.0-alpha
 ARG buildConfiguration=Release
 WORKDIR /src
 COPY ["admin.ui/admin.ui/admin.ui.csproj", "admin.ui/"]
+COPY ["admin.ui/admin.services/admin.services.csproj", "admin.services/"]
 RUN dotnet restore "admin.ui/admin.ui.csproj"
 COPY . .
-WORKDIR "/src/admin.ui"
+WORKDIR "/src/admin.ui/admin.ui"
 
 RUN ["sh", "-c", "dotnet build \"admin.ui.csproj\" -c ${buildConfiguration} -o /app/build /property:Version=\"${buildVersion}\"" ]
 
