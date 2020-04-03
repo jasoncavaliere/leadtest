@@ -1,0 +1,124 @@
+@{
+
+	// View
+	View = this;
+	SetClientVar("login", LoginStatus);
+
+	// Global Page Rendering event
+	Page_Rendering();
+
+	// Page Render event
+	LeadStatus_Delete.Page_Render();
+
+	// Check action result
+	if (LeadStatus_Delete.ActionResult is EmptyResult) { // Terminate page
+		return;
+	}
+
+	// Layout
+	Layout = "_Layout";
+
+	// Local variables (Temp data)
+	#pragma warning disable 168
+	string sqlWrk, filterWrk, whereWrk, curVal;
+	List<Dictionary<string, object>> rswrk;
+	string[] arWrk;
+	List<object> listWrk;
+	Func<string> lookupFilter;
+	#pragma warning restore 168
+}
+<script>
+var fLeadStatusdelete, currentPageID;
+loadjs.ready("head", function() {
+
+	// Form object
+	currentPageID = ew.PAGE_ID = "delete";
+	fLeadStatusdelete = currentForm = new ew.Form("fLeadStatusdelete", "delete");
+	loadjs.done("fLeadStatusdelete");
+});
+</script>
+<script>
+loadjs.ready("head", function() {
+
+	// Client script
+	// Write your client script here, no need to add script tags.
+
+});
+</script>
+@LeadStatus_Delete.ShowPageHeader()
+@LeadStatus_Delete.ShowMessages()
+<form name="fLeadStatusdelete" id="fLeadStatusdelete" class="form-inline ew-form ew-delete-form" action="@AppPath(CurrentPageName())" method="post">
+@if (LeadStatus_Delete.CheckToken) {
+	@Html.AntiForgeryToken()
+}
+<input type="hidden" name="action" id="action" value="delete">
+@foreach (string key in LeadStatus_Delete.RecordKeys) {
+<input type="hidden" name="key_m[]" value="@key">
+}
+<div class="card ew-card ew-grid">
+<div class="@ResponsiveTableClass() card-body ew-grid-middle-panel">
+<table class="table ew-table">
+	<thead>
+	<tr class="ew-table-header">
+@if (LeadStatus_Delete.Id.Visible) { // LeadStatus_Delete.Id.Visible (begin)
+		<th class="@Html.Raw(LeadStatus_Delete.Id.HeaderCellClass)"><span id="elh_LeadStatus_Id" class="LeadStatus_Id">@Html.Raw(LeadStatus_Delete.Id.Caption)</span></th>
+} @* LeadStatus_Delete.Id.Visible (end) *@
+@if (LeadStatus_Delete.DisplayName.Visible) { // LeadStatus_Delete.DisplayName.Visible (begin)
+		<th class="@Html.Raw(LeadStatus_Delete.DisplayName.HeaderCellClass)"><span id="elh_LeadStatus_DisplayName" class="LeadStatus_DisplayName">@Html.Raw(LeadStatus_Delete.DisplayName.Caption)</span></th>
+} @* LeadStatus_Delete.DisplayName.Visible (end) *@
+	</tr>
+	</thead>
+	<tbody>
+@{ LeadStatus_Delete.RecordCount = 0; }
+@while (LeadStatus_Delete.Recordset != null && await LeadStatus_Delete.Recordset.ReadAsync()) { // DN
+	LeadStatus_Delete.RecordCount++;
+	LeadStatus_Delete.RowCount++;
+
+	// Set row properties
+	LeadStatus_Delete.ResetAttributes();
+	LeadStatus_Delete.RowType = Config.RowTypeView; // View
+
+	// Get the field contents
+	await LeadStatus_Delete.LoadRowValues(LeadStatus_Delete.Recordset);
+
+	// Render row
+	await LeadStatus_Delete.RenderRow();
+	<tr @Html.Raw(LeadStatus.RowAttributes)>
+@if (LeadStatus_Delete.Id.Visible) { // LeadStatus_Delete.Id.Visible (begin)
+		<td @Html.Raw(LeadStatus_Delete.Id.CellAttributes)>
+<span id="el@(LeadStatus_Delete.RowCount)_LeadStatus_Id" class="LeadStatus_Id">
+<span @Html.Raw(LeadStatus_Delete.Id.ViewAttributes)>@Html.Raw(LeadStatus_Delete.Id.GetViewValue())</span>
+</span>
+</td>
+} @* LeadStatus_Delete.Id.Visible (end) *@
+@if (LeadStatus_Delete.DisplayName.Visible) { // LeadStatus_Delete.DisplayName.Visible (begin)
+		<td @Html.Raw(LeadStatus_Delete.DisplayName.CellAttributes)>
+<span id="el@(LeadStatus_Delete.RowCount)_LeadStatus_DisplayName" class="LeadStatus_DisplayName">
+<span @Html.Raw(LeadStatus_Delete.DisplayName.ViewAttributes)>@Html.Raw(LeadStatus_Delete.DisplayName.GetViewValue())</span>
+</span>
+</td>
+} @* LeadStatus_Delete.DisplayName.Visible (end) *@
+	</tr>
+}
+@{ LeadStatus_Delete.CloseRecordset(); }
+</tbody>
+</table>
+</div>
+</div>
+<div>
+<button class="btn btn-primary ew-btn" name="btn-action" id="btn-action" type="submit">@Html.Raw(Language.Phrase("DeleteBtn"))</button>
+<button class="btn btn-default ew-btn" name="btn-cancel" id="btn-cancel" type="button" data-href="@AppPath(LeadStatus_Delete.ReturnUrl)">@Language.Phrase("CancelBtn")</button>
+</div>
+</form>
+@LeadStatus_Delete.ShowPageFooter()
+@ShowDebugMessage()
+@ElapsedTime()
+<script>
+loadjs.ready("load", function() {
+
+	// Startup script
+	// Write your table-specific startup script here
+	// document.write("page loaded");
+
+});
+</script>

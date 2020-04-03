@@ -1,0 +1,161 @@
+@{
+
+	// View
+	View = this;
+	SetClientVar("login", LoginStatus);
+
+	// Global Page Rendering event
+	Page_Rendering();
+
+	// Page Render event
+	BankBranch_Edit.Page_Render();
+
+	// Check action result
+	if (BankBranch_Edit.ActionResult is EmptyResult) { // Terminate page
+		return;
+	}
+
+	// Layout
+	Layout = "_Layout";
+
+	// Local variables (Temp data)
+	#pragma warning disable 168
+	string sqlWrk, filterWrk, whereWrk, curVal;
+	List<Dictionary<string, object>> rswrk;
+	string[] arWrk;
+	List<object> listWrk;
+	Func<string> lookupFilter;
+	#pragma warning restore 168
+}
+<script>
+var fBankBranchedit, currentPageID;
+loadjs.ready("head", function() {
+
+	// Form object
+	currentPageID = ew.PAGE_ID = "edit";
+	fBankBranchedit = currentForm = new ew.Form("fBankBranchedit", "edit");
+
+	// Validate form
+	fBankBranchedit.validate = function() {
+		if (!this.validateRequired)
+			return true; // Ignore validation
+		var $ = jQuery, fobj = this.getForm(), $fobj = $(fobj);
+		if ($fobj.find("#confirm").val() == "confirm")
+			return true;
+		var elm, felm, uelm, addcnt = 0;
+		var $k = $fobj.find("#" + this.formKeyCountName); // Get key_count
+		var rowcnt = ($k[0]) ? parseInt($k.val(), 10) : 1;
+		var startcnt = (rowcnt == 0) ? 0 : 1; // Check rowcnt == 0 => Inline-Add
+		var gridinsert = ["insert", "gridinsert"].includes($fobj.find("#action").val()) && $k[0];
+		for (var i = startcnt; i <= rowcnt; i++) {
+			var infix = ($k[0]) ? String(i) : "";
+			$fobj.data("rowindex", infix);
+			@if (BankBranch_Edit.Id.Required) {
+				<text>
+				elm = this.getElements("x" + infix + "_Id");
+				if (elm && !ew.isHidden(elm) && !ew.hasValue(elm))
+					return this.onError(elm, "@Html.Raw(JsEncode(Convert.ToString(BankBranch_Edit.Id.RequiredErrorMessage).Replace("%s", BankBranch_Edit.Id.Caption)))");
+				</text>
+			}
+				elm = this.getElements("x" + infix + "_Id");
+				if (elm && !ew.checkInteger(elm.value))
+					return this.onError(elm, "@(JsEncode(BankBranch_Edit.Id.ErrorMessage))");
+			@if (BankBranch_Edit._Name.Required) {
+				<text>
+				elm = this.getElements("x" + infix + "__Name");
+				if (elm && !ew.isHidden(elm) && !ew.hasValue(elm))
+					return this.onError(elm, "@Html.Raw(JsEncode(Convert.ToString(BankBranch_Edit._Name.RequiredErrorMessage).Replace("%s", BankBranch_Edit._Name.Caption)))");
+				</text>
+			}
+
+				// Call Form_CustomValidate event
+				if (!this.Form_CustomValidate(fobj))
+					return false;
+		}
+
+		// Process detail forms
+		var dfs = $fobj.find("input[name='detailpage']").get();
+		for (var i = 0; i < dfs.length; i++) {
+			var df = dfs[i], val = df.value;
+			if (val && ew.forms[val])
+				if (!ew.forms[val].validate())
+					return false;
+		}
+		return true;
+	}
+
+	// Form_CustomValidate
+	fBankBranchedit.Form_CustomValidate = function(fobj) { // DO NOT CHANGE THIS LINE!
+
+		// Your custom validation code here, return false if invalid.
+		return true;
+	}
+
+	// Use JavaScript validation or not
+	fBankBranchedit.validateRequired = @(Config.ClientValidate ? "true" : "false");
+
+	// Dynamic selection lists
+	loadjs.done("fBankBranchedit");
+});
+</script>
+<script>
+loadjs.ready("head", function() {
+
+	// Client script
+	// Write your client script here, no need to add script tags.
+
+});
+</script>
+@BankBranch_Edit.ShowPageHeader()
+@BankBranch_Edit.ShowMessages()
+<form name="fBankBranchedit" id="fBankBranchedit" class="@(BankBranch_Edit.FormClassName)" action="@AppPath(CurrentPageName())" method="post">
+@if (BankBranch_Edit.CheckToken) {
+	@Html.AntiForgeryToken()
+}
+<input type="hidden" name="action" id="action" value="update">
+@if (BankBranch_Edit.IsModal) {
+<input type="hidden" name="modal" value="@ConvertToInt(BankBranch_Edit.IsModal)">
+}
+<div class="ew-edit-div"><!-- page* -->
+@if (BankBranch_Edit.Id.Visible) { // BankBranch_Edit.Id.Visible (begin)
+	<div id="r_Id" class="form-group row">
+		<label id="elh_BankBranch_Id" for="x_Id" class="@(BankBranch_Edit.LeftColumnClass)">@Html.Raw(BankBranch_Edit.Id.Caption)@Html.Raw(BankBranch_Edit.Id.Required ? Language.Phrase("FieldRequiredIndicator") : "")</label>
+		<div class="@(BankBranch_Edit.RightColumnClass)"><div @Html.Raw(BankBranch_Edit.Id.CellAttributes)>
+<input type="text" data-table="BankBranch" data-field="x_Id" name="x_Id" id="x_Id" size="30" maxlength="4" placeholder="@Html.Raw(HtmlEncode(BankBranch_Edit.Id.PlaceHolder))" value="@(BankBranch_Edit.Id.EditValue)" @Html.Raw(BankBranch_Edit.Id.EditAttributes)>
+<input type="hidden" data-table="BankBranch" data-field="x_Id" name="o_Id" id="o_Id" value="@Html.Raw(HtmlEncode(BankBranch_Edit.Id.OldValue != null ? BankBranch_Edit.Id.OldValue : BankBranch_Edit.Id.CurrentValue))">
+@Html.Raw(BankBranch_Edit.Id.CustomMsg)</div></div>
+	</div>
+} @* BankBranch_Edit.Id.Visible (end) *@
+@if (BankBranch_Edit._Name.Visible) { // BankBranch_Edit._Name.Visible (begin)
+	<div id="r__Name" class="form-group row">
+		<label id="elh_BankBranch__Name" for="x__Name" class="@(BankBranch_Edit.LeftColumnClass)">@Html.Raw(BankBranch_Edit._Name.Caption)@Html.Raw(BankBranch_Edit._Name.Required ? Language.Phrase("FieldRequiredIndicator") : "")</label>
+		<div class="@(BankBranch_Edit.RightColumnClass)"><div @Html.Raw(BankBranch_Edit._Name.CellAttributes)>
+<span id="el_BankBranch__Name">
+<input type="text" data-table="BankBranch" data-field="x__Name" name="x__Name" id="x__Name" size="30" maxlength="100" placeholder="@Html.Raw(HtmlEncode(BankBranch_Edit._Name.PlaceHolder))" value="@(BankBranch_Edit._Name.EditValue)" @Html.Raw(BankBranch_Edit._Name.EditAttributes)>
+</span>
+@Html.Raw(BankBranch_Edit._Name.CustomMsg)</div></div>
+	</div>
+} @* BankBranch_Edit._Name.Visible (end) *@
+</div><!-- /page* -->
+@{ BankBranch_Edit.CloseRecordset(); }
+@if (!BankBranch_Edit.IsModal) {
+@:<div class="form-group row"><!-- buttons .form-group -->
+	@:<div class="@(BankBranch_Edit.OffsetColumnClass)"><!-- buttons offset -->
+<button class="btn btn-primary ew-btn" name="btn-action" id="btn-action" type="submit">@Html.Raw(Language.Phrase("SaveBtn"))</button>
+<button class="btn btn-default ew-btn" name="btn-cancel" id="btn-cancel" type="button" data-href="@AppPath(BankBranch_Edit.ReturnUrl)">@Html.Raw(Language.Phrase("CancelBtn"))</button>
+	@:</div><!-- /buttons offset -->
+@:</div><!-- /buttons .form-group -->
+}
+</form>
+@BankBranch_Edit.ShowPageFooter()
+@ShowDebugMessage()
+@ElapsedTime()
+<script>
+loadjs.ready("load", function() {
+
+	// Startup script
+	// Write your table-specific startup script here
+	// document.write("page loaded");
+
+});
+</script>

@@ -74,40 +74,41 @@ namespace AspNetMaker2020.Models {
 	public partial class project1 {
 
 		/// <summary>
-		/// _index
+		/// LeadStatus_Delete
 		/// </summary>
-		public static __index _index {
-			get => HttpData.Get<__index>("_index");
-			set => HttpData["_index"] = value;
+		public static _LeadStatus_Delete LeadStatus_Delete {
+			get => HttpData.Get<_LeadStatus_Delete>("LeadStatus_Delete");
+			set => HttpData["LeadStatus_Delete"] = value;
 		}
 
 		/// <summary>
-		/// Page class (index)
+		/// Page class for LeadStatus
 		/// </summary>
-		public class __index : __indexBase
+		public class _LeadStatus_Delete : _LeadStatus_DeleteBase
 		{
 
 			// Construtor
-			public __index(Controller controller = null) : base(controller) {
+			public _LeadStatus_Delete(Controller controller = null) : base(controller) {
 			}
-
-			// Server events
 		}
 
 		/// <summary>
 		/// Page base class
 		/// </summary>
-		public class __indexBase : IAspNetMakerPage
+		public class _LeadStatus_DeleteBase : _LeadStatus, IAspNetMakerPage
 		{
 
 			// Page ID
-			public string PageID = "index";
+			public string PageID = "delete";
 
 			// Project ID
 			public string ProjectID = "{DE72B0A5-4A34-400E-B744-FF3F81D69E8F}";
 
+			// Table name
+			public string TableName { get; set; } = "LeadStatus";
+
 			// Page object name
-			public string PageObjName = "_index";
+			public string PageObjName = "LeadStatus_Delete";
 
 			// Page headings
 			public string Heading = "";
@@ -148,6 +149,8 @@ namespace AspNetMaker2020.Models {
 				get {
 					if (!Empty(Heading))
 						return Heading;
+					else if (!Empty(Caption))
+						return Caption;
 					else
 						return "";
 				}
@@ -158,6 +161,8 @@ namespace AspNetMaker2020.Models {
 				get {
 					if (!Empty(Subheading))
 						return Subheading;
+					if (!Empty(TableName))
+						return Language.Phrase(PageID);
 					return "";
 				}
 			}
@@ -259,6 +264,7 @@ namespace AspNetMaker2020.Models {
 
 				// Message
 				string message = Message;
+				Message_Showing(ref message, "");
 				if (!Empty(message)) { // Message in Session, display
 					if (!hidden)
 						message = "<button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-label=\"Close\"><span aria-hidden=\"true\">&times;</span></button>" + message;
@@ -268,6 +274,7 @@ namespace AspNetMaker2020.Models {
 
 				// Warning message
 				string warningMessage = WarningMessage;
+				Message_Showing(ref warningMessage, "warning");
 				if (!Empty(warningMessage)) { // Message in Session, display
 					if (!hidden)
 						warningMessage = "<button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-label=\"Close\"><span aria-hidden=\"true\">&times;</span></button>" + warningMessage;
@@ -277,6 +284,7 @@ namespace AspNetMaker2020.Models {
 
 				// Success message
 				string successMessage = SuccessMessage;
+				Message_Showing(ref successMessage, "success");
 				if (!Empty(successMessage)) { // Message in Session, display
 					if (!hidden)
 						successMessage = "<button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-label=\"Close\"><span aria-hidden=\"true\">&times;</span></button>" + successMessage;
@@ -286,6 +294,7 @@ namespace AspNetMaker2020.Models {
 
 				// Failure message
 				string errorMessage = FailureMessage;
+				Message_Showing(ref errorMessage, "failure");
 				if (!Empty(errorMessage)) { // Message in Session, display
 					if (!hidden)
 						errorMessage = "<button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-label=\"Close\"><span aria-hidden=\"true\">&times;</span></button>" + errorMessage;
@@ -363,7 +372,7 @@ namespace AspNetMaker2020.Models {
 			}
 
 			// Constructor
-			public __indexBase(Controller controller = null) { // DN
+			public _LeadStatus_DeleteBase(Controller controller = null) { // DN
 				if (controller != null)
 					Controller = controller;
 
@@ -373,6 +382,10 @@ namespace AspNetMaker2020.Models {
 				// Language object
 				Language ??= new Lang();
 
+				// Table object (LeadStatus)
+				if (LeadStatus == null || LeadStatus is _LeadStatus)
+					LeadStatus = this;
+
 				// Start time
 				StartTime = Environment.TickCount;
 
@@ -380,12 +393,23 @@ namespace AspNetMaker2020.Models {
 				LoadDebugMessage();
 
 				// Open connection
-				Conn ??= GetConnection();
+				Conn = Connection; // DN
 			}
 			#pragma warning disable 1998
 
 			// Export view result
 			public async Task<IActionResult> ExportView() { // DN
+				if (!Empty(CustomExport) && CustomExport == Export && Config.Export.TryGetValue(CustomExport, out string classname)) {
+					IActionResult result = null;
+					string content = await GetViewOutput();
+					if (Empty(ExportFileName))
+						ExportFileName = TableVar;
+					dynamic doc = CreateInstance(classname, new object[] { LeadStatus, "" }); // DN
+					doc.Text.Append(content);
+					result = doc.Export();
+					DeleteTempImages(); // Delete temp images
+					return result;
+				}
 				return null;
 			}
 			#pragma warning restore 1998
@@ -440,6 +464,70 @@ namespace AspNetMaker2020.Models {
 				}
 				return null;
 			}
+
+			// Get all records from datareader
+			protected async Task<List<Dictionary<string, object>>> GetRecordsFromRecordset(DbDataReader rs)
+			{
+				var rows = new List<Dictionary<string, object>>();
+				while (rs != null && await rs.ReadAsync()) {
+					await LoadRowValues(rs); // Set up DbValue/CurrentValue
+					rows.Add(GetRecordFromDictionary(GetDictionary(rs)));
+				}
+				return rows;
+			}
+
+			// Get the first record from datareader
+			protected async Task<Dictionary<string, object>> GetRecordFromRecordset(DbDataReader rs)
+			{
+				if (rs != null) {
+					await LoadRowValues(rs); // Set up DbValue/CurrentValue
+					return GetRecordFromDictionary(GetDictionary(rs));
+				}
+				return null;
+			}
+
+			// Get the first record from the list of records
+			protected Dictionary<string, object> GetRecordFromRecordset(List<Dictionary<string, object>> ar) => GetRecordFromDictionary(ar[0]);
+
+			// Get record from Dictionary
+			protected Dictionary<string, object> GetRecordFromDictionary(Dictionary<string, object> ar) {
+				var row = new Dictionary<string, object>();
+				foreach (var (key, value) in ar) {
+					if (Fields.TryGetValue(key, out DbField fld)) {
+						if (fld.Visible || fld.IsPrimaryKey) { // Primary key or Visible
+							if (fld.HtmlTag == "FILE") { // Upload field
+								if (Empty(value)) {
+									row[key] = null;
+								} else {
+									if (fld.DataType == Config.DataTypeBlob) {
+										string url = FullUrl(GetPageName(Config.ApiUrl) + "/" + Config.ApiFileAction + "/" + fld.TableVar + "/" + fld.Param + "/" + GetRecordKeyValue(ar)); // Query string format
+										row[key] = new Dictionary<string, object> { { "mimeType", ContentType((byte[])value) }, { "url", url } };
+									} else if (!fld.UploadMultiple || !Convert.ToString(value).Contains(Config.MultipleUploadSeparator)) { // Single file
+										row[key] = new Dictionary<string, object> { { "mimeType", ContentType(Convert.ToString(value)) }, { "url", FullUrl(fld.HrefPath + Convert.ToString(value)) } };
+									} else { // Multiple files
+										var files = Convert.ToString(value).Split(Config.MultipleUploadSeparator);
+										row[key] = files.Where(file => !Empty(file)).Select(file => new Dictionary<string, object> { { "type", ContentType(file) }, { "url", FullUrl(fld.HrefPath + file) } });
+									}
+								}
+							} else {
+								row[key] = Convert.ToString(value);
+							}
+						}
+					}
+				}
+				return row;
+			}
+
+			// Get record key value from array
+			protected string GetRecordKeyValue(Dictionary<string, object> ar) {
+				string key = "";
+				key += UrlEncode(Convert.ToString(ar["Id"]));
+				return key;
+			}
+
+			// Hide fields for Add/Edit
+			protected void HideFieldsForAddEdit() {
+			}
 			#pragma warning disable 1998
 
 			/// <summary>
@@ -455,7 +543,22 @@ namespace AspNetMaker2020.Models {
 				return false;
 			}
 			#pragma warning restore 1998
-			#pragma warning disable 162, 1998
+
+			public string DbMasterFilter = "";
+
+			public string DbDetailFilter = "";
+
+			public int StartRecord;
+
+			public int TotalRecords;
+
+			public int RecordCount;
+
+			public List<string> RecordKeys;
+
+			public DbDataReader Recordset;
+
+			public int StartRowCount = 1;
 
 			/// <summary>
 			/// Page run
@@ -473,6 +576,13 @@ namespace AspNetMaker2020.Models {
 				if (!await SetupApiRequest()) {
 					Security ??= CreateSecurity(); // DN
 				}
+				CurrentAction = Param("action"); // Set up current action
+				Id.SetVisibility();
+				DisplayName.SetVisibility();
+				HideFieldsForAddEdit();
+
+				// Do not use lookup cache
+				SetUseLookupCache(false);
 
 				// Global Page Loading event
 				Page_Loading();
@@ -490,15 +600,301 @@ namespace AspNetMaker2020.Models {
 
 				// Create token
 				CreateToken();
-				CurrentBreadcrumb = new Breadcrumb();
 
-				// If session expired, show session expired message
-				if (Get<bool>("expired"))
-					FailureMessage = Language.Phrase("SessionExpired");
-				return Terminate("BankBranchlist"); // Exit and go to default page
+				// Set up lookup cache
+				// Set up Breadcrumb
+
+				SetupBreadcrumb();
+
+				// Load key parameters
+				RecordKeys = GetRecordKeys(); // Load record keys
+				string filter = GetFilterFromRecordKeys();
+				if (Empty(filter))
+					return Terminate("LeadStatuslist"); // Prevent SQL injection, return to List page
+
+				// Set up filter (WHERE Clause)
+				CurrentFilter = filter;
+
+				// Get action
+				if (IsApi()) {
+					CurrentAction = "delete"; // Delete record directly
+				} else if (Post("action", out StringValues sv)) {
+					CurrentAction = sv;
+				} else if (Get<bool>("action")) {
+					CurrentAction = "delete"; // Delete record directly
+				} else {
+					CurrentAction = "show"; // Display record
+				}
+				if (IsDelete) { // DN
+					SendEmail = true; // Send email on delete success
+					var res = await DeleteRows();
+					if (res) { // Delete rows
+						if (Empty(SuccessMessage))
+							SuccessMessage = Language.Phrase("DeleteSuccess"); // Set up success message
+						if (IsApi()) {
+							return res;
+						} else {
+							return Terminate(ReturnUrl); // Return to caller
+						}
+					} else { // Delete failed
+						if (IsApi())
+							return Terminate();
+						CurrentAction = "show"; // Display record
+					}
+				}
+				if (IsShow) { // Load records for display // DN
+					Recordset = await LoadRecordset();
+					TotalRecords = await ListRecordCount(); // Get record count
+					if (TotalRecords <= 0) { // No record found, exit
+						CloseRecordset(); // DN
+						return Terminate("LeadStatuslist"); // Return to list
+					}
+				}
 				return PageResult();
 			}
-			#pragma warning restore 162, 1998
+
+			// Load recordset // DN
+			public async Task<DbDataReader> LoadRecordset(int offset = -1, int rowcnt = -1) {
+
+				// Load list page SQL
+				string sql = ListSql;
+
+				// Load recordset (Recordset_Selected event not supported) // DN
+				return await Connection.SelectLimit(sql, rowcnt, offset, !Empty(OrderBy) || !Empty(SessionOrderBy));
+			}
+
+			// Load row based on key values
+			public async Task<bool> LoadRow() {
+				string filter = GetRecordFilter();
+
+				// Call Row Selecting event
+				Row_Selecting(ref filter);
+
+				// Load SQL based on filter
+				CurrentFilter = filter;
+				string sql = CurrentSql;
+				bool res = false;
+				try {
+					using var rsrow = await Connection.OpenDataReaderAsync(sql);
+					if (rsrow != null && await rsrow.ReadAsync()) {
+						await LoadRowValues(rsrow);
+						res = true;
+					} else {
+						return false;
+					}
+				} catch {
+					if (Config.Debug)
+						throw;
+				}
+				return res;
+			}
+			#pragma warning disable 162, 168, 1998
+
+			// Load row values from recordset
+			public async Task LoadRowValues(DbDataReader dr = null) {
+				Dictionary<string, object> row;
+				object v;
+				if (dr != null && dr.HasRows)
+					row = Connection.GetRow(dr); // DN
+				else
+					row = NewRow();
+
+				// Call Row Selected event
+				Row_Selected(row);
+				if (dr == null || !dr.HasRows)
+					return;
+				Id.SetDbValue(row["Id"]);
+				DisplayName.SetDbValue(row["DisplayName"]);
+			}
+			#pragma warning restore 162, 168, 1998
+
+			// Return a row with default values
+			protected Dictionary<string, object> NewRow() {
+				var row = new Dictionary<string, object>();
+				row.Add("Id", System.DBNull.Value);
+				row.Add("DisplayName", System.DBNull.Value);
+				return row;
+			}
+			#pragma warning disable 1998
+
+			// Render row values based on field settings
+			public async Task RenderRow() {
+
+				// Call Row_Rendering event
+				Row_Rendering();
+
+				// Common render codes for all row types
+				// Id
+				// DisplayName
+
+				if (RowType == Config.RowTypeView) { // View row
+
+					// Id
+					Id.ViewValue = Convert.ToString(Id.CurrentValue); // DN
+					Id.ViewValue = FormatNumber(Id.ViewValue, 0, -2, -2, -2);
+					Id.ViewCustomAttributes = "";
+
+					// DisplayName
+					DisplayName.ViewValue = Convert.ToString(DisplayName.CurrentValue); // DN
+					DisplayName.ViewCustomAttributes = "";
+
+					// Id
+					Id.HrefValue = "";
+					Id.TooltipValue = "";
+
+					// DisplayName
+					DisplayName.HrefValue = "";
+					DisplayName.TooltipValue = "";
+				}
+
+				// Call Row Rendered event
+				if (RowType != Config.RowTypeAggregateInit)
+					Row_Rendered();
+			}
+			#pragma warning restore 1998
+
+			// Delete records (based on current filter)
+			protected async Task<JsonBoolResult> DeleteRows() { // DN
+				bool result = true;
+				List<Dictionary<string, object>> rsold = null;
+				try {
+					string sql = CurrentSql;
+					using var rs = await Connection.GetDataReaderAsync(sql);
+					if (rs == null) {
+						return JsonBoolResult.FalseResult;
+					} else if (!rs.HasRows) {
+						FailureMessage = Language.Phrase("NoRecord"); // No record found
+						return JsonBoolResult.FalseResult;
+					} else { // Clone old rows
+						rsold = await Connection.GetRowsAsync(rs);
+					}
+				} catch (Exception e) {
+					if (Config.Debug)
+						throw;
+					FailureMessage = e.Message;
+					return JsonBoolResult.FalseResult;
+				}
+				LeadStatus ??= new _LeadStatus();
+				Connection.BeginTrans();
+				var key = "";
+				try {
+
+					// Call Row Deleting event
+					if (result)
+						result = rsold.All(row => Row_Deleting(row));
+					if (result) {
+						foreach (var row in rsold) {
+							var thisKey = "";
+							if (!Empty(thisKey)) thisKey += Config.CompositeKeySeparator;
+							thisKey += Convert.ToString(row["Id"]);
+							if (Config.DeleteUploadFiles)
+								DeleteUploadedFiles(row);
+							try {
+								await DeleteAsync(row);
+							} catch (Exception e) {
+								if (Config.Debug)
+									throw;
+								FailureMessage = e.Message; // Set up error message
+								result = false;
+								break;
+							}
+							if (!Empty(key))
+								key += ", ";
+							key += thisKey;
+						}
+					}
+					if (!result) {
+
+						// Set up error message
+						if (!Empty(SuccessMessage) || !Empty(FailureMessage)) {
+
+							// Use the message, do nothing
+						} else if (!Empty(CancelMessage)) {
+							FailureMessage = CancelMessage;
+							CancelMessage = "";
+						} else {
+							FailureMessage = Language.Phrase("DeleteCancelled");
+						}
+					}
+				} catch (Exception e) {
+					FailureMessage = e.Message;
+					result = false;
+				}
+				if (result) {
+					Connection.CommitTrans(); // Commit the changes
+				} else {
+					Connection.RollbackTrans(); // Rollback changes
+				}
+
+				// Call Row Deleted event
+				if (result)
+					rsold.ForEach(row => Row_Deleted(row));
+
+				// Write JSON for API request (Support single row only)
+				var d = new Dictionary<string, object>();
+				d.Add("success", result);
+				if (IsApi() && result) {
+					var row = GetRecordFromRecordset(rsold);
+					d.Add(TableVar, row);
+					d.Add("version", Config.ProductVersion);
+					return new JsonBoolResult(d, true);
+				}
+				return new JsonBoolResult(d, result);
+			}
+
+			// Save data to memory cache
+			public void SetCache<T>(string key, T value, int span) => Cache.Set<T>(key, value, new MemoryCacheEntryOptions()
+				.SetSlidingExpiration(TimeSpan.FromMilliseconds(span))); // Keep in cache for this time, reset time if accessed
+
+			// Gete data from memory cache
+			public void GetCache<T>(string key) => Cache.Get<T>(key);
+
+			// Set up Breadcrumb
+			protected void SetupBreadcrumb() {
+				var breadcrumb = new Breadcrumb();
+				string url = CurrentUrl();
+				breadcrumb.Add("list", TableVar, AppPath(AddMasterUrl("LeadStatuslist")), "", TableVar, true);
+				string pageId = "delete";
+				breadcrumb.Add("delete", pageId, url);
+				CurrentBreadcrumb = breadcrumb;
+			}
+
+			// Setup lookup options
+			public async Task SetupLookupOptions(DbField fld)
+			{
+				Func<string> lookupFilter = null;
+				var conn = Connection;
+				if (!Empty(fld.Lookup) && fld.Lookup.Options.Count == 0) {
+
+					// Set up lookup SQL
+					// Always call to Lookup.GetSql so that user can setup Lookup.Options in Lookup_Selecting server event
+
+					var sql = fld.Lookup.GetSql(false, "", lookupFilter, this);
+
+					// Set up lookup cache
+					if (fld.UseLookupCache && !Empty(sql) && fld.Lookup.ParentFields.Count == 0 && fld.Lookup.Options.Count == 0) {
+						int totalCnt = await TryGetRecordCount(sql, conn);
+						if (totalCnt > fld.LookupCacheCount) // Total count > cache count, do not cache
+							return;
+						var ar = new Dictionary<string, Dictionary<string, object>>();
+						var values = new List<object>();
+						List<Dictionary<string, object>> rs = await conn.GetRowsAsync(sql);
+						if (rs != null) {
+							foreach (var row in rs) {
+								string key = row.Values.First()?.ToString() ?? string.Empty;
+								if (!ar.ContainsKey(key))
+									ar.Add(key, row);
+							}
+						}
+						fld.Lookup.Options = ar;
+					}
+				}
+			}
+
+			// Close recordset
+			public void CloseRecordset() {
+				using (Recordset) {} // Dispose
+			}
 
 			// Page Load event
 			public virtual void Page_Load() {

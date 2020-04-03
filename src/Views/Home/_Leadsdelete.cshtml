@@ -1,0 +1,214 @@
+@{
+
+	// View
+	View = this;
+	SetClientVar("login", LoginStatus);
+
+	// Global Page Rendering event
+	Page_Rendering();
+
+	// Page Render event
+	_Leads_Delete.Page_Render();
+
+	// Check action result
+	if (_Leads_Delete.ActionResult is EmptyResult) { // Terminate page
+		return;
+	}
+
+	// Layout
+	Layout = "_Layout";
+
+	// Local variables (Temp data)
+	#pragma warning disable 168
+	string sqlWrk, filterWrk, whereWrk, curVal;
+	List<Dictionary<string, object>> rswrk;
+	string[] arWrk;
+	List<object> listWrk;
+	Func<string> lookupFilter;
+	#pragma warning restore 168
+}
+<script>
+var f_Leadsdelete, currentPageID;
+loadjs.ready("head", function() {
+
+	// Form object
+	currentPageID = ew.PAGE_ID = "delete";
+	f_Leadsdelete = currentForm = new ew.Form("f_Leadsdelete", "delete");
+	loadjs.done("f_Leadsdelete");
+});
+</script>
+<script>
+loadjs.ready("head", function() {
+
+	// Client script
+	// Write your client script here, no need to add script tags.
+
+});
+</script>
+@_Leads_Delete.ShowPageHeader()
+@_Leads_Delete.ShowMessages()
+<form name="f_Leadsdelete" id="f_Leadsdelete" class="form-inline ew-form ew-delete-form" action="@AppPath(CurrentPageName())" method="post">
+@if (_Leads_Delete.CheckToken) {
+	@Html.AntiForgeryToken()
+}
+<input type="hidden" name="action" id="action" value="delete">
+@foreach (string key in _Leads_Delete.RecordKeys) {
+<input type="hidden" name="key_m[]" value="@key">
+}
+<div class="card ew-card ew-grid">
+<div class="@ResponsiveTableClass() card-body ew-grid-middle-panel">
+<table class="table ew-table">
+	<thead>
+	<tr class="ew-table-header">
+@if (_Leads_Delete.LeadId.Visible) { // _Leads_Delete.LeadId.Visible (begin)
+		<th class="@Html.Raw(_Leads_Delete.LeadId.HeaderCellClass)"><span id="elh__Leads_LeadId" class="_Leads_LeadId">@Html.Raw(_Leads_Delete.LeadId.Caption)</span></th>
+} @* _Leads_Delete.LeadId.Visible (end) *@
+@if (_Leads_Delete._Name.Visible) { // _Leads_Delete._Name.Visible (begin)
+		<th class="@Html.Raw(_Leads_Delete._Name.HeaderCellClass)"><span id="elh__Leads__Name" class="_Leads__Name">@Html.Raw(_Leads_Delete._Name.Caption)</span></th>
+} @* _Leads_Delete._Name.Visible (end) *@
+@if (_Leads_Delete.State.Visible) { // _Leads_Delete.State.Visible (begin)
+		<th class="@Html.Raw(_Leads_Delete.State.HeaderCellClass)"><span id="elh__Leads_State" class="_Leads_State">@Html.Raw(_Leads_Delete.State.Caption)</span></th>
+} @* _Leads_Delete.State.Visible (end) *@
+@if (_Leads_Delete.LeadStatusId.Visible) { // _Leads_Delete.LeadStatusId.Visible (begin)
+		<th class="@Html.Raw(_Leads_Delete.LeadStatusId.HeaderCellClass)"><span id="elh__Leads_LeadStatusId" class="_Leads_LeadStatusId">@Html.Raw(_Leads_Delete.LeadStatusId.Caption)</span></th>
+} @* _Leads_Delete.LeadStatusId.Visible (end) *@
+@if (_Leads_Delete.BranchId.Visible) { // _Leads_Delete.BranchId.Visible (begin)
+		<th class="@Html.Raw(_Leads_Delete.BranchId.HeaderCellClass)"><span id="elh__Leads_BranchId" class="_Leads_BranchId">@Html.Raw(_Leads_Delete.BranchId.Caption)</span></th>
+} @* _Leads_Delete.BranchId.Visible (end) *@
+@if (_Leads_Delete.UserId.Visible) { // _Leads_Delete.UserId.Visible (begin)
+		<th class="@Html.Raw(_Leads_Delete.UserId.HeaderCellClass)"><span id="elh__Leads_UserId" class="_Leads_UserId">@Html.Raw(_Leads_Delete.UserId.Caption)</span></th>
+} @* _Leads_Delete.UserId.Visible (end) *@
+@if (_Leads_Delete.FirstName.Visible) { // _Leads_Delete.FirstName.Visible (begin)
+		<th class="@Html.Raw(_Leads_Delete.FirstName.HeaderCellClass)"><span id="elh__Leads_FirstName" class="_Leads_FirstName">@Html.Raw(_Leads_Delete.FirstName.Caption)</span></th>
+} @* _Leads_Delete.FirstName.Visible (end) *@
+@if (_Leads_Delete.LastName.Visible) { // _Leads_Delete.LastName.Visible (begin)
+		<th class="@Html.Raw(_Leads_Delete.LastName.HeaderCellClass)"><span id="elh__Leads_LastName" class="_Leads_LastName">@Html.Raw(_Leads_Delete.LastName.Caption)</span></th>
+} @* _Leads_Delete.LastName.Visible (end) *@
+@if (_Leads_Delete.BlobUrl.Visible) { // _Leads_Delete.BlobUrl.Visible (begin)
+		<th class="@Html.Raw(_Leads_Delete.BlobUrl.HeaderCellClass)"><span id="elh__Leads_BlobUrl" class="_Leads_BlobUrl">@Html.Raw(_Leads_Delete.BlobUrl.Caption)</span></th>
+} @* _Leads_Delete.BlobUrl.Visible (end) *@
+@if (_Leads_Delete.EmailAddress.Visible) { // _Leads_Delete.EmailAddress.Visible (begin)
+		<th class="@Html.Raw(_Leads_Delete.EmailAddress.HeaderCellClass)"><span id="elh__Leads_EmailAddress" class="_Leads_EmailAddress">@Html.Raw(_Leads_Delete.EmailAddress.Caption)</span></th>
+} @* _Leads_Delete.EmailAddress.Visible (end) *@
+@if (_Leads_Delete.PhoneNumber.Visible) { // _Leads_Delete.PhoneNumber.Visible (begin)
+		<th class="@Html.Raw(_Leads_Delete.PhoneNumber.HeaderCellClass)"><span id="elh__Leads_PhoneNumber" class="_Leads_PhoneNumber">@Html.Raw(_Leads_Delete.PhoneNumber.Caption)</span></th>
+} @* _Leads_Delete.PhoneNumber.Visible (end) *@
+	</tr>
+	</thead>
+	<tbody>
+@{ _Leads_Delete.RecordCount = 0; }
+@while (_Leads_Delete.Recordset != null && await _Leads_Delete.Recordset.ReadAsync()) { // DN
+	_Leads_Delete.RecordCount++;
+	_Leads_Delete.RowCount++;
+
+	// Set row properties
+	_Leads_Delete.ResetAttributes();
+	_Leads_Delete.RowType = Config.RowTypeView; // View
+
+	// Get the field contents
+	await _Leads_Delete.LoadRowValues(_Leads_Delete.Recordset);
+
+	// Render row
+	await _Leads_Delete.RenderRow();
+	<tr @Html.Raw(_Leads.RowAttributes)>
+@if (_Leads_Delete.LeadId.Visible) { // _Leads_Delete.LeadId.Visible (begin)
+		<td @Html.Raw(_Leads_Delete.LeadId.CellAttributes)>
+<span id="el@(_Leads_Delete.RowCount)__Leads_LeadId" class="_Leads_LeadId">
+<span @Html.Raw(_Leads_Delete.LeadId.ViewAttributes)>@Html.Raw(_Leads_Delete.LeadId.GetViewValue())</span>
+</span>
+</td>
+} @* _Leads_Delete.LeadId.Visible (end) *@
+@if (_Leads_Delete._Name.Visible) { // _Leads_Delete._Name.Visible (begin)
+		<td @Html.Raw(_Leads_Delete._Name.CellAttributes)>
+<span id="el@(_Leads_Delete.RowCount)__Leads__Name" class="_Leads__Name">
+<span @Html.Raw(_Leads_Delete._Name.ViewAttributes)>@Html.Raw(_Leads_Delete._Name.GetViewValue())</span>
+</span>
+</td>
+} @* _Leads_Delete._Name.Visible (end) *@
+@if (_Leads_Delete.State.Visible) { // _Leads_Delete.State.Visible (begin)
+		<td @Html.Raw(_Leads_Delete.State.CellAttributes)>
+<span id="el@(_Leads_Delete.RowCount)__Leads_State" class="_Leads_State">
+<span @Html.Raw(_Leads_Delete.State.ViewAttributes)>@Html.Raw(_Leads_Delete.State.GetViewValue())</span>
+</span>
+</td>
+} @* _Leads_Delete.State.Visible (end) *@
+@if (_Leads_Delete.LeadStatusId.Visible) { // _Leads_Delete.LeadStatusId.Visible (begin)
+		<td @Html.Raw(_Leads_Delete.LeadStatusId.CellAttributes)>
+<span id="el@(_Leads_Delete.RowCount)__Leads_LeadStatusId" class="_Leads_LeadStatusId">
+<span @Html.Raw(_Leads_Delete.LeadStatusId.ViewAttributes)>@Html.Raw(_Leads_Delete.LeadStatusId.GetViewValue())</span>
+</span>
+</td>
+} @* _Leads_Delete.LeadStatusId.Visible (end) *@
+@if (_Leads_Delete.BranchId.Visible) { // _Leads_Delete.BranchId.Visible (begin)
+		<td @Html.Raw(_Leads_Delete.BranchId.CellAttributes)>
+<span id="el@(_Leads_Delete.RowCount)__Leads_BranchId" class="_Leads_BranchId">
+<span @Html.Raw(_Leads_Delete.BranchId.ViewAttributes)>@Html.Raw(_Leads_Delete.BranchId.GetViewValue())</span>
+</span>
+</td>
+} @* _Leads_Delete.BranchId.Visible (end) *@
+@if (_Leads_Delete.UserId.Visible) { // _Leads_Delete.UserId.Visible (begin)
+		<td @Html.Raw(_Leads_Delete.UserId.CellAttributes)>
+<span id="el@(_Leads_Delete.RowCount)__Leads_UserId" class="_Leads_UserId">
+<span @Html.Raw(_Leads_Delete.UserId.ViewAttributes)>@Html.Raw(_Leads_Delete.UserId.GetViewValue())</span>
+</span>
+</td>
+} @* _Leads_Delete.UserId.Visible (end) *@
+@if (_Leads_Delete.FirstName.Visible) { // _Leads_Delete.FirstName.Visible (begin)
+		<td @Html.Raw(_Leads_Delete.FirstName.CellAttributes)>
+<span id="el@(_Leads_Delete.RowCount)__Leads_FirstName" class="_Leads_FirstName">
+<span @Html.Raw(_Leads_Delete.FirstName.ViewAttributes)>@Html.Raw(_Leads_Delete.FirstName.GetViewValue())</span>
+</span>
+</td>
+} @* _Leads_Delete.FirstName.Visible (end) *@
+@if (_Leads_Delete.LastName.Visible) { // _Leads_Delete.LastName.Visible (begin)
+		<td @Html.Raw(_Leads_Delete.LastName.CellAttributes)>
+<span id="el@(_Leads_Delete.RowCount)__Leads_LastName" class="_Leads_LastName">
+<span @Html.Raw(_Leads_Delete.LastName.ViewAttributes)>@Html.Raw(_Leads_Delete.LastName.GetViewValue())</span>
+</span>
+</td>
+} @* _Leads_Delete.LastName.Visible (end) *@
+@if (_Leads_Delete.BlobUrl.Visible) { // _Leads_Delete.BlobUrl.Visible (begin)
+		<td @Html.Raw(_Leads_Delete.BlobUrl.CellAttributes)>
+<span id="el@(_Leads_Delete.RowCount)__Leads_BlobUrl" class="_Leads_BlobUrl">
+<span @Html.Raw(_Leads_Delete.BlobUrl.ViewAttributes)>@Html.Raw(_Leads_Delete.BlobUrl.GetViewValue())</span>
+</span>
+</td>
+} @* _Leads_Delete.BlobUrl.Visible (end) *@
+@if (_Leads_Delete.EmailAddress.Visible) { // _Leads_Delete.EmailAddress.Visible (begin)
+		<td @Html.Raw(_Leads_Delete.EmailAddress.CellAttributes)>
+<span id="el@(_Leads_Delete.RowCount)__Leads_EmailAddress" class="_Leads_EmailAddress">
+<span @Html.Raw(_Leads_Delete.EmailAddress.ViewAttributes)>@Html.Raw(_Leads_Delete.EmailAddress.GetViewValue())</span>
+</span>
+</td>
+} @* _Leads_Delete.EmailAddress.Visible (end) *@
+@if (_Leads_Delete.PhoneNumber.Visible) { // _Leads_Delete.PhoneNumber.Visible (begin)
+		<td @Html.Raw(_Leads_Delete.PhoneNumber.CellAttributes)>
+<span id="el@(_Leads_Delete.RowCount)__Leads_PhoneNumber" class="_Leads_PhoneNumber">
+<span @Html.Raw(_Leads_Delete.PhoneNumber.ViewAttributes)>@Html.Raw(_Leads_Delete.PhoneNumber.GetViewValue())</span>
+</span>
+</td>
+} @* _Leads_Delete.PhoneNumber.Visible (end) *@
+	</tr>
+}
+@{ _Leads_Delete.CloseRecordset(); }
+</tbody>
+</table>
+</div>
+</div>
+<div>
+<button class="btn btn-primary ew-btn" name="btn-action" id="btn-action" type="submit">@Html.Raw(Language.Phrase("DeleteBtn"))</button>
+<button class="btn btn-default ew-btn" name="btn-cancel" id="btn-cancel" type="button" data-href="@AppPath(_Leads_Delete.ReturnUrl)">@Language.Phrase("CancelBtn")</button>
+</div>
+</form>
+@_Leads_Delete.ShowPageFooter()
+@ShowDebugMessage()
+@ElapsedTime()
+<script>
+loadjs.ready("load", function() {
+
+	// Startup script
+	// Write your table-specific startup script here
+	// document.write("page loaded");
+
+});
+</script>

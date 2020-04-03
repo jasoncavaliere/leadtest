@@ -74,17 +74,17 @@ namespace AspNetMaker2020.Models {
 	public partial class project1 {
 
 		/// <summary>
-		/// _Leads
+		/// LeadStatus
 		/// </summary>
-		public static __Leads _Leads {
-			get => HttpData.GetOrCreate<__Leads>("_Leads");
-			set => HttpData["_Leads"] = value;
+		public static _LeadStatus LeadStatus {
+			get => HttpData.GetOrCreate<_LeadStatus>("LeadStatus");
+			set => HttpData["LeadStatus"] = value;
 		}
 
 		/// <summary>
-		/// Table class for Leads
+		/// Table class for LeadStatus
 		/// </summary>
-		public class __Leads: DbTable {
+		public class _LeadStatus: DbTable {
 
 			public int RowCount = 0; // DN
 
@@ -99,39 +99,21 @@ namespace AspNetMaker2020.Models {
 
 			public string TableLeftColumnClass = "w-col-2";
 
-			public readonly DbField<SqlDbType> LeadId;
+			public readonly DbField<SqlDbType> Id;
 
-			public readonly DbField<SqlDbType> _Name;
-
-			public readonly DbField<SqlDbType> State;
-
-			public readonly DbField<SqlDbType> LeadStatusId;
-
-			public readonly DbField<SqlDbType> BranchId;
-
-			public readonly DbField<SqlDbType> UserId;
-
-			public readonly DbField<SqlDbType> FirstName;
-
-			public readonly DbField<SqlDbType> LastName;
-
-			public readonly DbField<SqlDbType> BlobUrl;
-
-			public readonly DbField<SqlDbType> EmailAddress;
-
-			public readonly DbField<SqlDbType> PhoneNumber;
+			public readonly DbField<SqlDbType> DisplayName;
 
 			// Constructor
-			public __Leads() {
+			public _LeadStatus() {
 
 				// Language object // DN
 				Language ??= new Lang();
-				TableVar = "_Leads";
-				Name = "Leads";
+				TableVar = "LeadStatus";
+				Name = "LeadStatus";
 				Type = "TABLE";
 
 				// Update Table
-				UpdateTable = "[dbo].[Leads]";
+				UpdateTable = "[dbo].[LeadStatus]";
 				DbId = "DB"; // DN
 				ExportAll = true;
 				ExportPageBreakCount = 0; // Page break per every n record (PDF only)
@@ -149,18 +131,18 @@ namespace AspNetMaker2020.Models {
 				UserIdAllowSecurity = 0; // User ID Allow
 				BasicSearch = new BasicSearch(TableVar);
 
-				// LeadId
-				LeadId = new DbField<SqlDbType> {
-					TableVar = "_Leads",
-					TableName = "Leads",
-					FieldVar = "x_LeadId",
-					Name = "LeadId",
-					Expression = "[LeadId]",
-					BasicSearchExpression = "[LeadId]",
-					Type = 72,
-					DbType = SqlDbType.UniqueIdentifier,
+				// Id
+				Id = new DbField<SqlDbType> {
+					TableVar = "LeadStatus",
+					TableName = "LeadStatus",
+					FieldVar = "x_Id",
+					Name = "Id",
+					Expression = "[Id]",
+					BasicSearchExpression = "CAST([Id] AS NVARCHAR)",
+					Type = 3,
+					DbType = SqlDbType.Int,
 					DateTimeFormat = -1,
-					VirtualExpression = "[LeadId]",
+					VirtualExpression = "[Id]",
 					IsVirtual = false,
 					ForceSelection = false,
 					SelectMultiple = false,
@@ -171,24 +153,24 @@ namespace AspNetMaker2020.Models {
 					Nullable = false, // NOT NULL field
 					Required = true, // Required field
 					Sortable = true, // Allow sort
-					DefaultErrorMessage = Language.Phrase("IncorrectGUID"),
+					DefaultErrorMessage = Language.Phrase("IncorrectInteger"),
 					IsUpload = false
 				};
-				LeadId.Init(this); // DN
-				Fields.Add("LeadId", LeadId);
+				Id.Init(this); // DN
+				Fields.Add("Id", Id);
 
-				// Name
-				_Name = new DbField<SqlDbType> {
-					TableVar = "_Leads",
-					TableName = "Leads",
-					FieldVar = "x__Name",
-					Name = "Name",
-					Expression = "[Name]",
-					BasicSearchExpression = "[Name]",
+				// DisplayName
+				DisplayName = new DbField<SqlDbType> {
+					TableVar = "LeadStatus",
+					TableName = "LeadStatus",
+					FieldVar = "x_DisplayName",
+					Name = "DisplayName",
+					Expression = "[DisplayName]",
+					BasicSearchExpression = "[DisplayName]",
 					Type = 200,
 					DbType = SqlDbType.VarChar,
 					DateTimeFormat = -1,
-					VirtualExpression = "[Name]",
+					VirtualExpression = "[DisplayName]",
 					IsVirtual = false,
 					ForceSelection = false,
 					SelectMultiple = false,
@@ -200,235 +182,8 @@ namespace AspNetMaker2020.Models {
 					Sortable = true, // Allow sort
 					IsUpload = false
 				};
-				_Name.Init(this); // DN
-				Fields.Add("Name", _Name);
-
-				// State
-				State = new DbField<SqlDbType> {
-					TableVar = "_Leads",
-					TableName = "Leads",
-					FieldVar = "x_State",
-					Name = "State",
-					Expression = "[State]",
-					BasicSearchExpression = "[State]",
-					Type = 200,
-					DbType = SqlDbType.VarChar,
-					DateTimeFormat = -1,
-					VirtualExpression = "[State]",
-					IsVirtual = false,
-					ForceSelection = false,
-					SelectMultiple = false,
-					VirtualSearch = false,
-					ViewTag = "FORMATTED TEXT",
-					HtmlTag = "TEXT",
-					Nullable = false, // NOT NULL field
-					Required = true, // Required field
-					Sortable = true, // Allow sort
-					IsUpload = false
-				};
-				State.Init(this); // DN
-				Fields.Add("State", State);
-
-				// LeadStatusId
-				LeadStatusId = new DbField<SqlDbType> {
-					TableVar = "_Leads",
-					TableName = "Leads",
-					FieldVar = "x_LeadStatusId",
-					Name = "LeadStatusId",
-					Expression = "[LeadStatusId]",
-					BasicSearchExpression = "CAST([LeadStatusId] AS NVARCHAR)",
-					Type = 3,
-					DbType = SqlDbType.Int,
-					DateTimeFormat = -1,
-					VirtualExpression = "[LeadStatusId]",
-					IsVirtual = false,
-					ForceSelection = false,
-					SelectMultiple = false,
-					VirtualSearch = false,
-					ViewTag = "FORMATTED TEXT",
-					HtmlTag = "SELECT",
-					Sortable = true, // Allow sort
-					UsePleaseSelect = true, // Use PleaseSelect by default
-					PleaseSelectText = Language.Phrase("PleaseSelect"), // PleaseSelect text
-					DefaultErrorMessage = Language.Phrase("IncorrectInteger"),
-					IsUpload = false
-				};
-				LeadStatusId.Init(this); // DN
-				LeadStatusId.Lookup = new Lookup<DbField>("LeadStatusId", "LeadStatus", false, "Id", new List<string> {"DisplayName", "", "", ""}, new List<string> {}, new List<string> {}, new List<string> {}, new List<string> {}, new List<string> {}, new List<string> {}, "", "");
-				Fields.Add("LeadStatusId", LeadStatusId);
-
-				// BranchId
-				BranchId = new DbField<SqlDbType> {
-					TableVar = "_Leads",
-					TableName = "Leads",
-					FieldVar = "x_BranchId",
-					Name = "BranchId",
-					Expression = "[BranchId]",
-					BasicSearchExpression = "CAST([BranchId] AS NVARCHAR)",
-					Type = 3,
-					DbType = SqlDbType.Int,
-					DateTimeFormat = -1,
-					VirtualExpression = "[BranchId]",
-					IsVirtual = false,
-					ForceSelection = false,
-					SelectMultiple = false,
-					VirtualSearch = false,
-					ViewTag = "FORMATTED TEXT",
-					HtmlTag = "SELECT",
-					Sortable = true, // Allow sort
-					UsePleaseSelect = true, // Use PleaseSelect by default
-					PleaseSelectText = Language.Phrase("PleaseSelect"), // PleaseSelect text
-					DefaultErrorMessage = Language.Phrase("IncorrectInteger"),
-					IsUpload = false
-				};
-				BranchId.Init(this); // DN
-				BranchId.Lookup = new Lookup<DbField>("BranchId", "BankBranch", false, "Id", new List<string> {"Name", "", "", ""}, new List<string> {}, new List<string> {}, new List<string> {}, new List<string> {}, new List<string> {}, new List<string> {}, "", "");
-				Fields.Add("BranchId", BranchId);
-
-				// UserId
-				UserId = new DbField<SqlDbType> {
-					TableVar = "_Leads",
-					TableName = "Leads",
-					FieldVar = "x_UserId",
-					Name = "UserId",
-					Expression = "[UserId]",
-					BasicSearchExpression = "[UserId]",
-					Type = 72,
-					DbType = SqlDbType.UniqueIdentifier,
-					DateTimeFormat = -1,
-					VirtualExpression = "[UserId]",
-					IsVirtual = false,
-					ForceSelection = false,
-					SelectMultiple = false,
-					VirtualSearch = false,
-					ViewTag = "FORMATTED TEXT",
-					HtmlTag = "TEXT",
-					Sortable = true, // Allow sort
-					DefaultErrorMessage = Language.Phrase("IncorrectGUID"),
-					IsUpload = false
-				};
-				UserId.Init(this); // DN
-				Fields.Add("UserId", UserId);
-
-				// FirstName
-				FirstName = new DbField<SqlDbType> {
-					TableVar = "_Leads",
-					TableName = "Leads",
-					FieldVar = "x_FirstName",
-					Name = "FirstName",
-					Expression = "[FirstName]",
-					BasicSearchExpression = "[FirstName]",
-					Type = 200,
-					DbType = SqlDbType.VarChar,
-					DateTimeFormat = -1,
-					VirtualExpression = "[FirstName]",
-					IsVirtual = false,
-					ForceSelection = false,
-					SelectMultiple = false,
-					VirtualSearch = false,
-					ViewTag = "FORMATTED TEXT",
-					HtmlTag = "TEXT",
-					Sortable = true, // Allow sort
-					IsUpload = false
-				};
-				FirstName.Init(this); // DN
-				Fields.Add("FirstName", FirstName);
-
-				// LastName
-				LastName = new DbField<SqlDbType> {
-					TableVar = "_Leads",
-					TableName = "Leads",
-					FieldVar = "x_LastName",
-					Name = "LastName",
-					Expression = "[LastName]",
-					BasicSearchExpression = "[LastName]",
-					Type = 130,
-					DbType = SqlDbType.NChar,
-					DateTimeFormat = -1,
-					VirtualExpression = "[LastName]",
-					IsVirtual = false,
-					ForceSelection = false,
-					SelectMultiple = false,
-					VirtualSearch = false,
-					ViewTag = "FORMATTED TEXT",
-					HtmlTag = "TEXT",
-					Sortable = true, // Allow sort
-					IsUpload = false
-				};
-				LastName.Init(this); // DN
-				Fields.Add("LastName", LastName);
-
-				// BlobUrl
-				BlobUrl = new DbField<SqlDbType> {
-					TableVar = "_Leads",
-					TableName = "Leads",
-					FieldVar = "x_BlobUrl",
-					Name = "BlobUrl",
-					Expression = "[BlobUrl]",
-					BasicSearchExpression = "[BlobUrl]",
-					Type = 200,
-					DbType = SqlDbType.VarChar,
-					DateTimeFormat = -1,
-					VirtualExpression = "[BlobUrl]",
-					IsVirtual = false,
-					ForceSelection = false,
-					SelectMultiple = false,
-					VirtualSearch = false,
-					ViewTag = "FORMATTED TEXT",
-					HtmlTag = "TEXT",
-					Sortable = true, // Allow sort
-					IsUpload = false
-				};
-				BlobUrl.Init(this); // DN
-				Fields.Add("BlobUrl", BlobUrl);
-
-				// EmailAddress
-				EmailAddress = new DbField<SqlDbType> {
-					TableVar = "_Leads",
-					TableName = "Leads",
-					FieldVar = "x_EmailAddress",
-					Name = "EmailAddress",
-					Expression = "[EmailAddress]",
-					BasicSearchExpression = "[EmailAddress]",
-					Type = 200,
-					DbType = SqlDbType.VarChar,
-					DateTimeFormat = -1,
-					VirtualExpression = "[EmailAddress]",
-					IsVirtual = false,
-					ForceSelection = false,
-					SelectMultiple = false,
-					VirtualSearch = false,
-					ViewTag = "FORMATTED TEXT",
-					HtmlTag = "TEXT",
-					Sortable = true, // Allow sort
-					IsUpload = false
-				};
-				EmailAddress.Init(this); // DN
-				Fields.Add("EmailAddress", EmailAddress);
-
-				// PhoneNumber
-				PhoneNumber = new DbField<SqlDbType> {
-					TableVar = "_Leads",
-					TableName = "Leads",
-					FieldVar = "x_PhoneNumber",
-					Name = "PhoneNumber",
-					Expression = "[PhoneNumber]",
-					BasicSearchExpression = "[PhoneNumber]",
-					Type = 130,
-					DbType = SqlDbType.NChar,
-					DateTimeFormat = -1,
-					VirtualExpression = "[PhoneNumber]",
-					IsVirtual = false,
-					ForceSelection = false,
-					SelectMultiple = false,
-					VirtualSearch = false,
-					ViewTag = "FORMATTED TEXT",
-					HtmlTag = "TEXT",
-					Sortable = true, // Allow sort
-					IsUpload = false
-				};
-				PhoneNumber.Init(this); // DN
-				Fields.Add("PhoneNumber", PhoneNumber);
+				DisplayName.Init(this); // DN
+				Fields.Add("DisplayName", DisplayName);
 			}
 
 			// Set Field Visibility
@@ -517,7 +272,7 @@ namespace AspNetMaker2020.Models {
 			private string _sqlFrom = null;
 
 			public string SqlFrom {
-				get => _sqlFrom ?? "[dbo].[Leads]";
+				get => _sqlFrom ?? "[dbo].[LeadStatus]";
 				set => _sqlFrom = value;
 			}
 
@@ -776,8 +531,8 @@ namespace AspNetMaker2020.Models {
 				AddFilter(ref filter, whereClause);
 				if (row != null) {
 					DbField fld;
-					fld = FieldByName("LeadId");
-					AddFilter(ref filter, fld.Expression + "=" + QuotedValue(row["LeadId"], FieldByName("LeadId").DataType, DbId));
+					fld = FieldByName("Id");
+					AddFilter(ref filter, fld.Expression + "=" + QuotedValue(row["Id"], FieldByName("Id").DataType, DbId));
 				}
 				if (!Empty(filter))
 					sql += filter;
@@ -798,17 +553,8 @@ namespace AspNetMaker2020.Models {
 			public void LoadDbValues(Dictionary<string, object> row) {
 				if (row == null)
 					return;
-				LeadId.SetDbValue(row["LeadId"], false);
-				_Name.SetDbValue(row["Name"], false);
-				State.SetDbValue(row["State"], false);
-				LeadStatusId.SetDbValue(row["LeadStatusId"], false);
-				BranchId.SetDbValue(row["BranchId"], false);
-				UserId.SetDbValue(row["UserId"], false);
-				FirstName.SetDbValue(row["FirstName"], false);
-				LastName.SetDbValue(row["LastName"], false);
-				BlobUrl.SetDbValue(row["BlobUrl"], false);
-				EmailAddress.SetDbValue(row["EmailAddress"], false);
-				PhoneNumber.SetDbValue(row["PhoneNumber"], false);
+				Id.SetDbValue(row["Id"], false);
+				DisplayName.SetDbValue(row["DisplayName"], false);
 			}
 
 			public void DeleteUploadedFiles(Dictionary<string, object> row) {
@@ -816,7 +562,7 @@ namespace AspNetMaker2020.Models {
 			}
 
 			// Record filter WHERE clause
-			private string _sqlKeyFilter => "[LeadId] = '@LeadId@'";
+			private string _sqlKeyFilter => "[Id] = @Id@";
 			#pragma warning disable 168
 
 			// Get record filter
@@ -824,12 +570,14 @@ namespace AspNetMaker2020.Models {
 			{
 				string keyFilter = _sqlKeyFilter;
 				object val, result;
-				val = !Empty(row) && row.TryGetValue("LeadId", out result) ? result : null;
-				val ??= !Empty(LeadId.OldValue) ? LeadId.OldValue : LeadId.CurrentValue; // DN
+				val = !Empty(row) && row.TryGetValue("Id", out result) ? result : null;
+				val ??= !Empty(Id.OldValue) ? Id.OldValue : Id.CurrentValue; // DN
+				if (!IsNumeric(val))
+					return "0=1"; // Invalid key
 				if (val == null)
 					return "0=1"; // Invalid key
 				else
-					keyFilter = keyFilter.Replace("@LeadId@", AdjustSql(AdjustGuid(val, DbId), DbId)); // Replace key value
+					keyFilter = keyFilter.Replace("@Id@", AdjustSql(val, DbId)); // Replace key value
 				return keyFilter;
 			}
 			#pragma warning restore 168
@@ -847,7 +595,7 @@ namespace AspNetMaker2020.Models {
 					if (!Empty(Session[name])) {
 						return Session.GetString(name);
 					} else {
-						return "_Leadslist";
+						return "LeadStatuslist";
 					}
 				}
 				set {
@@ -857,18 +605,18 @@ namespace AspNetMaker2020.Models {
 
 			// Get modal caption
 			public string GetModalCaption(string pageName) {
-				if (SameString(pageName, "_Leadsview"))
+				if (SameString(pageName, "LeadStatusview"))
 					return Language.Phrase("View");
-				else if (SameString(pageName, "_Leadsedit"))
+				else if (SameString(pageName, "LeadStatusedit"))
 					return Language.Phrase("Edit");
-				else if (SameString(pageName, "_Leadsadd"))
+				else if (SameString(pageName, "LeadStatusadd"))
 					return Language.Phrase("Add");
 				else
 					return "";
 			}
 
 			// List URL
-			public string ListUrl => "_Leadslist";
+			public string ListUrl => "LeadStatuslist";
 
 			// View URL
 			public string ViewUrl => GetViewUrl();
@@ -877,22 +625,22 @@ namespace AspNetMaker2020.Models {
 			public string GetViewUrl(string parm = "") {
 				string url = "";
 				if (!Empty(parm))
-					url = KeyUrl("_Leadsview", UrlParm(parm));
+					url = KeyUrl("LeadStatusview", UrlParm(parm));
 				else
-					url = KeyUrl("_Leadsview", UrlParm(Config.TableShowDetail + "="));
+					url = KeyUrl("LeadStatusview", UrlParm(Config.TableShowDetail + "="));
 				return AddMasterUrl(url);
 			}
 
 			// Add URL
-			public string AddUrl { get; set; } = "_Leadsadd";
+			public string AddUrl { get; set; } = "LeadStatusadd";
 
 			// Add URL
 			public string GetAddUrl(string parm = "") {
 				string url = "";
 				if (!Empty(parm))
-					url = "_Leadsadd?" + UrlParm(parm);
+					url = "LeadStatusadd?" + UrlParm(parm);
 				else
-					url = "_Leadsadd";
+					url = "LeadStatusadd";
 				return AppPath(AddMasterUrl(url));
 			}
 
@@ -902,7 +650,7 @@ namespace AspNetMaker2020.Models {
 			// Edit URL (with parameter)
 			public string GetEditUrl(string parm = "") {
 				string url = "";
-				url = KeyUrl("_Leadsedit", UrlParm(parm));
+				url = KeyUrl("LeadStatusedit", UrlParm(parm));
 				return AppPath(AddMasterUrl(url)); // DN
 			}
 
@@ -916,7 +664,7 @@ namespace AspNetMaker2020.Models {
 			// Copy URL
 			public string GetCopyUrl(string parm = "") {
 				string url = "";
-				url = KeyUrl("_Leadsadd", UrlParm(parm));
+				url = KeyUrl("LeadStatusadd", UrlParm(parm));
 				return AppPath(AddMasterUrl(url)); // DN
 			}
 
@@ -926,7 +674,7 @@ namespace AspNetMaker2020.Models {
 
 			// Delete URL
 			public string DeleteUrl =>
-				AppPath(KeyUrl("_Leadsdelete", UrlParm())); // DN
+				AppPath(KeyUrl("LeadStatusdelete", UrlParm())); // DN
 
 			// Add master URL
 			public string AddMasterUrl(string url) {
@@ -936,14 +684,14 @@ namespace AspNetMaker2020.Models {
 			// Get primary key as JSON
 			public string KeyToJson() {
 				string json = "";
-				json += "LeadId:" + ConvertToJson(LeadId.CurrentValue, "string", true);
+				json += "Id:" + ConvertToJson(Id.CurrentValue, "number", true);
 				return "{" + json + "}";
 			}
 
 			// Add key value to URL
 			public string KeyUrl(string url, string parm = "") { // DN
-				if (!IsDBNull(LeadId.CurrentValue)) {
-					url += "/" + RawUrlEncode(Convert.ToString(LeadId.CurrentValue));
+				if (!IsDBNull(Id.CurrentValue)) {
+					url += "/" + Id.CurrentValue;
 				} else {
 					return "javascript:ew.alert(ew.language.phrase('InvalidRecord'));";
 				}
@@ -979,18 +727,20 @@ namespace AspNetMaker2020.Models {
 					object rv;
 					if (IsApi() && RouteValues.TryGetValue("key", out object k))
 						keyValues = k.ToString().Split('/');
-					if (RouteValues.TryGetValue("LeadId", out rv)) { // LeadId
+					if (RouteValues.TryGetValue("Id", out rv)) { // Id
 						key = Convert.ToString(rv);
 					} else if (IsApi() && !Empty(keyValues)) {
 						key = keyValues[0];
 					} else {
-						key = Param("LeadId");
+						key = Param("Id");
 					}
 					keysList.Add(key);
 				}
 
 				// Check keys
 				foreach (var keys in keysList) {
+					if (!IsNumeric(keys)) // Id
+						continue;
 					result.Add(keys);
 				}
 				return result;
@@ -1005,9 +755,9 @@ namespace AspNetMaker2020.Models {
 					if (!Empty(keyFilter))
 						keyFilter += " OR ";
 					if (setCurrent)
-						LeadId.CurrentValue = keys;
+						Id.CurrentValue = keys;
 					else
-						LeadId.OldValue = keys;
+						Id.OldValue = keys;
 					keyFilter += "(" + GetRecordFilter() + ")";
 				}
 				return keyFilter;
@@ -1030,17 +780,8 @@ namespace AspNetMaker2020.Models {
 
 			// Load row values from recordset
 			public void LoadListRowValues(DbDataReader rs) {
-				LeadId.SetDbValue(rs["LeadId"]);
-				_Name.SetDbValue(rs["Name"]);
-				State.SetDbValue(rs["State"]);
-				LeadStatusId.SetDbValue(rs["LeadStatusId"]);
-				BranchId.SetDbValue(rs["BranchId"]);
-				UserId.SetDbValue(rs["UserId"]);
-				FirstName.SetDbValue(rs["FirstName"]);
-				LastName.SetDbValue(rs["LastName"]);
-				BlobUrl.SetDbValue(rs["BlobUrl"]);
-				EmailAddress.SetDbValue(rs["EmailAddress"]);
-				PhoneNumber.SetDbValue(rs["PhoneNumber"]);
+				Id.SetDbValue(rs["Id"]);
+				DisplayName.SetDbValue(rs["DisplayName"]);
 			}
 			#pragma warning disable 1998
 
@@ -1051,139 +792,25 @@ namespace AspNetMaker2020.Models {
 				Row_Rendering();
 
 				// Common render codes
-				// LeadId
-				// Name
-				// State
-				// LeadStatusId
-				// BranchId
-				// UserId
-				// FirstName
-				// LastName
-				// BlobUrl
-				// EmailAddress
-				// PhoneNumber
-				// LeadId
+				// Id
+				// DisplayName
+				// Id
 
-				LeadId.ViewValue = Convert.ToString(LeadId.CurrentValue); // DN
-				LeadId.ViewCustomAttributes = "";
+				Id.ViewValue = Convert.ToString(Id.CurrentValue); // DN
+				Id.ViewValue = FormatNumber(Id.ViewValue, 0, -2, -2, -2);
+				Id.ViewCustomAttributes = "";
 
-				// Name
-				_Name.ViewValue = Convert.ToString(_Name.CurrentValue); // DN
-				_Name.ViewCustomAttributes = "";
+				// DisplayName
+				DisplayName.ViewValue = Convert.ToString(DisplayName.CurrentValue); // DN
+				DisplayName.ViewCustomAttributes = "";
 
-				// State
-				State.ViewValue = Convert.ToString(State.CurrentValue); // DN
-				State.ViewCustomAttributes = "";
+				// Id
+				Id.HrefValue = "";
+				Id.TooltipValue = "";
 
-				// LeadStatusId
-				curVal = Convert.ToString(LeadStatusId.CurrentValue);
-				if (!Empty(curVal)) {
-					LeadStatusId.ViewValue = LeadStatusId.LookupCacheOption(curVal);
-					if (LeadStatusId.ViewValue == null) { // Lookup from database
-						filterWrk = "[Id]" + SearchString("=", curVal.Trim(), Config.DataTypeNumber, "");
-						sqlWrk = LeadStatusId.Lookup.GetSql(false, filterWrk, null, this);
-						rswrk = await Connection.GetRowsAsync(sqlWrk);
-						if (rswrk != null && rswrk.Count > 0) { // Lookup values found
-							var listwrk = rswrk[0].Values.ToList();
-							listwrk[1] = Convert.ToString(listwrk[1]);
-							LeadStatusId.ViewValue = LeadStatusId.DisplayValue(listwrk);
-						} else {
-							LeadStatusId.ViewValue = LeadStatusId.CurrentValue;
-						}
-					}
-				} else {
-					LeadStatusId.ViewValue = System.DBNull.Value;
-				}
-				LeadStatusId.ViewCustomAttributes = "";
-
-				// BranchId
-				curVal = Convert.ToString(BranchId.CurrentValue);
-				if (!Empty(curVal)) {
-					BranchId.ViewValue = BranchId.LookupCacheOption(curVal);
-					if (BranchId.ViewValue == null) { // Lookup from database
-						filterWrk = "[Id]" + SearchString("=", curVal.Trim(), Config.DataTypeNumber, "");
-						sqlWrk = BranchId.Lookup.GetSql(false, filterWrk, null, this);
-						rswrk = await Connection.GetRowsAsync(sqlWrk);
-						if (rswrk != null && rswrk.Count > 0) { // Lookup values found
-							var listwrk = rswrk[0].Values.ToList();
-							listwrk[1] = Convert.ToString(listwrk[1]);
-							BranchId.ViewValue = BranchId.DisplayValue(listwrk);
-						} else {
-							BranchId.ViewValue = BranchId.CurrentValue;
-						}
-					}
-				} else {
-					BranchId.ViewValue = System.DBNull.Value;
-				}
-				BranchId.ViewCustomAttributes = "";
-
-				// UserId
-				UserId.ViewValue = Convert.ToString(UserId.CurrentValue); // DN
-				UserId.ViewCustomAttributes = "";
-
-				// FirstName
-				FirstName.ViewValue = Convert.ToString(FirstName.CurrentValue); // DN
-				FirstName.ViewCustomAttributes = "";
-
-				// LastName
-				LastName.ViewValue = Convert.ToString(LastName.CurrentValue); // DN
-				LastName.ViewCustomAttributes = "";
-
-				// BlobUrl
-				BlobUrl.ViewValue = Convert.ToString(BlobUrl.CurrentValue); // DN
-				BlobUrl.ViewCustomAttributes = "";
-
-				// EmailAddress
-				EmailAddress.ViewValue = Convert.ToString(EmailAddress.CurrentValue); // DN
-				EmailAddress.ViewCustomAttributes = "";
-
-				// PhoneNumber
-				PhoneNumber.ViewValue = Convert.ToString(PhoneNumber.CurrentValue); // DN
-				PhoneNumber.ViewCustomAttributes = "";
-
-				// LeadId
-				LeadId.HrefValue = "";
-				LeadId.TooltipValue = "";
-
-				// Name
-				_Name.HrefValue = "";
-				_Name.TooltipValue = "";
-
-				// State
-				State.HrefValue = "";
-				State.TooltipValue = "";
-
-				// LeadStatusId
-				LeadStatusId.HrefValue = "";
-				LeadStatusId.TooltipValue = "";
-
-				// BranchId
-				BranchId.HrefValue = "";
-				BranchId.TooltipValue = "";
-
-				// UserId
-				UserId.HrefValue = "";
-				UserId.TooltipValue = "";
-
-				// FirstName
-				FirstName.HrefValue = "";
-				FirstName.TooltipValue = "";
-
-				// LastName
-				LastName.HrefValue = "";
-				LastName.TooltipValue = "";
-
-				// BlobUrl
-				BlobUrl.HrefValue = "";
-				BlobUrl.TooltipValue = "";
-
-				// EmailAddress
-				EmailAddress.HrefValue = "";
-				EmailAddress.TooltipValue = "";
-
-				// PhoneNumber
-				PhoneNumber.HrefValue = "";
-				PhoneNumber.TooltipValue = "";
+				// DisplayName
+				DisplayName.HrefValue = "";
+				DisplayName.TooltipValue = "";
 
 				// Call Row Rendered event
 				Row_Rendered();
@@ -1200,70 +827,17 @@ namespace AspNetMaker2020.Models {
 				// Call Row Rendering event
 				Row_Rendering();
 
-				// LeadId
-				LeadId.EditAttrs["class"] = "form-control";
-				LeadId.EditValue = LeadId.CurrentValue; // DN
-				LeadId.PlaceHolder = RemoveHtml(LeadId.Caption);
+				// Id
+				Id.EditAttrs["class"] = "form-control";
+				Id.EditValue = Id.CurrentValue; // DN
+				Id.PlaceHolder = RemoveHtml(Id.Caption);
 
-				// Name
-				_Name.EditAttrs["class"] = "form-control";
-				if (!_Name.Raw)
-					_Name.CurrentValue = HtmlDecode(_Name.CurrentValue);
-				_Name.EditValue = _Name.CurrentValue; // DN
-				_Name.PlaceHolder = RemoveHtml(_Name.Caption);
-
-				// State
-				State.EditAttrs["class"] = "form-control";
-				if (!State.Raw)
-					State.CurrentValue = HtmlDecode(State.CurrentValue);
-				State.EditValue = State.CurrentValue; // DN
-				State.PlaceHolder = RemoveHtml(State.Caption);
-
-				// LeadStatusId
-				LeadStatusId.EditAttrs["class"] = "form-control";
-
-				// BranchId
-				BranchId.EditAttrs["class"] = "form-control";
-
-				// UserId
-				UserId.EditAttrs["class"] = "form-control";
-				UserId.EditValue = UserId.CurrentValue; // DN
-				UserId.PlaceHolder = RemoveHtml(UserId.Caption);
-
-				// FirstName
-				FirstName.EditAttrs["class"] = "form-control";
-				if (!FirstName.Raw)
-					FirstName.CurrentValue = HtmlDecode(FirstName.CurrentValue);
-				FirstName.EditValue = FirstName.CurrentValue; // DN
-				FirstName.PlaceHolder = RemoveHtml(FirstName.Caption);
-
-				// LastName
-				LastName.EditAttrs["class"] = "form-control";
-				if (!LastName.Raw)
-					LastName.CurrentValue = HtmlDecode(LastName.CurrentValue);
-				LastName.EditValue = LastName.CurrentValue; // DN
-				LastName.PlaceHolder = RemoveHtml(LastName.Caption);
-
-				// BlobUrl
-				BlobUrl.EditAttrs["class"] = "form-control";
-				if (!BlobUrl.Raw)
-					BlobUrl.CurrentValue = HtmlDecode(BlobUrl.CurrentValue);
-				BlobUrl.EditValue = BlobUrl.CurrentValue; // DN
-				BlobUrl.PlaceHolder = RemoveHtml(BlobUrl.Caption);
-
-				// EmailAddress
-				EmailAddress.EditAttrs["class"] = "form-control";
-				if (!EmailAddress.Raw)
-					EmailAddress.CurrentValue = HtmlDecode(EmailAddress.CurrentValue);
-				EmailAddress.EditValue = EmailAddress.CurrentValue; // DN
-				EmailAddress.PlaceHolder = RemoveHtml(EmailAddress.Caption);
-
-				// PhoneNumber
-				PhoneNumber.EditAttrs["class"] = "form-control";
-				if (!PhoneNumber.Raw)
-					PhoneNumber.CurrentValue = HtmlDecode(PhoneNumber.CurrentValue);
-				PhoneNumber.EditValue = PhoneNumber.CurrentValue; // DN
-				PhoneNumber.PlaceHolder = RemoveHtml(PhoneNumber.Caption);
+				// DisplayName
+				DisplayName.EditAttrs["class"] = "form-control";
+				if (!DisplayName.Raw)
+					DisplayName.CurrentValue = HtmlDecode(DisplayName.CurrentValue);
+				DisplayName.EditValue = DisplayName.CurrentValue; // DN
+				DisplayName.PlaceHolder = RemoveHtml(DisplayName.Caption);
 
 				// Call Row Rendered event
 				Row_Rendered();
@@ -1297,29 +871,11 @@ namespace AspNetMaker2020.Models {
 					if (doc.Horizontal) { // Horizontal format, write header
 						doc.BeginExportRow();
 						if (exportType == "view") {
-							doc.ExportCaption(LeadId);
-							doc.ExportCaption(_Name);
-							doc.ExportCaption(State);
-							doc.ExportCaption(LeadStatusId);
-							doc.ExportCaption(BranchId);
-							doc.ExportCaption(UserId);
-							doc.ExportCaption(FirstName);
-							doc.ExportCaption(LastName);
-							doc.ExportCaption(BlobUrl);
-							doc.ExportCaption(EmailAddress);
-							doc.ExportCaption(PhoneNumber);
+							doc.ExportCaption(Id);
+							doc.ExportCaption(DisplayName);
 						} else {
-							doc.ExportCaption(LeadId);
-							doc.ExportCaption(_Name);
-							doc.ExportCaption(State);
-							doc.ExportCaption(LeadStatusId);
-							doc.ExportCaption(BranchId);
-							doc.ExportCaption(UserId);
-							doc.ExportCaption(FirstName);
-							doc.ExportCaption(LastName);
-							doc.ExportCaption(BlobUrl);
-							doc.ExportCaption(EmailAddress);
-							doc.ExportCaption(PhoneNumber);
+							doc.ExportCaption(Id);
+							doc.ExportCaption(DisplayName);
 						}
 						doc.EndExportRow();
 					}
@@ -1357,29 +913,11 @@ namespace AspNetMaker2020.Models {
 						if (!doc.ExportCustom) {
 							doc.BeginExportRow(rowcnt); // Allow CSS styles if enabled
 							if (exportType == "view") {
-								await doc.ExportField(LeadId);
-								await doc.ExportField(_Name);
-								await doc.ExportField(State);
-								await doc.ExportField(LeadStatusId);
-								await doc.ExportField(BranchId);
-								await doc.ExportField(UserId);
-								await doc.ExportField(FirstName);
-								await doc.ExportField(LastName);
-								await doc.ExportField(BlobUrl);
-								await doc.ExportField(EmailAddress);
-								await doc.ExportField(PhoneNumber);
+								await doc.ExportField(Id);
+								await doc.ExportField(DisplayName);
 							} else {
-								await doc.ExportField(LeadId);
-								await doc.ExportField(_Name);
-								await doc.ExportField(State);
-								await doc.ExportField(LeadStatusId);
-								await doc.ExportField(BranchId);
-								await doc.ExportField(UserId);
-								await doc.ExportField(FirstName);
-								await doc.ExportField(LastName);
-								await doc.ExportField(BlobUrl);
-								await doc.ExportField(EmailAddress);
-								await doc.ExportField(PhoneNumber);
+								await doc.ExportField(Id);
+								await doc.ExportField(DisplayName);
 							}
 							doc.EndExportRow(rowcnt);
 						}

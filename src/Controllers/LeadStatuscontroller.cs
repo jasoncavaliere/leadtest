@@ -30,74 +30,74 @@ namespace AspNetMaker2020.Controllers
 	{
 
 		// list
-		[Route("_Leadslist/{LeadId?}")]
-		[Route("Home/_Leadslist/{LeadId?}")]
+		[Route("LeadStatuslist/{Id?}")]
+		[Route("Home/LeadStatuslist/{Id?}")]
 
-		public async Task<IActionResult> _Leadslist()
+		public async Task<IActionResult> LeadStatuslist()
 		{
 
 			// Create page object
-			_Leads_List = new __Leads_List(this);
-			_Leads_List.Cache = _cache;
+			LeadStatus_List = new _LeadStatus_List(this);
+			LeadStatus_List.Cache = _cache;
 
 			// Run the page
-			return await _Leads_List.Run();
+			return await LeadStatus_List.Run();
 		}
 
 		// add
-		[Route("_Leadsadd/{LeadId?}")]
-		[Route("Home/_Leadsadd/{LeadId?}")]
+		[Route("LeadStatusadd/{Id?}")]
+		[Route("Home/LeadStatusadd/{Id?}")]
 
-		public async Task<IActionResult> _Leadsadd()
+		public async Task<IActionResult> LeadStatusadd()
 		{
 
 			// Create page object
-			_Leads_Add = new __Leads_Add(this);
+			LeadStatus_Add = new _LeadStatus_Add(this);
 
 			// Run the page
-			return await _Leads_Add.Run();
+			return await LeadStatus_Add.Run();
 		}
 
 		// view
-		[Route("_Leadsview/{LeadId?}")]
-		[Route("Home/_Leadsview/{LeadId?}")]
+		[Route("LeadStatusview/{Id?}")]
+		[Route("Home/LeadStatusview/{Id?}")]
 
-		public async Task<IActionResult> _Leadsview()
+		public async Task<IActionResult> LeadStatusview()
 		{
 
 			// Create page object
-			_Leads_View = new __Leads_View(this);
+			LeadStatus_View = new _LeadStatus_View(this);
 
 			// Run the page
-			return await _Leads_View.Run();
+			return await LeadStatus_View.Run();
 		}
 
 		// edit
-		[Route("_Leadsedit/{LeadId?}")]
-		[Route("Home/_Leadsedit/{LeadId?}")]
+		[Route("LeadStatusedit/{Id?}")]
+		[Route("Home/LeadStatusedit/{Id?}")]
 
-		public async Task<IActionResult> _Leadsedit()
+		public async Task<IActionResult> LeadStatusedit()
 		{
 
 			// Create page object
-			_Leads_Edit = new __Leads_Edit(this);
+			LeadStatus_Edit = new _LeadStatus_Edit(this);
 
 			// Run the page
-			return await _Leads_Edit.Run();
+			return await LeadStatus_Edit.Run();
 		}
 
 		// delete
-		[Route("_Leadsdelete/{LeadId?}")]
-		[Route("Home/_Leadsdelete/{LeadId?}")]
+		[Route("LeadStatusdelete/{Id?}")]
+		[Route("Home/LeadStatusdelete/{Id?}")]
 
-		public async Task<IActionResult> _Leadsdelete()
+		public async Task<IActionResult> LeadStatusdelete()
 		{
 
 			// Create page object
-			_Leads_Delete = new __Leads_Delete(this);
+			LeadStatus_Delete = new _LeadStatus_Delete(this);
 
 			// Run the page
-			return await _Leads_Delete.Run();
+			return await LeadStatus_Delete.Run();
 		}
 	}
 }

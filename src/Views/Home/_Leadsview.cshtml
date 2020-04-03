@@ -1,0 +1,191 @@
+@{
+
+	// View
+	View = this;
+	SetClientVar("login", LoginStatus);
+
+	// Global Page Rendering event
+	Page_Rendering();
+
+	// Page Render event
+	_Leads_View.Page_Render();
+
+	// Check action result
+	if (_Leads_View.ActionResult is EmptyResult) { // Terminate page
+		return;
+	}
+
+	// Layout
+	Layout = "_Layout";
+
+	// Local variables (Temp data)
+	#pragma warning disable 168
+	string sqlWrk, filterWrk, whereWrk, curVal;
+	List<Dictionary<string, object>> rswrk;
+	string[] arWrk;
+	List<object> listWrk;
+	Func<string> lookupFilter;
+	#pragma warning restore 168
+}
+@if (!_Leads_View.IsExport()) {
+<script>
+var f_Leadsview, currentPageID;
+loadjs.ready("head", function() {
+
+	// Form object
+	currentPageID = ew.PAGE_ID = "view";
+	f_Leadsview = currentForm = new ew.Form("f_Leadsview", "view");
+	loadjs.done("f_Leadsview");
+});
+</script>
+<script>
+loadjs.ready("head", function() {
+
+	// Client script
+	// Write your client script here, no need to add script tags.
+
+});
+</script>
+}
+@if (!_Leads_View.IsExport()) {
+<div class="btn-toolbar ew-toolbar">
+	@_Leads_View.ExportOptions.RenderBody()
+	@_Leads_View.OtherOptions.RenderBody()
+	<div class="clearfix"></div>
+</div>
+}
+@_Leads_View.ShowPageHeader()
+@_Leads_View.ShowMessages()
+<form name="f_Leadsview" id="f_Leadsview" class="form-inline ew-form ew-view-form" method="post">
+@if (_Leads_View.CheckToken) {
+	@Html.AntiForgeryToken()
+}
+<input type="hidden" name="modal" value="@ConvertToInt(_Leads_View.IsModal)">
+<table class="table table-striped table-sm ew-view-table">
+@if (_Leads_View.LeadId.Visible) { // _Leads_View.LeadId.Visible (begin)
+	<tr id="r_LeadId">
+		<td class="@(_Leads_View.TableLeftColumnClass)"><span id="elh__Leads_LeadId">@Html.Raw(_Leads_View.LeadId.Caption)</span></td>
+		<td data-name="LeadId" @Html.Raw(_Leads_View.LeadId.CellAttributes)>
+<span id="el__Leads_LeadId">
+<span @Html.Raw(_Leads_View.LeadId.ViewAttributes)>@Html.Raw(_Leads_View.LeadId.GetViewValue())</span>
+</span>
+</td>
+	</tr>
+} @* _Leads_View.LeadId.Visible (end) *@
+@if (_Leads_View._Name.Visible) { // _Leads_View._Name.Visible (begin)
+	<tr id="r__Name">
+		<td class="@(_Leads_View.TableLeftColumnClass)"><span id="elh__Leads__Name">@Html.Raw(_Leads_View._Name.Caption)</span></td>
+		<td data-name="_Name" @Html.Raw(_Leads_View._Name.CellAttributes)>
+<span id="el__Leads__Name">
+<span @Html.Raw(_Leads_View._Name.ViewAttributes)>@Html.Raw(_Leads_View._Name.GetViewValue())</span>
+</span>
+</td>
+	</tr>
+} @* _Leads_View._Name.Visible (end) *@
+@if (_Leads_View.State.Visible) { // _Leads_View.State.Visible (begin)
+	<tr id="r_State">
+		<td class="@(_Leads_View.TableLeftColumnClass)"><span id="elh__Leads_State">@Html.Raw(_Leads_View.State.Caption)</span></td>
+		<td data-name="State" @Html.Raw(_Leads_View.State.CellAttributes)>
+<span id="el__Leads_State">
+<span @Html.Raw(_Leads_View.State.ViewAttributes)>@Html.Raw(_Leads_View.State.GetViewValue())</span>
+</span>
+</td>
+	</tr>
+} @* _Leads_View.State.Visible (end) *@
+@if (_Leads_View.LeadStatusId.Visible) { // _Leads_View.LeadStatusId.Visible (begin)
+	<tr id="r_LeadStatusId">
+		<td class="@(_Leads_View.TableLeftColumnClass)"><span id="elh__Leads_LeadStatusId">@Html.Raw(_Leads_View.LeadStatusId.Caption)</span></td>
+		<td data-name="LeadStatusId" @Html.Raw(_Leads_View.LeadStatusId.CellAttributes)>
+<span id="el__Leads_LeadStatusId">
+<span @Html.Raw(_Leads_View.LeadStatusId.ViewAttributes)>@Html.Raw(_Leads_View.LeadStatusId.GetViewValue())</span>
+</span>
+</td>
+	</tr>
+} @* _Leads_View.LeadStatusId.Visible (end) *@
+@if (_Leads_View.BranchId.Visible) { // _Leads_View.BranchId.Visible (begin)
+	<tr id="r_BranchId">
+		<td class="@(_Leads_View.TableLeftColumnClass)"><span id="elh__Leads_BranchId">@Html.Raw(_Leads_View.BranchId.Caption)</span></td>
+		<td data-name="BranchId" @Html.Raw(_Leads_View.BranchId.CellAttributes)>
+<span id="el__Leads_BranchId">
+<span @Html.Raw(_Leads_View.BranchId.ViewAttributes)>@Html.Raw(_Leads_View.BranchId.GetViewValue())</span>
+</span>
+</td>
+	</tr>
+} @* _Leads_View.BranchId.Visible (end) *@
+@if (_Leads_View.UserId.Visible) { // _Leads_View.UserId.Visible (begin)
+	<tr id="r_UserId">
+		<td class="@(_Leads_View.TableLeftColumnClass)"><span id="elh__Leads_UserId">@Html.Raw(_Leads_View.UserId.Caption)</span></td>
+		<td data-name="UserId" @Html.Raw(_Leads_View.UserId.CellAttributes)>
+<span id="el__Leads_UserId">
+<span @Html.Raw(_Leads_View.UserId.ViewAttributes)>@Html.Raw(_Leads_View.UserId.GetViewValue())</span>
+</span>
+</td>
+	</tr>
+} @* _Leads_View.UserId.Visible (end) *@
+@if (_Leads_View.FirstName.Visible) { // _Leads_View.FirstName.Visible (begin)
+	<tr id="r_FirstName">
+		<td class="@(_Leads_View.TableLeftColumnClass)"><span id="elh__Leads_FirstName">@Html.Raw(_Leads_View.FirstName.Caption)</span></td>
+		<td data-name="FirstName" @Html.Raw(_Leads_View.FirstName.CellAttributes)>
+<span id="el__Leads_FirstName">
+<span @Html.Raw(_Leads_View.FirstName.ViewAttributes)>@Html.Raw(_Leads_View.FirstName.GetViewValue())</span>
+</span>
+</td>
+	</tr>
+} @* _Leads_View.FirstName.Visible (end) *@
+@if (_Leads_View.LastName.Visible) { // _Leads_View.LastName.Visible (begin)
+	<tr id="r_LastName">
+		<td class="@(_Leads_View.TableLeftColumnClass)"><span id="elh__Leads_LastName">@Html.Raw(_Leads_View.LastName.Caption)</span></td>
+		<td data-name="LastName" @Html.Raw(_Leads_View.LastName.CellAttributes)>
+<span id="el__Leads_LastName">
+<span @Html.Raw(_Leads_View.LastName.ViewAttributes)>@Html.Raw(_Leads_View.LastName.GetViewValue())</span>
+</span>
+</td>
+	</tr>
+} @* _Leads_View.LastName.Visible (end) *@
+@if (_Leads_View.BlobUrl.Visible) { // _Leads_View.BlobUrl.Visible (begin)
+	<tr id="r_BlobUrl">
+		<td class="@(_Leads_View.TableLeftColumnClass)"><span id="elh__Leads_BlobUrl">@Html.Raw(_Leads_View.BlobUrl.Caption)</span></td>
+		<td data-name="BlobUrl" @Html.Raw(_Leads_View.BlobUrl.CellAttributes)>
+<span id="el__Leads_BlobUrl">
+<span @Html.Raw(_Leads_View.BlobUrl.ViewAttributes)>@Html.Raw(_Leads_View.BlobUrl.GetViewValue())</span>
+</span>
+</td>
+	</tr>
+} @* _Leads_View.BlobUrl.Visible (end) *@
+@if (_Leads_View.EmailAddress.Visible) { // _Leads_View.EmailAddress.Visible (begin)
+	<tr id="r_EmailAddress">
+		<td class="@(_Leads_View.TableLeftColumnClass)"><span id="elh__Leads_EmailAddress">@Html.Raw(_Leads_View.EmailAddress.Caption)</span></td>
+		<td data-name="EmailAddress" @Html.Raw(_Leads_View.EmailAddress.CellAttributes)>
+<span id="el__Leads_EmailAddress">
+<span @Html.Raw(_Leads_View.EmailAddress.ViewAttributes)>@Html.Raw(_Leads_View.EmailAddress.GetViewValue())</span>
+</span>
+</td>
+	</tr>
+} @* _Leads_View.EmailAddress.Visible (end) *@
+@if (_Leads_View.PhoneNumber.Visible) { // _Leads_View.PhoneNumber.Visible (begin)
+	<tr id="r_PhoneNumber">
+		<td class="@(_Leads_View.TableLeftColumnClass)"><span id="elh__Leads_PhoneNumber">@Html.Raw(_Leads_View.PhoneNumber.Caption)</span></td>
+		<td data-name="PhoneNumber" @Html.Raw(_Leads_View.PhoneNumber.CellAttributes)>
+<span id="el__Leads_PhoneNumber">
+<span @Html.Raw(_Leads_View.PhoneNumber.ViewAttributes)>@Html.Raw(_Leads_View.PhoneNumber.GetViewValue())</span>
+</span>
+</td>
+	</tr>
+} @* _Leads_View.PhoneNumber.Visible (end) *@
+</table>
+@{ _Leads_View.CloseRecordset(); }
+</form>
+@_Leads_View.ShowPageFooter()
+@ShowDebugMessage()
+@ElapsedTime()
+@if (!_Leads_View.IsExport()) {
+<script>
+loadjs.ready("load", function() {
+
+	// Startup script
+	// Write your table-specific startup script here
+	// document.write("page loaded");
+
+});
+</script>
+}

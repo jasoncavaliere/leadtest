@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8" standalone="yes"?>
-<ew-language date="2020/4/2" version="17.0.0" id="en" name="English" desc="English" author="e.World Technology Ltd.">
+<ew-language date="2020/4/3" version="17.0.0" id="en" name="English" desc="English" author="e.World Technology Ltd.">
   <!--
 	*** Important Notes:
 	1. Language ID should follow: https://developers.google.com/recaptcha/docs/language,
@@ -856,8 +856,23 @@
   <project>
     <phrase id="footertext" value="&amp;copy;2019 e.World Technology Ltd. All rights reserved." />
     <menu id="1">
+      <phrase id="menutext" value="Bank Branch" />
+    </menu>
+    <menu id="2">
       <phrase id="menutext" value="Leads" />
     </menu>
+    <menu id="3">
+      <phrase id="menutext" value="Lead Status" />
+    </menu>
+    <table id="bankbranch">
+      <phrase id="tblcaption" value="Bank Branch" />
+      <field id="id">
+        <phrase id="fldcaption" value="Id" />
+      </field>
+      <field id="_name">
+        <phrase id="fldcaption" value="Name" />
+      </field>
+    </table>
     <table id="_leads">
       <phrase id="tblcaption" value="Leads" />
       <field id="leadid">
@@ -868,6 +883,39 @@
       </field>
       <field id="state">
         <phrase id="fldcaption" value="State" />
+      </field>
+      <field id="leadstatusid">
+        <phrase id="fldcaption" value="Lead Status Id" />
+      </field>
+      <field id="branchid">
+        <phrase id="fldcaption" value="Branch Id" />
+      </field>
+      <field id="userid">
+        <phrase id="fldcaption" value="User Id" />
+      </field>
+      <field id="firstname">
+        <phrase id="fldcaption" value="First Name" />
+      </field>
+      <field id="lastname">
+        <phrase id="fldcaption" value="Last Name" />
+      </field>
+      <field id="bloburl">
+        <phrase id="fldcaption" value="Blob Url" />
+      </field>
+      <field id="emailaddress">
+        <phrase id="fldcaption" value="Email Address" />
+      </field>
+      <field id="phonenumber">
+        <phrase id="fldcaption" value="Phone Number" />
+      </field>
+    </table>
+    <table id="leadstatus">
+      <phrase id="tblcaption" value="Lead Status" />
+      <field id="id">
+        <phrase id="fldcaption" value="Id" />
+      </field>
+      <field id="displayname">
+        <phrase id="fldcaption" value="Display Name" />
       </field>
     </table>
   </project>

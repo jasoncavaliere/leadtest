@@ -1,0 +1,161 @@
+@{
+
+	// View
+	View = this;
+	SetClientVar("login", LoginStatus);
+
+	// Global Page Rendering event
+	Page_Rendering();
+
+	// Page Render event
+	LeadStatus_Edit.Page_Render();
+
+	// Check action result
+	if (LeadStatus_Edit.ActionResult is EmptyResult) { // Terminate page
+		return;
+	}
+
+	// Layout
+	Layout = "_Layout";
+
+	// Local variables (Temp data)
+	#pragma warning disable 168
+	string sqlWrk, filterWrk, whereWrk, curVal;
+	List<Dictionary<string, object>> rswrk;
+	string[] arWrk;
+	List<object> listWrk;
+	Func<string> lookupFilter;
+	#pragma warning restore 168
+}
+<script>
+var fLeadStatusedit, currentPageID;
+loadjs.ready("head", function() {
+
+	// Form object
+	currentPageID = ew.PAGE_ID = "edit";
+	fLeadStatusedit = currentForm = new ew.Form("fLeadStatusedit", "edit");
+
+	// Validate form
+	fLeadStatusedit.validate = function() {
+		if (!this.validateRequired)
+			return true; // Ignore validation
+		var $ = jQuery, fobj = this.getForm(), $fobj = $(fobj);
+		if ($fobj.find("#confirm").val() == "confirm")
+			return true;
+		var elm, felm, uelm, addcnt = 0;
+		var $k = $fobj.find("#" + this.formKeyCountName); // Get key_count
+		var rowcnt = ($k[0]) ? parseInt($k.val(), 10) : 1;
+		var startcnt = (rowcnt == 0) ? 0 : 1; // Check rowcnt == 0 => Inline-Add
+		var gridinsert = ["insert", "gridinsert"].includes($fobj.find("#action").val()) && $k[0];
+		for (var i = startcnt; i <= rowcnt; i++) {
+			var infix = ($k[0]) ? String(i) : "";
+			$fobj.data("rowindex", infix);
+			@if (LeadStatus_Edit.Id.Required) {
+				<text>
+				elm = this.getElements("x" + infix + "_Id");
+				if (elm && !ew.isHidden(elm) && !ew.hasValue(elm))
+					return this.onError(elm, "@Html.Raw(JsEncode(Convert.ToString(LeadStatus_Edit.Id.RequiredErrorMessage).Replace("%s", LeadStatus_Edit.Id.Caption)))");
+				</text>
+			}
+				elm = this.getElements("x" + infix + "_Id");
+				if (elm && !ew.checkInteger(elm.value))
+					return this.onError(elm, "@(JsEncode(LeadStatus_Edit.Id.ErrorMessage))");
+			@if (LeadStatus_Edit.DisplayName.Required) {
+				<text>
+				elm = this.getElements("x" + infix + "_DisplayName");
+				if (elm && !ew.isHidden(elm) && !ew.hasValue(elm))
+					return this.onError(elm, "@Html.Raw(JsEncode(Convert.ToString(LeadStatus_Edit.DisplayName.RequiredErrorMessage).Replace("%s", LeadStatus_Edit.DisplayName.Caption)))");
+				</text>
+			}
+
+				// Call Form_CustomValidate event
+				if (!this.Form_CustomValidate(fobj))
+					return false;
+		}
+
+		// Process detail forms
+		var dfs = $fobj.find("input[name='detailpage']").get();
+		for (var i = 0; i < dfs.length; i++) {
+			var df = dfs[i], val = df.value;
+			if (val && ew.forms[val])
+				if (!ew.forms[val].validate())
+					return false;
+		}
+		return true;
+	}
+
+	// Form_CustomValidate
+	fLeadStatusedit.Form_CustomValidate = function(fobj) { // DO NOT CHANGE THIS LINE!
+
+		// Your custom validation code here, return false if invalid.
+		return true;
+	}
+
+	// Use JavaScript validation or not
+	fLeadStatusedit.validateRequired = @(Config.ClientValidate ? "true" : "false");
+
+	// Dynamic selection lists
+	loadjs.done("fLeadStatusedit");
+});
+</script>
+<script>
+loadjs.ready("head", function() {
+
+	// Client script
+	// Write your client script here, no need to add script tags.
+
+});
+</script>
+@LeadStatus_Edit.ShowPageHeader()
+@LeadStatus_Edit.ShowMessages()
+<form name="fLeadStatusedit" id="fLeadStatusedit" class="@(LeadStatus_Edit.FormClassName)" action="@AppPath(CurrentPageName())" method="post">
+@if (LeadStatus_Edit.CheckToken) {
+	@Html.AntiForgeryToken()
+}
+<input type="hidden" name="action" id="action" value="update">
+@if (LeadStatus_Edit.IsModal) {
+<input type="hidden" name="modal" value="@ConvertToInt(LeadStatus_Edit.IsModal)">
+}
+<div class="ew-edit-div"><!-- page* -->
+@if (LeadStatus_Edit.Id.Visible) { // LeadStatus_Edit.Id.Visible (begin)
+	<div id="r_Id" class="form-group row">
+		<label id="elh_LeadStatus_Id" for="x_Id" class="@(LeadStatus_Edit.LeftColumnClass)">@Html.Raw(LeadStatus_Edit.Id.Caption)@Html.Raw(LeadStatus_Edit.Id.Required ? Language.Phrase("FieldRequiredIndicator") : "")</label>
+		<div class="@(LeadStatus_Edit.RightColumnClass)"><div @Html.Raw(LeadStatus_Edit.Id.CellAttributes)>
+<input type="text" data-table="LeadStatus" data-field="x_Id" name="x_Id" id="x_Id" size="30" maxlength="4" placeholder="@Html.Raw(HtmlEncode(LeadStatus_Edit.Id.PlaceHolder))" value="@(LeadStatus_Edit.Id.EditValue)" @Html.Raw(LeadStatus_Edit.Id.EditAttributes)>
+<input type="hidden" data-table="LeadStatus" data-field="x_Id" name="o_Id" id="o_Id" value="@Html.Raw(HtmlEncode(LeadStatus_Edit.Id.OldValue != null ? LeadStatus_Edit.Id.OldValue : LeadStatus_Edit.Id.CurrentValue))">
+@Html.Raw(LeadStatus_Edit.Id.CustomMsg)</div></div>
+	</div>
+} @* LeadStatus_Edit.Id.Visible (end) *@
+@if (LeadStatus_Edit.DisplayName.Visible) { // LeadStatus_Edit.DisplayName.Visible (begin)
+	<div id="r_DisplayName" class="form-group row">
+		<label id="elh_LeadStatus_DisplayName" for="x_DisplayName" class="@(LeadStatus_Edit.LeftColumnClass)">@Html.Raw(LeadStatus_Edit.DisplayName.Caption)@Html.Raw(LeadStatus_Edit.DisplayName.Required ? Language.Phrase("FieldRequiredIndicator") : "")</label>
+		<div class="@(LeadStatus_Edit.RightColumnClass)"><div @Html.Raw(LeadStatus_Edit.DisplayName.CellAttributes)>
+<span id="el_LeadStatus_DisplayName">
+<input type="text" data-table="LeadStatus" data-field="x_DisplayName" name="x_DisplayName" id="x_DisplayName" size="30" maxlength="50" placeholder="@Html.Raw(HtmlEncode(LeadStatus_Edit.DisplayName.PlaceHolder))" value="@(LeadStatus_Edit.DisplayName.EditValue)" @Html.Raw(LeadStatus_Edit.DisplayName.EditAttributes)>
+</span>
+@Html.Raw(LeadStatus_Edit.DisplayName.CustomMsg)</div></div>
+	</div>
+} @* LeadStatus_Edit.DisplayName.Visible (end) *@
+</div><!-- /page* -->
+@{ LeadStatus_Edit.CloseRecordset(); }
+@if (!LeadStatus_Edit.IsModal) {
+@:<div class="form-group row"><!-- buttons .form-group -->
+	@:<div class="@(LeadStatus_Edit.OffsetColumnClass)"><!-- buttons offset -->
+<button class="btn btn-primary ew-btn" name="btn-action" id="btn-action" type="submit">@Html.Raw(Language.Phrase("SaveBtn"))</button>
+<button class="btn btn-default ew-btn" name="btn-cancel" id="btn-cancel" type="button" data-href="@AppPath(LeadStatus_Edit.ReturnUrl)">@Html.Raw(Language.Phrase("CancelBtn"))</button>
+	@:</div><!-- /buttons offset -->
+@:</div><!-- /buttons .form-group -->
+}
+</form>
+@LeadStatus_Edit.ShowPageFooter()
+@ShowDebugMessage()
+@ElapsedTime()
+<script>
+loadjs.ready("load", function() {
+
+	// Startup script
+	// Write your table-specific startup script here
+	// document.write("page loaded");
+
+});
+</script>

@@ -91,7 +91,9 @@ namespace AspNetMaker2020.Models {
 
 			// Sidebar menu
 			var sideMenu = new Menu("menu", true, false);
-			sideMenu.AddMenuItem(1, "mi__Leads", Language.MenuPhrase("1", "MenuText"), "_Leadslist", -1, "", true, false, false, "", "", false);
+			sideMenu.AddMenuItem(1, "mi_BankBranch", Language.MenuPhrase("1", "MenuText"), "BankBranchlist", -1, "", true, false, false, "", "", false);
+			sideMenu.AddMenuItem(2, "mi__Leads", Language.MenuPhrase("2", "MenuText"), "_Leadslist", -1, "", true, false, false, "", "", false);
+			sideMenu.AddMenuItem(3, "mi_LeadStatus", Language.MenuPhrase("3", "MenuText"), "LeadStatuslist", -1, "", true, false, false, "", "", false);
 			SideMenu = sideMenu.ToScript();
 		}
 	} // End Partial class

@@ -30,74 +30,74 @@ namespace AspNetMaker2020.Controllers
 	{
 
 		// list
-		[Route("_Leadslist/{LeadId?}")]
-		[Route("Home/_Leadslist/{LeadId?}")]
+		[Route("BankBranchlist/{Id?}")]
+		[Route("Home/BankBranchlist/{Id?}")]
 
-		public async Task<IActionResult> _Leadslist()
+		public async Task<IActionResult> BankBranchlist()
 		{
 
 			// Create page object
-			_Leads_List = new __Leads_List(this);
-			_Leads_List.Cache = _cache;
+			BankBranch_List = new _BankBranch_List(this);
+			BankBranch_List.Cache = _cache;
 
 			// Run the page
-			return await _Leads_List.Run();
+			return await BankBranch_List.Run();
 		}
 
 		// add
-		[Route("_Leadsadd/{LeadId?}")]
-		[Route("Home/_Leadsadd/{LeadId?}")]
+		[Route("BankBranchadd/{Id?}")]
+		[Route("Home/BankBranchadd/{Id?}")]
 
-		public async Task<IActionResult> _Leadsadd()
+		public async Task<IActionResult> BankBranchadd()
 		{
 
 			// Create page object
-			_Leads_Add = new __Leads_Add(this);
+			BankBranch_Add = new _BankBranch_Add(this);
 
 			// Run the page
-			return await _Leads_Add.Run();
+			return await BankBranch_Add.Run();
 		}
 
 		// view
-		[Route("_Leadsview/{LeadId?}")]
-		[Route("Home/_Leadsview/{LeadId?}")]
+		[Route("BankBranchview/{Id?}")]
+		[Route("Home/BankBranchview/{Id?}")]
 
-		public async Task<IActionResult> _Leadsview()
+		public async Task<IActionResult> BankBranchview()
 		{
 
 			// Create page object
-			_Leads_View = new __Leads_View(this);
+			BankBranch_View = new _BankBranch_View(this);
 
 			// Run the page
-			return await _Leads_View.Run();
+			return await BankBranch_View.Run();
 		}
 
 		// edit
-		[Route("_Leadsedit/{LeadId?}")]
-		[Route("Home/_Leadsedit/{LeadId?}")]
+		[Route("BankBranchedit/{Id?}")]
+		[Route("Home/BankBranchedit/{Id?}")]
 
-		public async Task<IActionResult> _Leadsedit()
+		public async Task<IActionResult> BankBranchedit()
 		{
 
 			// Create page object
-			_Leads_Edit = new __Leads_Edit(this);
+			BankBranch_Edit = new _BankBranch_Edit(this);
 
 			// Run the page
-			return await _Leads_Edit.Run();
+			return await BankBranch_Edit.Run();
 		}
 
 		// delete
-		[Route("_Leadsdelete/{LeadId?}")]
-		[Route("Home/_Leadsdelete/{LeadId?}")]
+		[Route("BankBranchdelete/{Id?}")]
+		[Route("Home/BankBranchdelete/{Id?}")]
 
-		public async Task<IActionResult> _Leadsdelete()
+		public async Task<IActionResult> BankBranchdelete()
 		{
 
 			// Create page object
-			_Leads_Delete = new __Leads_Delete(this);
+			BankBranch_Delete = new _BankBranch_Delete(this);
 
 			// Run the page
-			return await _Leads_Delete.Run();
+			return await BankBranch_Delete.Run();
 		}
 	}
 }

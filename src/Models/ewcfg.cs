@@ -117,7 +117,7 @@ namespace AspNetMaker2020.Models {
 
 			public const string ProjectId = "{DE72B0A5-4A34-400E-B744-FF3F81D69E8F}"; // Project ID (GUID)
 
-			public static string RandomKey = "ZfsqSo4JsyMY6dNb"; // Random key for encryption
+			public static string RandomKey = "pRVqkV3rc0e0bh0x"; // Random key for encryption
 
 			public static string EncryptionKey = ""; // Encryption key for data protection
 
@@ -743,8 +743,11 @@ namespace AspNetMaker2020.Models {
 
 			// Table class names
 			public static Dictionary<string, string> TableClassNames = new Dictionary<string, string> {
+				{"BankBranch", "_BankBranch"},
 				{"Leads", "__Leads"},
 				{"_Leads", "__Leads"},
+				{"LeadStatus", "_LeadStatus"},
+				{"Users", "_Users"},
 			};
 
 			// Boolean html attributes

@@ -1,0 +1,101 @@
+@{
+
+	// View
+	View = this;
+	SetClientVar("login", LoginStatus);
+
+	// Global Page Rendering event
+	Page_Rendering();
+
+	// Page Render event
+	BankBranch_View.Page_Render();
+
+	// Check action result
+	if (BankBranch_View.ActionResult is EmptyResult) { // Terminate page
+		return;
+	}
+
+	// Layout
+	Layout = "_Layout";
+
+	// Local variables (Temp data)
+	#pragma warning disable 168
+	string sqlWrk, filterWrk, whereWrk, curVal;
+	List<Dictionary<string, object>> rswrk;
+	string[] arWrk;
+	List<object> listWrk;
+	Func<string> lookupFilter;
+	#pragma warning restore 168
+}
+@if (!BankBranch_View.IsExport()) {
+<script>
+var fBankBranchview, currentPageID;
+loadjs.ready("head", function() {
+
+	// Form object
+	currentPageID = ew.PAGE_ID = "view";
+	fBankBranchview = currentForm = new ew.Form("fBankBranchview", "view");
+	loadjs.done("fBankBranchview");
+});
+</script>
+<script>
+loadjs.ready("head", function() {
+
+	// Client script
+	// Write your client script here, no need to add script tags.
+
+});
+</script>
+}
+@if (!BankBranch_View.IsExport()) {
+<div class="btn-toolbar ew-toolbar">
+	@BankBranch_View.ExportOptions.RenderBody()
+	@BankBranch_View.OtherOptions.RenderBody()
+	<div class="clearfix"></div>
+</div>
+}
+@BankBranch_View.ShowPageHeader()
+@BankBranch_View.ShowMessages()
+<form name="fBankBranchview" id="fBankBranchview" class="form-inline ew-form ew-view-form" method="post">
+@if (BankBranch_View.CheckToken) {
+	@Html.AntiForgeryToken()
+}
+<input type="hidden" name="modal" value="@ConvertToInt(BankBranch_View.IsModal)">
+<table class="table table-striped table-sm ew-view-table">
+@if (BankBranch_View.Id.Visible) { // BankBranch_View.Id.Visible (begin)
+	<tr id="r_Id">
+		<td class="@(BankBranch_View.TableLeftColumnClass)"><span id="elh_BankBranch_Id">@Html.Raw(BankBranch_View.Id.Caption)</span></td>
+		<td data-name="Id" @Html.Raw(BankBranch_View.Id.CellAttributes)>
+<span id="el_BankBranch_Id">
+<span @Html.Raw(BankBranch_View.Id.ViewAttributes)>@Html.Raw(BankBranch_View.Id.GetViewValue())</span>
+</span>
+</td>
+	</tr>
+} @* BankBranch_View.Id.Visible (end) *@
+@if (BankBranch_View._Name.Visible) { // BankBranch_View._Name.Visible (begin)
+	<tr id="r__Name">
+		<td class="@(BankBranch_View.TableLeftColumnClass)"><span id="elh_BankBranch__Name">@Html.Raw(BankBranch_View._Name.Caption)</span></td>
+		<td data-name="_Name" @Html.Raw(BankBranch_View._Name.CellAttributes)>
+<span id="el_BankBranch__Name">
+<span @Html.Raw(BankBranch_View._Name.ViewAttributes)>@Html.Raw(BankBranch_View._Name.GetViewValue())</span>
+</span>
+</td>
+	</tr>
+} @* BankBranch_View._Name.Visible (end) *@
+</table>
+@{ BankBranch_View.CloseRecordset(); }
+</form>
+@BankBranch_View.ShowPageFooter()
+@ShowDebugMessage()
+@ElapsedTime()
+@if (!BankBranch_View.IsExport()) {
+<script>
+loadjs.ready("load", function() {
+
+	// Startup script
+	// Write your table-specific startup script here
+	// document.write("page loaded");
+
+});
+</script>
+}

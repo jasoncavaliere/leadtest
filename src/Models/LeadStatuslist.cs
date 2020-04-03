@@ -74,28 +74,28 @@ namespace AspNetMaker2020.Models {
 	public partial class project1 {
 
 		/// <summary>
-		/// _Leads_List
+		/// LeadStatus_List
 		/// </summary>
-		public static __Leads_List _Leads_List {
-			get => HttpData.Get<__Leads_List>("_Leads_List");
-			set => HttpData["_Leads_List"] = value;
+		public static _LeadStatus_List LeadStatus_List {
+			get => HttpData.Get<_LeadStatus_List>("LeadStatus_List");
+			set => HttpData["LeadStatus_List"] = value;
 		}
 
 		/// <summary>
-		/// Page class for Leads
+		/// Page class for LeadStatus
 		/// </summary>
-		public class __Leads_List : __Leads_ListBase
+		public class _LeadStatus_List : _LeadStatus_ListBase
 		{
 
 			// Construtor
-			public __Leads_List(Controller controller = null) : base(controller) {
+			public _LeadStatus_List(Controller controller = null) : base(controller) {
 			}
 		}
 
 		/// <summary>
 		/// Page base class
 		/// </summary>
-		public class __Leads_ListBase : __Leads, IAspNetMakerPage
+		public class _LeadStatus_ListBase : _LeadStatus, IAspNetMakerPage
 		{
 
 			// Page ID
@@ -105,13 +105,13 @@ namespace AspNetMaker2020.Models {
 			public string ProjectID = "{DE72B0A5-4A34-400E-B744-FF3F81D69E8F}";
 
 			// Table name
-			public string TableName { get; set; } = "Leads";
+			public string TableName { get; set; } = "LeadStatus";
 
 			// Page object name
-			public string PageObjName = "_Leads_List";
+			public string PageObjName = "LeadStatus_List";
 
 			// Grid form hidden field names
-			public string FormName = "f_Leadslist";
+			public string FormName = "fLeadStatuslist";
 
 			public string FormActionName = "k_action";
 
@@ -420,7 +420,7 @@ namespace AspNetMaker2020.Models {
 			}
 
 			// Constructor
-			public __Leads_ListBase(Controller controller = null) { // DN
+			public _LeadStatus_ListBase(Controller controller = null) { // DN
 				if (controller != null)
 					Controller = controller;
 
@@ -430,9 +430,9 @@ namespace AspNetMaker2020.Models {
 				// Language object
 				Language ??= new Lang();
 
-				// Table object (_Leads)
-				if (_Leads == null || _Leads is __Leads)
-					_Leads = this;
+				// Table object (LeadStatus)
+				if (LeadStatus == null || LeadStatus is _LeadStatus)
+					LeadStatus = this;
 
 				// Initialize URLs
 				ExportPrintUrl = PageUrl + "export=print";
@@ -442,12 +442,12 @@ namespace AspNetMaker2020.Models {
 				ExportHtmlUrl = PageUrl + "export=html";
 				ExportXmlUrl = PageUrl + "export=xml";
 				ExportCsvUrl = PageUrl + "export=csv";
-				AddUrl = "_Leadsadd";
+				AddUrl = "LeadStatusadd";
 				InlineAddUrl = PageUrl + "action=add";
 				GridAddUrl = PageUrl + "action=gridadd";
 				GridEditUrl = PageUrl + "action=gridedit";
-				MultiDeleteUrl = "_Leadsdelete";
-				MultiUpdateUrl = "_Leadsupdate";
+				MultiDeleteUrl = "LeadStatusdelete";
+				MultiUpdateUrl = "LeadStatusupdate";
 
 				// Start time
 				StartTime = Environment.TickCount;
@@ -475,7 +475,7 @@ namespace AspNetMaker2020.Models {
 				OtherOptions["action"] = new ListOptions { Tag = "div", TagClassName = "ew-action-option" };
 
 				// Filter options
-				FilterOptions = new ListOptions { Tag = "div", TagClassName = "ew-filter-option f_Leadslistsrch" };
+				FilterOptions = new ListOptions { Tag = "div", TagClassName = "ew-filter-option fLeadStatuslistsrch" };
 
 				// List actions
 				ListActions = new ListActions();
@@ -489,7 +489,7 @@ namespace AspNetMaker2020.Models {
 					string content = await GetViewOutput();
 					if (Empty(ExportFileName))
 						ExportFileName = TableVar;
-					dynamic doc = CreateInstance(classname, new object[] { _Leads, "" }); // DN
+					dynamic doc = CreateInstance(classname, new object[] { LeadStatus, "" }); // DN
 					doc.Text.Append(content);
 					result = doc.Export();
 					DeleteTempImages(); // Delete temp images
@@ -606,7 +606,7 @@ namespace AspNetMaker2020.Models {
 			// Get record key value from array
 			protected string GetRecordKeyValue(Dictionary<string, object> ar) {
 				string key = "";
-				key += UrlEncode(Convert.ToString(ar["LeadId"]));
+				key += UrlEncode(Convert.ToString(ar["Id"]));
 				return key;
 			}
 
@@ -815,17 +815,8 @@ namespace AspNetMaker2020.Models {
 
 				// Set up list options
 				await SetupListOptions();
-				LeadId.SetVisibility();
-				_Name.SetVisibility();
-				State.SetVisibility();
-				LeadStatusId.SetVisibility();
-				BranchId.SetVisibility();
-				UserId.SetVisibility();
-				FirstName.SetVisibility();
-				LastName.SetVisibility();
-				BlobUrl.SetVisibility();
-				EmailAddress.SetVisibility();
-				PhoneNumber.SetVisibility();
+				Id.SetVisibility();
+				DisplayName.SetVisibility();
 				HideFieldsForAddEdit();
 
 				// Global Page Loading event
@@ -856,10 +847,8 @@ namespace AspNetMaker2020.Models {
 					ListOptions["checkbox"].Visible = true;
 
 				// Set up lookup cache
-				await SetupLookupOptions(LeadStatusId);
-				await SetupLookupOptions(BranchId);
-
 				// Search filters
+
 				string srchBasic = ""; // Basic search filter
 				string filter = "";
 
@@ -1058,7 +1047,9 @@ namespace AspNetMaker2020.Models {
 			protected bool SetupKeyValues(string key) {
 				var keyFields = key.Split(Convert.ToChar(Config.CompositeKeySeparator));
 				if (keyFields.Length >= 1) {
-					LeadId.OldValue = keyFields[0];
+					Id.OldValue = keyFields[0];
+					if (!IsNumeric(Id.OldValue))
+						return false;
 				}
 				return true;
 			}
@@ -1073,18 +1064,9 @@ namespace AspNetMaker2020.Models {
 
 				// Initialize
 				var filters = new JObject(); // DN
-				filters.Merge(JObject.Parse(LeadId.AdvancedSearch.ToJson())); // Field LeadId
-				filters.Merge(JObject.Parse(_Name.AdvancedSearch.ToJson())); // Field Name
-				filters.Merge(JObject.Parse(State.AdvancedSearch.ToJson())); // Field State
-				filters.Merge(JObject.Parse(LeadStatusId.AdvancedSearch.ToJson())); // Field LeadStatusId
-				filters.Merge(JObject.Parse(BranchId.AdvancedSearch.ToJson())); // Field BranchId
-				filters.Merge(JObject.Parse(UserId.AdvancedSearch.ToJson())); // Field UserId
-				filters.Merge(JObject.Parse(FirstName.AdvancedSearch.ToJson())); // Field FirstName
-				filters.Merge(JObject.Parse(LastName.AdvancedSearch.ToJson())); // Field LastName
-				filters.Merge(JObject.Parse(BlobUrl.AdvancedSearch.ToJson())); // Field BlobUrl
-				filters.Merge(JObject.Parse(EmailAddress.AdvancedSearch.ToJson())); // Field EmailAddress
-				filters.Merge(JObject.Parse(PhoneNumber.AdvancedSearch.ToJson())); // Field PhoneNumber
-				filters.Merge(JObject.Parse(_Leads.BasicSearch.ToJson()));
+				filters.Merge(JObject.Parse(Id.AdvancedSearch.ToJson())); // Field Id
+				filters.Merge(JObject.Parse(DisplayName.AdvancedSearch.ToJson())); // Field DisplayName
+				filters.Merge(JObject.Parse(LeadStatus.BasicSearch.ToJson()));
 
 				// Return filter list in JSON
 				if (filters.HasValues)
@@ -1111,114 +1093,24 @@ namespace AspNetMaker2020.Models {
 				Command = "search";
 				string sv;
 
-				// Field LeadId
-				if (filter.TryGetValue("x_LeadId", out sv)) {
-					LeadId.AdvancedSearch.SearchValue = sv;
-					LeadId.AdvancedSearch.SearchOperator = filter["z_LeadId"];
-					LeadId.AdvancedSearch.SearchCondition = filter["v_LeadId"];
-					LeadId.AdvancedSearch.SearchValue2 = filter["y_LeadId"];
-					LeadId.AdvancedSearch.SearchOperator2 = filter["w_LeadId"];
-					LeadId.AdvancedSearch.Save();
+				// Field Id
+				if (filter.TryGetValue("x_Id", out sv)) {
+					Id.AdvancedSearch.SearchValue = sv;
+					Id.AdvancedSearch.SearchOperator = filter["z_Id"];
+					Id.AdvancedSearch.SearchCondition = filter["v_Id"];
+					Id.AdvancedSearch.SearchValue2 = filter["y_Id"];
+					Id.AdvancedSearch.SearchOperator2 = filter["w_Id"];
+					Id.AdvancedSearch.Save();
 				}
 
-				// Field Name
-				if (filter.TryGetValue("x__Name", out sv)) {
-					_Name.AdvancedSearch.SearchValue = sv;
-					_Name.AdvancedSearch.SearchOperator = filter["z__Name"];
-					_Name.AdvancedSearch.SearchCondition = filter["v__Name"];
-					_Name.AdvancedSearch.SearchValue2 = filter["y__Name"];
-					_Name.AdvancedSearch.SearchOperator2 = filter["w__Name"];
-					_Name.AdvancedSearch.Save();
-				}
-
-				// Field State
-				if (filter.TryGetValue("x_State", out sv)) {
-					State.AdvancedSearch.SearchValue = sv;
-					State.AdvancedSearch.SearchOperator = filter["z_State"];
-					State.AdvancedSearch.SearchCondition = filter["v_State"];
-					State.AdvancedSearch.SearchValue2 = filter["y_State"];
-					State.AdvancedSearch.SearchOperator2 = filter["w_State"];
-					State.AdvancedSearch.Save();
-				}
-
-				// Field LeadStatusId
-				if (filter.TryGetValue("x_LeadStatusId", out sv)) {
-					LeadStatusId.AdvancedSearch.SearchValue = sv;
-					LeadStatusId.AdvancedSearch.SearchOperator = filter["z_LeadStatusId"];
-					LeadStatusId.AdvancedSearch.SearchCondition = filter["v_LeadStatusId"];
-					LeadStatusId.AdvancedSearch.SearchValue2 = filter["y_LeadStatusId"];
-					LeadStatusId.AdvancedSearch.SearchOperator2 = filter["w_LeadStatusId"];
-					LeadStatusId.AdvancedSearch.Save();
-				}
-
-				// Field BranchId
-				if (filter.TryGetValue("x_BranchId", out sv)) {
-					BranchId.AdvancedSearch.SearchValue = sv;
-					BranchId.AdvancedSearch.SearchOperator = filter["z_BranchId"];
-					BranchId.AdvancedSearch.SearchCondition = filter["v_BranchId"];
-					BranchId.AdvancedSearch.SearchValue2 = filter["y_BranchId"];
-					BranchId.AdvancedSearch.SearchOperator2 = filter["w_BranchId"];
-					BranchId.AdvancedSearch.Save();
-				}
-
-				// Field UserId
-				if (filter.TryGetValue("x_UserId", out sv)) {
-					UserId.AdvancedSearch.SearchValue = sv;
-					UserId.AdvancedSearch.SearchOperator = filter["z_UserId"];
-					UserId.AdvancedSearch.SearchCondition = filter["v_UserId"];
-					UserId.AdvancedSearch.SearchValue2 = filter["y_UserId"];
-					UserId.AdvancedSearch.SearchOperator2 = filter["w_UserId"];
-					UserId.AdvancedSearch.Save();
-				}
-
-				// Field FirstName
-				if (filter.TryGetValue("x_FirstName", out sv)) {
-					FirstName.AdvancedSearch.SearchValue = sv;
-					FirstName.AdvancedSearch.SearchOperator = filter["z_FirstName"];
-					FirstName.AdvancedSearch.SearchCondition = filter["v_FirstName"];
-					FirstName.AdvancedSearch.SearchValue2 = filter["y_FirstName"];
-					FirstName.AdvancedSearch.SearchOperator2 = filter["w_FirstName"];
-					FirstName.AdvancedSearch.Save();
-				}
-
-				// Field LastName
-				if (filter.TryGetValue("x_LastName", out sv)) {
-					LastName.AdvancedSearch.SearchValue = sv;
-					LastName.AdvancedSearch.SearchOperator = filter["z_LastName"];
-					LastName.AdvancedSearch.SearchCondition = filter["v_LastName"];
-					LastName.AdvancedSearch.SearchValue2 = filter["y_LastName"];
-					LastName.AdvancedSearch.SearchOperator2 = filter["w_LastName"];
-					LastName.AdvancedSearch.Save();
-				}
-
-				// Field BlobUrl
-				if (filter.TryGetValue("x_BlobUrl", out sv)) {
-					BlobUrl.AdvancedSearch.SearchValue = sv;
-					BlobUrl.AdvancedSearch.SearchOperator = filter["z_BlobUrl"];
-					BlobUrl.AdvancedSearch.SearchCondition = filter["v_BlobUrl"];
-					BlobUrl.AdvancedSearch.SearchValue2 = filter["y_BlobUrl"];
-					BlobUrl.AdvancedSearch.SearchOperator2 = filter["w_BlobUrl"];
-					BlobUrl.AdvancedSearch.Save();
-				}
-
-				// Field EmailAddress
-				if (filter.TryGetValue("x_EmailAddress", out sv)) {
-					EmailAddress.AdvancedSearch.SearchValue = sv;
-					EmailAddress.AdvancedSearch.SearchOperator = filter["z_EmailAddress"];
-					EmailAddress.AdvancedSearch.SearchCondition = filter["v_EmailAddress"];
-					EmailAddress.AdvancedSearch.SearchValue2 = filter["y_EmailAddress"];
-					EmailAddress.AdvancedSearch.SearchOperator2 = filter["w_EmailAddress"];
-					EmailAddress.AdvancedSearch.Save();
-				}
-
-				// Field PhoneNumber
-				if (filter.TryGetValue("x_PhoneNumber", out sv)) {
-					PhoneNumber.AdvancedSearch.SearchValue = sv;
-					PhoneNumber.AdvancedSearch.SearchOperator = filter["z_PhoneNumber"];
-					PhoneNumber.AdvancedSearch.SearchCondition = filter["v_PhoneNumber"];
-					PhoneNumber.AdvancedSearch.SearchValue2 = filter["y_PhoneNumber"];
-					PhoneNumber.AdvancedSearch.SearchOperator2 = filter["w_PhoneNumber"];
-					PhoneNumber.AdvancedSearch.Save();
+				// Field DisplayName
+				if (filter.TryGetValue("x_DisplayName", out sv)) {
+					DisplayName.AdvancedSearch.SearchValue = sv;
+					DisplayName.AdvancedSearch.SearchOperator = filter["z_DisplayName"];
+					DisplayName.AdvancedSearch.SearchCondition = filter["v_DisplayName"];
+					DisplayName.AdvancedSearch.SearchValue2 = filter["y_DisplayName"];
+					DisplayName.AdvancedSearch.SearchOperator2 = filter["w_DisplayName"];
+					DisplayName.AdvancedSearch.Save();
 				}
 				if (filter.TryGetValue(Config.TableBasicSearch, out string keyword))
 					BasicSearch.SessionKeyword = keyword;
@@ -1230,13 +1122,7 @@ namespace AspNetMaker2020.Models {
 			// Return basic search SQL
 			protected string BasicSearchSql(List<string> keywords, string type) {
 				string where = "";
-				BuildBasicSearchSql(ref where, _Name, keywords, type);
-				BuildBasicSearchSql(ref where, State, keywords, type);
-				BuildBasicSearchSql(ref where, FirstName, keywords, type);
-				BuildBasicSearchSql(ref where, LastName, keywords, type);
-				BuildBasicSearchSql(ref where, BlobUrl, keywords, type);
-				BuildBasicSearchSql(ref where, EmailAddress, keywords, type);
-				BuildBasicSearchSql(ref where, PhoneNumber, keywords, type);
+				BuildBasicSearchSql(ref where, DisplayName, keywords, type);
 				return where;
 			}
 
@@ -1381,17 +1267,8 @@ namespace AspNetMaker2020.Models {
 				if (Get("order", out StringValues sv)) {
 					CurrentOrder = sv;
 					CurrentOrderType = Get("ordertype");
-					UpdateSort(LeadId); // LeadId
-					UpdateSort(_Name); // Name
-					UpdateSort(State); // State
-					UpdateSort(LeadStatusId); // LeadStatusId
-					UpdateSort(BranchId); // BranchId
-					UpdateSort(UserId); // UserId
-					UpdateSort(FirstName); // FirstName
-					UpdateSort(LastName); // LastName
-					UpdateSort(BlobUrl); // BlobUrl
-					UpdateSort(EmailAddress); // EmailAddress
-					UpdateSort(PhoneNumber); // PhoneNumber
+					UpdateSort(Id); // Id
+					UpdateSort(DisplayName); // DisplayName
 					StartRecordNumber = 1; // Reset start position
 				}
 			}
@@ -1425,17 +1302,8 @@ namespace AspNetMaker2020.Models {
 					if (SameText(Command, "resetsort")) {
 						string orderBy = "";
 						SessionOrderBy = orderBy;
-						LeadId.Sort = "";
-						_Name.Sort = "";
-						State.Sort = "";
-						LeadStatusId.Sort = "";
-						BranchId.Sort = "";
-						UserId.Sort = "";
-						FirstName.Sort = "";
-						LastName.Sort = "";
-						BlobUrl.Sort = "";
-						EmailAddress.Sort = "";
-						PhoneNumber.Sort = "";
+						Id.Sort = "";
+						DisplayName.Sort = "";
 					}
 
 					// Reset start position
@@ -1590,7 +1458,7 @@ namespace AspNetMaker2020.Models {
 
 				// "checkbox"
 				listOption = ListOptions["checkbox"];
-				listOption.Body = "<div class=\"custom-control custom-checkbox d-inline-block\"><input type=\"checkbox\" id=\"key_m_" + RowCount + "\" name=\"key_m[]\" class=\"custom-control-input ew-multi-select\" value=\"" + HtmlEncode(LeadId.CurrentValue) + "\" onclick=\"ew.clickMultiCheckbox(event);\"><label class=\"custom-control-label\" for=\"key_m_" + RowCount + "\"></label></div>";
+				listOption.Body = "<div class=\"custom-control custom-checkbox d-inline-block\"><input type=\"checkbox\" id=\"key_m_" + RowCount + "\" name=\"key_m[]\" class=\"custom-control-input ew-multi-select\" value=\"" + HtmlEncode(Id.CurrentValue) + "\" onclick=\"ew.clickMultiCheckbox(event);\"><label class=\"custom-control-label\" for=\"key_m_" + RowCount + "\"></label></div>";
 				RenderListOptionsExt();
 
 				// Call ListOptions_Rendered event
@@ -1626,10 +1494,10 @@ namespace AspNetMaker2020.Models {
 
 				// Filter button
 				item = FilterOptions.Add("savecurrentfilter");
-				item.Body = "<a class=\"ew-save-filter\" data-form=\"f_Leadslistsrch\" href=\"#\">" + Language.Phrase("SaveCurrentFilter") + "</a>";
+				item.Body = "<a class=\"ew-save-filter\" data-form=\"fLeadStatuslistsrch\" href=\"#\">" + Language.Phrase("SaveCurrentFilter") + "</a>";
 				item.Visible = true;
 				item = FilterOptions.Add("deletefilter");
-				item.Body = "<a class=\"ew-delete-filter\" data-form=\"f_Leadslistsrch\" href=\"#\">" + Language.Phrase("DeleteFilter") + "</a>";
+				item.Body = "<a class=\"ew-delete-filter\" data-form=\"fLeadStatuslistsrch\" href=\"#\">" + Language.Phrase("DeleteFilter") + "</a>";
 				item.Visible = true;
 				FilterOptions.UseDropDownButton = true;
 				FilterOptions.UseButtonGroup = !FilterOptions.UseDropDownButton;
@@ -1653,7 +1521,7 @@ namespace AspNetMaker2020.Models {
 						item = option.Add("custom_" + act.Action);
 						string caption = act.Caption;
 						var icon = (act.Icon != "") ? "<i class=\"" + HtmlEncode(act.Icon) + "\" data-caption=\"" + HtmlEncode(caption) + "\"></i> " + caption : caption;
-						item.Body = "<a class=\"ew-action ew-list-action\" title=\"" + HtmlEncode(caption) + "\" data-caption=\"" + HtmlEncode(caption) + "\" href=\"#\" onclick=\"return ew.submitAction(event,jQuery.extend({f:document.f_Leadslist}," + act.ToJson(true) + "));\">" + icon + "</a>";
+						item.Body = "<a class=\"ew-action ew-list-action\" title=\"" + HtmlEncode(caption) + "\" data-caption=\"" + HtmlEncode(caption) + "\" href=\"#\" onclick=\"return ew.submitAction(event,jQuery.extend({f:document.fLeadStatuslist}," + act.ToJson(true) + "));\">" + icon + "</a>";
 						item.Visible = act.Allowed;
 					}
 
@@ -1811,34 +1679,16 @@ namespace AspNetMaker2020.Models {
 				Row_Selected(row);
 				if (dr == null || !dr.HasRows)
 					return;
-				LeadId.SetDbValue(row["LeadId"]);
-				_Name.SetDbValue(row["Name"]);
-				State.SetDbValue(row["State"]);
-				LeadStatusId.SetDbValue(row["LeadStatusId"]);
-				BranchId.SetDbValue(row["BranchId"]);
-				UserId.SetDbValue(row["UserId"]);
-				FirstName.SetDbValue(row["FirstName"]);
-				LastName.SetDbValue(row["LastName"]);
-				BlobUrl.SetDbValue(row["BlobUrl"]);
-				EmailAddress.SetDbValue(row["EmailAddress"]);
-				PhoneNumber.SetDbValue(row["PhoneNumber"]);
+				Id.SetDbValue(row["Id"]);
+				DisplayName.SetDbValue(row["DisplayName"]);
 			}
 			#pragma warning restore 162, 168, 1998
 
 			// Return a row with default values
 			protected Dictionary<string, object> NewRow() {
 				var row = new Dictionary<string, object>();
-				row.Add("LeadId", System.DBNull.Value);
-				row.Add("Name", System.DBNull.Value);
-				row.Add("State", System.DBNull.Value);
-				row.Add("LeadStatusId", System.DBNull.Value);
-				row.Add("BranchId", System.DBNull.Value);
-				row.Add("UserId", System.DBNull.Value);
-				row.Add("FirstName", System.DBNull.Value);
-				row.Add("LastName", System.DBNull.Value);
-				row.Add("BlobUrl", System.DBNull.Value);
-				row.Add("EmailAddress", System.DBNull.Value);
-				row.Add("PhoneNumber", System.DBNull.Value);
+				row.Add("Id", System.DBNull.Value);
+				row.Add("DisplayName", System.DBNull.Value);
 				return row;
 			}
 			#pragma warning disable 618, 1998
@@ -1846,8 +1696,8 @@ namespace AspNetMaker2020.Models {
 			// Load old record
 			protected async Task<bool> LoadOldRecord(DatabaseConnectionBase<SqlConnection, SqlCommand, SqlDataReader, SqlDbType> cnn = null) {
 				bool validKey = true;
-				if (!Empty(GetKey("LeadId")))
-					LeadId.OldValue = GetKey("LeadId"); // LeadId
+				if (!Empty(GetKey("Id")))
+					Id.OldValue = GetKey("Id"); // Id
 				else
 					validKey = false;
 
@@ -1881,141 +1731,27 @@ namespace AspNetMaker2020.Models {
 				Row_Rendering();
 
 				// Common render codes for all row types
-				// LeadId
-				// Name
-				// State
-				// LeadStatusId
-				// BranchId
-				// UserId
-				// FirstName
-				// LastName
-				// BlobUrl
-				// EmailAddress
-				// PhoneNumber
+				// Id
+				// DisplayName
 
 				if (RowType == Config.RowTypeView) { // View row
 
-					// LeadId
-					LeadId.ViewValue = Convert.ToString(LeadId.CurrentValue); // DN
-					LeadId.ViewCustomAttributes = "";
+					// Id
+					Id.ViewValue = Convert.ToString(Id.CurrentValue); // DN
+					Id.ViewValue = FormatNumber(Id.ViewValue, 0, -2, -2, -2);
+					Id.ViewCustomAttributes = "";
 
-					// Name
-					_Name.ViewValue = Convert.ToString(_Name.CurrentValue); // DN
-					_Name.ViewCustomAttributes = "";
+					// DisplayName
+					DisplayName.ViewValue = Convert.ToString(DisplayName.CurrentValue); // DN
+					DisplayName.ViewCustomAttributes = "";
 
-					// State
-					State.ViewValue = Convert.ToString(State.CurrentValue); // DN
-					State.ViewCustomAttributes = "";
+					// Id
+					Id.HrefValue = "";
+					Id.TooltipValue = "";
 
-					// LeadStatusId
-					curVal = Convert.ToString(LeadStatusId.CurrentValue);
-					if (!Empty(curVal)) {
-						LeadStatusId.ViewValue = LeadStatusId.LookupCacheOption(curVal);
-						if (LeadStatusId.ViewValue == null) { // Lookup from database
-							filterWrk = "[Id]" + SearchString("=", curVal.Trim(), Config.DataTypeNumber, "");
-							sqlWrk = LeadStatusId.Lookup.GetSql(false, filterWrk, null, this);
-							rswrk = await Connection.GetRowsAsync(sqlWrk);
-							if (rswrk != null && rswrk.Count > 0) { // Lookup values found
-								var listwrk = rswrk[0].Values.ToList();
-								listwrk[1] = Convert.ToString(listwrk[1]);
-								LeadStatusId.ViewValue = LeadStatusId.DisplayValue(listwrk);
-							} else {
-								LeadStatusId.ViewValue = LeadStatusId.CurrentValue;
-							}
-						}
-					} else {
-						LeadStatusId.ViewValue = System.DBNull.Value;
-					}
-					LeadStatusId.ViewCustomAttributes = "";
-
-					// BranchId
-					curVal = Convert.ToString(BranchId.CurrentValue);
-					if (!Empty(curVal)) {
-						BranchId.ViewValue = BranchId.LookupCacheOption(curVal);
-						if (BranchId.ViewValue == null) { // Lookup from database
-							filterWrk = "[Id]" + SearchString("=", curVal.Trim(), Config.DataTypeNumber, "");
-							sqlWrk = BranchId.Lookup.GetSql(false, filterWrk, null, this);
-							rswrk = await Connection.GetRowsAsync(sqlWrk);
-							if (rswrk != null && rswrk.Count > 0) { // Lookup values found
-								var listwrk = rswrk[0].Values.ToList();
-								listwrk[1] = Convert.ToString(listwrk[1]);
-								BranchId.ViewValue = BranchId.DisplayValue(listwrk);
-							} else {
-								BranchId.ViewValue = BranchId.CurrentValue;
-							}
-						}
-					} else {
-						BranchId.ViewValue = System.DBNull.Value;
-					}
-					BranchId.ViewCustomAttributes = "";
-
-					// UserId
-					UserId.ViewValue = Convert.ToString(UserId.CurrentValue); // DN
-					UserId.ViewCustomAttributes = "";
-
-					// FirstName
-					FirstName.ViewValue = Convert.ToString(FirstName.CurrentValue); // DN
-					FirstName.ViewCustomAttributes = "";
-
-					// LastName
-					LastName.ViewValue = Convert.ToString(LastName.CurrentValue); // DN
-					LastName.ViewCustomAttributes = "";
-
-					// BlobUrl
-					BlobUrl.ViewValue = Convert.ToString(BlobUrl.CurrentValue); // DN
-					BlobUrl.ViewCustomAttributes = "";
-
-					// EmailAddress
-					EmailAddress.ViewValue = Convert.ToString(EmailAddress.CurrentValue); // DN
-					EmailAddress.ViewCustomAttributes = "";
-
-					// PhoneNumber
-					PhoneNumber.ViewValue = Convert.ToString(PhoneNumber.CurrentValue); // DN
-					PhoneNumber.ViewCustomAttributes = "";
-
-					// LeadId
-					LeadId.HrefValue = "";
-					LeadId.TooltipValue = "";
-
-					// Name
-					_Name.HrefValue = "";
-					_Name.TooltipValue = "";
-
-					// State
-					State.HrefValue = "";
-					State.TooltipValue = "";
-
-					// LeadStatusId
-					LeadStatusId.HrefValue = "";
-					LeadStatusId.TooltipValue = "";
-
-					// BranchId
-					BranchId.HrefValue = "";
-					BranchId.TooltipValue = "";
-
-					// UserId
-					UserId.HrefValue = "";
-					UserId.TooltipValue = "";
-
-					// FirstName
-					FirstName.HrefValue = "";
-					FirstName.TooltipValue = "";
-
-					// LastName
-					LastName.HrefValue = "";
-					LastName.TooltipValue = "";
-
-					// BlobUrl
-					BlobUrl.HrefValue = "";
-					BlobUrl.TooltipValue = "";
-
-					// EmailAddress
-					EmailAddress.HrefValue = "";
-					EmailAddress.TooltipValue = "";
-
-					// PhoneNumber
-					PhoneNumber.HrefValue = "";
-					PhoneNumber.TooltipValue = "";
+					// DisplayName
+					DisplayName.HrefValue = "";
+					DisplayName.TooltipValue = "";
 				}
 
 				// Call Row Rendered event
@@ -2041,7 +1777,7 @@ namespace AspNetMaker2020.Models {
 				// Search button
 				item = SearchOptions.Add("searchtoggle");
 				var searchToggleClass = !Empty(SearchWhere) ? " active" : " active";
-				item.Body = "<button type=\"button\" class=\"btn btn-default ew-search-toggle" + searchToggleClass + "\" title=\"" + Language.Phrase("SearchPanel") + "\" data-caption=\"" + Language.Phrase("SearchPanel") + "\" data-toggle=\"button\" data-form=\"f_Leadslistsrch\">" + Language.Phrase("SearchLink") + "</button>";
+				item.Body = "<button type=\"button\" class=\"btn btn-default ew-search-toggle" + searchToggleClass + "\" title=\"" + Language.Phrase("SearchPanel") + "\" data-caption=\"" + Language.Phrase("SearchPanel") + "\" data-toggle=\"button\" data-form=\"fLeadStatuslistsrch\">" + Language.Phrase("SearchLink") + "</button>";
 				item.Visible = true;
 
 				// Show all button
@@ -2095,18 +1831,6 @@ namespace AspNetMaker2020.Models {
 						List<Dictionary<string, object>> rs = await conn.GetRowsAsync(sql);
 						if (rs != null) {
 							foreach (var row in rs) {
-
-								// Format the field values
-								switch (fld.FieldVar) {
-									case "x_LeadStatusId":
-									break;
-								}
-
-								// Format the field values
-								switch (fld.FieldVar) {
-									case "x_BranchId":
-									break;
-								}
 								string key = row.Values.First()?.ToString() ?? string.Empty;
 								if (!ar.ContainsKey(key))
 									ar.Add(key, row);

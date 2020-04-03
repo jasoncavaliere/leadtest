@@ -1,0 +1,331 @@
+@{
+
+	// View
+	View = this;
+	SetClientVar("login", LoginStatus);
+
+	// Global Page Rendering event
+	Page_Rendering();
+
+	// Page Render event
+	_Leads_Edit.Page_Render();
+
+	// Check action result
+	if (_Leads_Edit.ActionResult is EmptyResult) { // Terminate page
+		return;
+	}
+
+	// Layout
+	Layout = "_Layout";
+
+	// Local variables (Temp data)
+	#pragma warning disable 168
+	string sqlWrk, filterWrk, whereWrk, curVal;
+	List<Dictionary<string, object>> rswrk;
+	string[] arWrk;
+	List<object> listWrk;
+	Func<string> lookupFilter;
+	#pragma warning restore 168
+}
+<script>
+var f_Leadsedit, currentPageID;
+loadjs.ready("head", function() {
+
+	// Form object
+	currentPageID = ew.PAGE_ID = "edit";
+	f_Leadsedit = currentForm = new ew.Form("f_Leadsedit", "edit");
+
+	// Validate form
+	f_Leadsedit.validate = function() {
+		if (!this.validateRequired)
+			return true; // Ignore validation
+		var $ = jQuery, fobj = this.getForm(), $fobj = $(fobj);
+		if ($fobj.find("#confirm").val() == "confirm")
+			return true;
+		var elm, felm, uelm, addcnt = 0;
+		var $k = $fobj.find("#" + this.formKeyCountName); // Get key_count
+		var rowcnt = ($k[0]) ? parseInt($k.val(), 10) : 1;
+		var startcnt = (rowcnt == 0) ? 0 : 1; // Check rowcnt == 0 => Inline-Add
+		var gridinsert = ["insert", "gridinsert"].includes($fobj.find("#action").val()) && $k[0];
+		for (var i = startcnt; i <= rowcnt; i++) {
+			var infix = ($k[0]) ? String(i) : "";
+			$fobj.data("rowindex", infix);
+			@if (_Leads_Edit.LeadId.Required) {
+				<text>
+				elm = this.getElements("x" + infix + "_LeadId");
+				if (elm && !ew.isHidden(elm) && !ew.hasValue(elm))
+					return this.onError(elm, "@Html.Raw(JsEncode(Convert.ToString(_Leads_Edit.LeadId.RequiredErrorMessage).Replace("%s", _Leads_Edit.LeadId.Caption)))");
+				</text>
+			}
+				elm = this.getElements("x" + infix + "_LeadId");
+				if (elm && !ew.checkGuid(elm.value))
+					return this.onError(elm, "@(JsEncode(_Leads_Edit.LeadId.ErrorMessage))");
+			@if (_Leads_Edit._Name.Required) {
+				<text>
+				elm = this.getElements("x" + infix + "__Name");
+				if (elm && !ew.isHidden(elm) && !ew.hasValue(elm))
+					return this.onError(elm, "@Html.Raw(JsEncode(Convert.ToString(_Leads_Edit._Name.RequiredErrorMessage).Replace("%s", _Leads_Edit._Name.Caption)))");
+				</text>
+			}
+			@if (_Leads_Edit.State.Required) {
+				<text>
+				elm = this.getElements("x" + infix + "_State");
+				if (elm && !ew.isHidden(elm) && !ew.hasValue(elm))
+					return this.onError(elm, "@Html.Raw(JsEncode(Convert.ToString(_Leads_Edit.State.RequiredErrorMessage).Replace("%s", _Leads_Edit.State.Caption)))");
+				</text>
+			}
+			@if (_Leads_Edit.LeadStatusId.Required) {
+				<text>
+				elm = this.getElements("x" + infix + "_LeadStatusId");
+				if (elm && !ew.isHidden(elm) && !ew.hasValue(elm))
+					return this.onError(elm, "@Html.Raw(JsEncode(Convert.ToString(_Leads_Edit.LeadStatusId.RequiredErrorMessage).Replace("%s", _Leads_Edit.LeadStatusId.Caption)))");
+				</text>
+			}
+			@if (_Leads_Edit.BranchId.Required) {
+				<text>
+				elm = this.getElements("x" + infix + "_BranchId");
+				if (elm && !ew.isHidden(elm) && !ew.hasValue(elm))
+					return this.onError(elm, "@Html.Raw(JsEncode(Convert.ToString(_Leads_Edit.BranchId.RequiredErrorMessage).Replace("%s", _Leads_Edit.BranchId.Caption)))");
+				</text>
+			}
+			@if (_Leads_Edit.UserId.Required) {
+				<text>
+				elm = this.getElements("x" + infix + "_UserId");
+				if (elm && !ew.isHidden(elm) && !ew.hasValue(elm))
+					return this.onError(elm, "@Html.Raw(JsEncode(Convert.ToString(_Leads_Edit.UserId.RequiredErrorMessage).Replace("%s", _Leads_Edit.UserId.Caption)))");
+				</text>
+			}
+				elm = this.getElements("x" + infix + "_UserId");
+				if (elm && !ew.checkGuid(elm.value))
+					return this.onError(elm, "@(JsEncode(_Leads_Edit.UserId.ErrorMessage))");
+			@if (_Leads_Edit.FirstName.Required) {
+				<text>
+				elm = this.getElements("x" + infix + "_FirstName");
+				if (elm && !ew.isHidden(elm) && !ew.hasValue(elm))
+					return this.onError(elm, "@Html.Raw(JsEncode(Convert.ToString(_Leads_Edit.FirstName.RequiredErrorMessage).Replace("%s", _Leads_Edit.FirstName.Caption)))");
+				</text>
+			}
+			@if (_Leads_Edit.LastName.Required) {
+				<text>
+				elm = this.getElements("x" + infix + "_LastName");
+				if (elm && !ew.isHidden(elm) && !ew.hasValue(elm))
+					return this.onError(elm, "@Html.Raw(JsEncode(Convert.ToString(_Leads_Edit.LastName.RequiredErrorMessage).Replace("%s", _Leads_Edit.LastName.Caption)))");
+				</text>
+			}
+			@if (_Leads_Edit.BlobUrl.Required) {
+				<text>
+				elm = this.getElements("x" + infix + "_BlobUrl");
+				if (elm && !ew.isHidden(elm) && !ew.hasValue(elm))
+					return this.onError(elm, "@Html.Raw(JsEncode(Convert.ToString(_Leads_Edit.BlobUrl.RequiredErrorMessage).Replace("%s", _Leads_Edit.BlobUrl.Caption)))");
+				</text>
+			}
+			@if (_Leads_Edit.EmailAddress.Required) {
+				<text>
+				elm = this.getElements("x" + infix + "_EmailAddress");
+				if (elm && !ew.isHidden(elm) && !ew.hasValue(elm))
+					return this.onError(elm, "@Html.Raw(JsEncode(Convert.ToString(_Leads_Edit.EmailAddress.RequiredErrorMessage).Replace("%s", _Leads_Edit.EmailAddress.Caption)))");
+				</text>
+			}
+			@if (_Leads_Edit.PhoneNumber.Required) {
+				<text>
+				elm = this.getElements("x" + infix + "_PhoneNumber");
+				if (elm && !ew.isHidden(elm) && !ew.hasValue(elm))
+					return this.onError(elm, "@Html.Raw(JsEncode(Convert.ToString(_Leads_Edit.PhoneNumber.RequiredErrorMessage).Replace("%s", _Leads_Edit.PhoneNumber.Caption)))");
+				</text>
+			}
+
+				// Call Form_CustomValidate event
+				if (!this.Form_CustomValidate(fobj))
+					return false;
+		}
+
+		// Process detail forms
+		var dfs = $fobj.find("input[name='detailpage']").get();
+		for (var i = 0; i < dfs.length; i++) {
+			var df = dfs[i], val = df.value;
+			if (val && ew.forms[val])
+				if (!ew.forms[val].validate())
+					return false;
+		}
+		return true;
+	}
+
+	// Form_CustomValidate
+	f_Leadsedit.Form_CustomValidate = function(fobj) { // DO NOT CHANGE THIS LINE!
+
+		// Your custom validation code here, return false if invalid.
+		return true;
+	}
+
+	// Use JavaScript validation or not
+	f_Leadsedit.validateRequired = @(Config.ClientValidate ? "true" : "false");
+
+	// Dynamic selection lists
+	f_Leadsedit.lists["x_LeadStatusId"] = @Html.Raw(_Leads_Edit.LeadStatusId.Lookup.ToClientList(_Leads_Edit));
+	f_Leadsedit.lists["x_LeadStatusId"].options = @Html.Raw(ConvertToJson(_Leads_Edit.LeadStatusId.LookupOptions));
+	f_Leadsedit.lists["x_BranchId"] = @Html.Raw(_Leads_Edit.BranchId.Lookup.ToClientList(_Leads_Edit));
+	f_Leadsedit.lists["x_BranchId"].options = @Html.Raw(ConvertToJson(_Leads_Edit.BranchId.LookupOptions));
+	loadjs.done("f_Leadsedit");
+});
+</script>
+<script>
+loadjs.ready("head", function() {
+
+	// Client script
+	// Write your client script here, no need to add script tags.
+
+});
+</script>
+@_Leads_Edit.ShowPageHeader()
+@_Leads_Edit.ShowMessages()
+<form name="f_Leadsedit" id="f_Leadsedit" class="@(_Leads_Edit.FormClassName)" action="@AppPath(CurrentPageName())" method="post">
+@if (_Leads_Edit.CheckToken) {
+	@Html.AntiForgeryToken()
+}
+<input type="hidden" name="action" id="action" value="update">
+@if (_Leads_Edit.IsModal) {
+<input type="hidden" name="modal" value="@ConvertToInt(_Leads_Edit.IsModal)">
+}
+<div class="ew-edit-div"><!-- page* -->
+@if (_Leads_Edit.LeadId.Visible) { // _Leads_Edit.LeadId.Visible (begin)
+	<div id="r_LeadId" class="form-group row">
+		<label id="elh__Leads_LeadId" for="x_LeadId" class="@(_Leads_Edit.LeftColumnClass)">@Html.Raw(_Leads_Edit.LeadId.Caption)@Html.Raw(_Leads_Edit.LeadId.Required ? Language.Phrase("FieldRequiredIndicator") : "")</label>
+		<div class="@(_Leads_Edit.RightColumnClass)"><div @Html.Raw(_Leads_Edit.LeadId.CellAttributes)>
+<input type="text" data-table="_Leads" data-field="x_LeadId" name="x_LeadId" id="x_LeadId" size="38" maxlength="38" placeholder="@Html.Raw(HtmlEncode(_Leads_Edit.LeadId.PlaceHolder))" value="@(_Leads_Edit.LeadId.EditValue)" @Html.Raw(_Leads_Edit.LeadId.EditAttributes)>
+<input type="hidden" data-table="_Leads" data-field="x_LeadId" name="o_LeadId" id="o_LeadId" value="@Html.Raw(HtmlEncode(_Leads_Edit.LeadId.OldValue != null ? _Leads_Edit.LeadId.OldValue : _Leads_Edit.LeadId.CurrentValue))">
+@Html.Raw(_Leads_Edit.LeadId.CustomMsg)</div></div>
+	</div>
+} @* _Leads_Edit.LeadId.Visible (end) *@
+@if (_Leads_Edit._Name.Visible) { // _Leads_Edit._Name.Visible (begin)
+	<div id="r__Name" class="form-group row">
+		<label id="elh__Leads__Name" for="x__Name" class="@(_Leads_Edit.LeftColumnClass)">@Html.Raw(_Leads_Edit._Name.Caption)@Html.Raw(_Leads_Edit._Name.Required ? Language.Phrase("FieldRequiredIndicator") : "")</label>
+		<div class="@(_Leads_Edit.RightColumnClass)"><div @Html.Raw(_Leads_Edit._Name.CellAttributes)>
+<span id="el__Leads__Name">
+<input type="text" data-table="_Leads" data-field="x__Name" name="x__Name" id="x__Name" size="30" maxlength="100" placeholder="@Html.Raw(HtmlEncode(_Leads_Edit._Name.PlaceHolder))" value="@(_Leads_Edit._Name.EditValue)" @Html.Raw(_Leads_Edit._Name.EditAttributes)>
+</span>
+@Html.Raw(_Leads_Edit._Name.CustomMsg)</div></div>
+	</div>
+} @* _Leads_Edit._Name.Visible (end) *@
+@if (_Leads_Edit.State.Visible) { // _Leads_Edit.State.Visible (begin)
+	<div id="r_State" class="form-group row">
+		<label id="elh__Leads_State" for="x_State" class="@(_Leads_Edit.LeftColumnClass)">@Html.Raw(_Leads_Edit.State.Caption)@Html.Raw(_Leads_Edit.State.Required ? Language.Phrase("FieldRequiredIndicator") : "")</label>
+		<div class="@(_Leads_Edit.RightColumnClass)"><div @Html.Raw(_Leads_Edit.State.CellAttributes)>
+<span id="el__Leads_State">
+<input type="text" data-table="_Leads" data-field="x_State" name="x_State" id="x_State" size="30" maxlength="100" placeholder="@Html.Raw(HtmlEncode(_Leads_Edit.State.PlaceHolder))" value="@(_Leads_Edit.State.EditValue)" @Html.Raw(_Leads_Edit.State.EditAttributes)>
+</span>
+@Html.Raw(_Leads_Edit.State.CustomMsg)</div></div>
+	</div>
+} @* _Leads_Edit.State.Visible (end) *@
+@if (_Leads_Edit.LeadStatusId.Visible) { // _Leads_Edit.LeadStatusId.Visible (begin)
+	<div id="r_LeadStatusId" class="form-group row">
+		<label id="elh__Leads_LeadStatusId" for="x_LeadStatusId" class="@(_Leads_Edit.LeftColumnClass)">@Html.Raw(_Leads_Edit.LeadStatusId.Caption)@Html.Raw(_Leads_Edit.LeadStatusId.Required ? Language.Phrase("FieldRequiredIndicator") : "")</label>
+		<div class="@(_Leads_Edit.RightColumnClass)"><div @Html.Raw(_Leads_Edit.LeadStatusId.CellAttributes)>
+<span id="el__Leads_LeadStatusId">
+<div class="input-group">
+	<select class="custom-select ew-custom-select" data-table="_Leads" data-field="x_LeadStatusId" data-value-separator="@(_Leads_Edit.LeadStatusId.DisplayValueSeparatorAttribute)" id="x_LeadStatusId" name="x_LeadStatusId" @Html.Raw(_Leads_Edit.LeadStatusId.EditAttributes)>
+			@(_Leads_Edit.LeadStatusId.SelectOptionListHtml("x_LeadStatusId"))
+		</select>
+</div>
+@Html.Raw(_Leads_Edit.LeadStatusId.Lookup.GetParamTag(_Leads_Edit, "p_x_LeadStatusId"))
+</span>
+@Html.Raw(_Leads_Edit.LeadStatusId.CustomMsg)</div></div>
+	</div>
+} @* _Leads_Edit.LeadStatusId.Visible (end) *@
+@if (_Leads_Edit.BranchId.Visible) { // _Leads_Edit.BranchId.Visible (begin)
+	<div id="r_BranchId" class="form-group row">
+		<label id="elh__Leads_BranchId" for="x_BranchId" class="@(_Leads_Edit.LeftColumnClass)">@Html.Raw(_Leads_Edit.BranchId.Caption)@Html.Raw(_Leads_Edit.BranchId.Required ? Language.Phrase("FieldRequiredIndicator") : "")</label>
+		<div class="@(_Leads_Edit.RightColumnClass)"><div @Html.Raw(_Leads_Edit.BranchId.CellAttributes)>
+<span id="el__Leads_BranchId">
+<div class="input-group">
+	<select class="custom-select ew-custom-select" data-table="_Leads" data-field="x_BranchId" data-value-separator="@(_Leads_Edit.BranchId.DisplayValueSeparatorAttribute)" id="x_BranchId" name="x_BranchId" @Html.Raw(_Leads_Edit.BranchId.EditAttributes)>
+			@(_Leads_Edit.BranchId.SelectOptionListHtml("x_BranchId"))
+		</select>
+</div>
+@Html.Raw(_Leads_Edit.BranchId.Lookup.GetParamTag(_Leads_Edit, "p_x_BranchId"))
+</span>
+@Html.Raw(_Leads_Edit.BranchId.CustomMsg)</div></div>
+	</div>
+} @* _Leads_Edit.BranchId.Visible (end) *@
+@if (_Leads_Edit.UserId.Visible) { // _Leads_Edit.UserId.Visible (begin)
+	<div id="r_UserId" class="form-group row">
+		<label id="elh__Leads_UserId" for="x_UserId" class="@(_Leads_Edit.LeftColumnClass)">@Html.Raw(_Leads_Edit.UserId.Caption)@Html.Raw(_Leads_Edit.UserId.Required ? Language.Phrase("FieldRequiredIndicator") : "")</label>
+		<div class="@(_Leads_Edit.RightColumnClass)"><div @Html.Raw(_Leads_Edit.UserId.CellAttributes)>
+<span id="el__Leads_UserId">
+<input type="text" data-table="_Leads" data-field="x_UserId" name="x_UserId" id="x_UserId" size="38" maxlength="38" placeholder="@Html.Raw(HtmlEncode(_Leads_Edit.UserId.PlaceHolder))" value="@(_Leads_Edit.UserId.EditValue)" @Html.Raw(_Leads_Edit.UserId.EditAttributes)>
+</span>
+@Html.Raw(_Leads_Edit.UserId.CustomMsg)</div></div>
+	</div>
+} @* _Leads_Edit.UserId.Visible (end) *@
+@if (_Leads_Edit.FirstName.Visible) { // _Leads_Edit.FirstName.Visible (begin)
+	<div id="r_FirstName" class="form-group row">
+		<label id="elh__Leads_FirstName" for="x_FirstName" class="@(_Leads_Edit.LeftColumnClass)">@Html.Raw(_Leads_Edit.FirstName.Caption)@Html.Raw(_Leads_Edit.FirstName.Required ? Language.Phrase("FieldRequiredIndicator") : "")</label>
+		<div class="@(_Leads_Edit.RightColumnClass)"><div @Html.Raw(_Leads_Edit.FirstName.CellAttributes)>
+<span id="el__Leads_FirstName">
+<input type="text" data-table="_Leads" data-field="x_FirstName" name="x_FirstName" id="x_FirstName" size="30" maxlength="50" placeholder="@Html.Raw(HtmlEncode(_Leads_Edit.FirstName.PlaceHolder))" value="@(_Leads_Edit.FirstName.EditValue)" @Html.Raw(_Leads_Edit.FirstName.EditAttributes)>
+</span>
+@Html.Raw(_Leads_Edit.FirstName.CustomMsg)</div></div>
+	</div>
+} @* _Leads_Edit.FirstName.Visible (end) *@
+@if (_Leads_Edit.LastName.Visible) { // _Leads_Edit.LastName.Visible (begin)
+	<div id="r_LastName" class="form-group row">
+		<label id="elh__Leads_LastName" for="x_LastName" class="@(_Leads_Edit.LeftColumnClass)">@Html.Raw(_Leads_Edit.LastName.Caption)@Html.Raw(_Leads_Edit.LastName.Required ? Language.Phrase("FieldRequiredIndicator") : "")</label>
+		<div class="@(_Leads_Edit.RightColumnClass)"><div @Html.Raw(_Leads_Edit.LastName.CellAttributes)>
+<span id="el__Leads_LastName">
+<input type="text" data-table="_Leads" data-field="x_LastName" name="x_LastName" id="x_LastName" size="30" maxlength="10" placeholder="@Html.Raw(HtmlEncode(_Leads_Edit.LastName.PlaceHolder))" value="@(_Leads_Edit.LastName.EditValue)" @Html.Raw(_Leads_Edit.LastName.EditAttributes)>
+</span>
+@Html.Raw(_Leads_Edit.LastName.CustomMsg)</div></div>
+	</div>
+} @* _Leads_Edit.LastName.Visible (end) *@
+@if (_Leads_Edit.BlobUrl.Visible) { // _Leads_Edit.BlobUrl.Visible (begin)
+	<div id="r_BlobUrl" class="form-group row">
+		<label id="elh__Leads_BlobUrl" for="x_BlobUrl" class="@(_Leads_Edit.LeftColumnClass)">@Html.Raw(_Leads_Edit.BlobUrl.Caption)@Html.Raw(_Leads_Edit.BlobUrl.Required ? Language.Phrase("FieldRequiredIndicator") : "")</label>
+		<div class="@(_Leads_Edit.RightColumnClass)"><div @Html.Raw(_Leads_Edit.BlobUrl.CellAttributes)>
+<span id="el__Leads_BlobUrl">
+<input type="text" data-table="_Leads" data-field="x_BlobUrl" name="x_BlobUrl" id="x_BlobUrl" size="30" maxlength="50" placeholder="@Html.Raw(HtmlEncode(_Leads_Edit.BlobUrl.PlaceHolder))" value="@(_Leads_Edit.BlobUrl.EditValue)" @Html.Raw(_Leads_Edit.BlobUrl.EditAttributes)>
+</span>
+@Html.Raw(_Leads_Edit.BlobUrl.CustomMsg)</div></div>
+	</div>
+} @* _Leads_Edit.BlobUrl.Visible (end) *@
+@if (_Leads_Edit.EmailAddress.Visible) { // _Leads_Edit.EmailAddress.Visible (begin)
+	<div id="r_EmailAddress" class="form-group row">
+		<label id="elh__Leads_EmailAddress" for="x_EmailAddress" class="@(_Leads_Edit.LeftColumnClass)">@Html.Raw(_Leads_Edit.EmailAddress.Caption)@Html.Raw(_Leads_Edit.EmailAddress.Required ? Language.Phrase("FieldRequiredIndicator") : "")</label>
+		<div class="@(_Leads_Edit.RightColumnClass)"><div @Html.Raw(_Leads_Edit.EmailAddress.CellAttributes)>
+<span id="el__Leads_EmailAddress">
+<input type="text" data-table="_Leads" data-field="x_EmailAddress" name="x_EmailAddress" id="x_EmailAddress" size="30" maxlength="50" placeholder="@Html.Raw(HtmlEncode(_Leads_Edit.EmailAddress.PlaceHolder))" value="@(_Leads_Edit.EmailAddress.EditValue)" @Html.Raw(_Leads_Edit.EmailAddress.EditAttributes)>
+</span>
+@Html.Raw(_Leads_Edit.EmailAddress.CustomMsg)</div></div>
+	</div>
+} @* _Leads_Edit.EmailAddress.Visible (end) *@
+@if (_Leads_Edit.PhoneNumber.Visible) { // _Leads_Edit.PhoneNumber.Visible (begin)
+	<div id="r_PhoneNumber" class="form-group row">
+		<label id="elh__Leads_PhoneNumber" for="x_PhoneNumber" class="@(_Leads_Edit.LeftColumnClass)">@Html.Raw(_Leads_Edit.PhoneNumber.Caption)@Html.Raw(_Leads_Edit.PhoneNumber.Required ? Language.Phrase("FieldRequiredIndicator") : "")</label>
+		<div class="@(_Leads_Edit.RightColumnClass)"><div @Html.Raw(_Leads_Edit.PhoneNumber.CellAttributes)>
+<span id="el__Leads_PhoneNumber">
+<input type="text" data-table="_Leads" data-field="x_PhoneNumber" name="x_PhoneNumber" id="x_PhoneNumber" size="30" maxlength="10" placeholder="@Html.Raw(HtmlEncode(_Leads_Edit.PhoneNumber.PlaceHolder))" value="@(_Leads_Edit.PhoneNumber.EditValue)" @Html.Raw(_Leads_Edit.PhoneNumber.EditAttributes)>
+</span>
+@Html.Raw(_Leads_Edit.PhoneNumber.CustomMsg)</div></div>
+	</div>
+} @* _Leads_Edit.PhoneNumber.Visible (end) *@
+</div><!-- /page* -->
+@{ _Leads_Edit.CloseRecordset(); }
+@if (!_Leads_Edit.IsModal) {
+@:<div class="form-group row"><!-- buttons .form-group -->
+	@:<div class="@(_Leads_Edit.OffsetColumnClass)"><!-- buttons offset -->
+<button class="btn btn-primary ew-btn" name="btn-action" id="btn-action" type="submit">@Html.Raw(Language.Phrase("SaveBtn"))</button>
+<button class="btn btn-default ew-btn" name="btn-cancel" id="btn-cancel" type="button" data-href="@AppPath(_Leads_Edit.ReturnUrl)">@Html.Raw(Language.Phrase("CancelBtn"))</button>
+	@:</div><!-- /buttons offset -->
+@:</div><!-- /buttons .form-group -->
+}
+</form>
+@_Leads_Edit.ShowPageFooter()
+@ShowDebugMessage()
+@ElapsedTime()
+<script>
+loadjs.ready("load", function() {
+
+	// Startup script
+	// Write your table-specific startup script here
+	// document.write("page loaded");
+
+});
+</script>
