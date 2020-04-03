@@ -20,7 +20,7 @@ namespace AspNetMaker2020
 				.ConfigureWebHostDefaults(webBuilder =>
 					{
 						webBuilder
-							.UseUrls("http://localhost:5000")
+						//	.UseUrls("http://localhost:5000")
 							.UseStartup<Startup>();
 					});
 	}
