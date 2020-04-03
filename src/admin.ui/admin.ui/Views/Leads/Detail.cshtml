@@ -1,0 +1,24 @@
+﻿@model admin.services.Lead
+
+@{
+    ViewData["Title"] = "Home Page";
+}
+
+    <table>
+        <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>State</th>
+        </tr>
+
+
+        
+            <tr>
+                <td>@Model.LeadId</td>
+                <td>@Model.Name</td>
+                <td>@Model.State</td>
+            </tr>
+       
+
+
+        </table>
