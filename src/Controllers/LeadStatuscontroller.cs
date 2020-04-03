@@ -85,19 +85,5 @@ namespace AspNetMaker2020.Controllers
 			// Run the page
 			return await LeadStatus_Edit.Run();
 		}
-
-		// delete
-		[Route("LeadStatusdelete/{Id?}")]
-		[Route("Home/LeadStatusdelete/{Id?}")]
-
-		public async Task<IActionResult> LeadStatusdelete()
-		{
-
-			// Create page object
-			LeadStatus_Delete = new _LeadStatus_Delete(this);
-
-			// Run the page
-			return await LeadStatus_Delete.Run();
-		}
 	}
 }

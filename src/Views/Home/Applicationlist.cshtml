@@ -1,0 +1,397 @@
+@{
+
+	// View
+	View = this;
+	SetClientVar("login", LoginStatus);
+
+	// Global Page Rendering event
+	Page_Rendering();
+
+	// Page Render event
+	Application_List.Page_Render();
+
+	// Check action result
+	if (Application_List.ActionResult is EmptyResult) { // Terminate page
+		return;
+	}
+
+	// Layout
+	Layout = "_Layout";
+
+	// Local variables (Temp data)
+	#pragma warning disable 168
+	string sqlWrk, filterWrk, whereWrk, curVal;
+	List<Dictionary<string, object>> rswrk;
+	string[] arWrk;
+	List<object> listWrk;
+	Func<string> lookupFilter;
+	#pragma warning restore 168
+}
+@if (!Application_List.IsExport()) {
+<script>
+var fApplicationlist, currentPageID;
+loadjs.ready("head", function() {
+
+	// Form object
+	currentPageID = ew.PAGE_ID = "list";
+	fApplicationlist = currentForm = new ew.Form("fApplicationlist", "list");
+	fApplicationlist.formKeyCountName = '@(Application_List.FormKeyCountName)';
+	loadjs.done("fApplicationlist");
+});
+var fApplicationlistsrch;
+loadjs.ready("head", function() {
+
+	// Form object for search
+	fApplicationlistsrch = currentSearchForm = new ew.Form("fApplicationlistsrch");
+
+	// Dynamic selection lists
+	// Filters
+
+	fApplicationlistsrch.filterList = @Html.Raw(await Application_List.GetFilterList());
+	loadjs.done("fApplicationlistsrch");
+});
+</script>
+<script>
+loadjs.ready("head", function() {
+
+	// Client script
+	// Write your client script here, no need to add script tags.
+
+});
+</script>
+}
+@if (!Application_List.IsExport()) {
+<div class="btn-toolbar ew-toolbar">
+@if (Application_List.TotalRecords > 0 && Application_List.ExportOptions.Visible) {
+	Application_List.ExportOptions.Render("body");
+}
+@if (Application_List.ImportOptions.Visible) {
+	Application_List.ImportOptions.Render("body");
+}
+@if (Application_List.SearchOptions.Visible) {
+	Application_List.SearchOptions.Render("body");
+}
+@if (Application_List.FilterOptions.Visible) {
+	Application_List.FilterOptions.Render("body");
+}
+<div class="clearfix"></div>
+</div>
+}
+@{ Application_List.RenderOtherOptions(); }
+@if (!Application_List.IsExport() && Empty(Application.CurrentAction)) { @* Show search form (begin) *@
+<form name="fApplicationlistsrch" id="fApplicationlistsrch" class="form-inline ew-form ew-ext-search-form" action="@AppPath(CurrentPageName())">
+<div id="fApplicationlistsrch-search-panel" class="@(Application_List.SearchPanelClass)"><!-- .ew-search-panel -->
+<input type="hidden" name="cmd" value="search">
+	<div class="ew-extended-search">
+<div id="xsr_@(Application_List.SearchRowCount + 1)" class="ew-row d-sm-flex">
+	<div class="ew-quick-search input-group">
+		<input type="text" name="@(Config.TableBasicSearch)" id="@(Config.TableBasicSearch)" class="form-control" value="@Html.Raw(HtmlEncode(Application_List.BasicSearch.SessionKeyword))" placeholder="@(HtmlEncode(Language.Phrase("Search")))">
+		<input type="hidden" name="@(Config.TableBasicSearchType)" id="@(Config.TableBasicSearchType)" value="@(HtmlEncode(Application_List.BasicSearch.SessionType))">
+		<div class="input-group-append">
+			<button class="btn btn-primary" name="btn-submit" id="btn-submit" type="submit">@Html.Raw(Language.Phrase("SearchBtn"))</button>
+			<button type="button" data-toggle="dropdown" class="btn btn-primary dropdown-toggle dropdown-toggle-split" aria-haspopup="true" aria-expanded="false"><span id="searchtype">@Html.Raw(Application_List.BasicSearch.TypeNameShort)</span></button>
+			<div class="dropdown-menu dropdown-menu-right">
+				<a class="dropdown-item@((Application_List.BasicSearch.SessionType == "") ? " active" : "")" href="#" onclick="return ew.setSearchType(this);">@Html.Raw(Language.Phrase("QuickSearchAuto"))</a>
+				<a class="dropdown-item@((Application_List.BasicSearch.SessionType == "=") ? " active" : "")" href="#" onclick="return ew.setSearchType(this, '=');">@Html.Raw(Language.Phrase("QuickSearchExact"))</a>
+				<a class="dropdown-item@((Application_List.BasicSearch.SessionType == "AND") ? " active" : "")" href="#" onclick="return ew.setSearchType(this, 'AND');">@Html.Raw(Language.Phrase("QuickSearchAll"))</a>
+				<a class="dropdown-item@((Application_List.BasicSearch.SessionType == "OR") ? " active" : "")" href="#" onclick="return ew.setSearchType(this, 'OR');">@Html.Raw(Language.Phrase("QuickSearchAny"))</a>
+			</div>
+		</div>
+	</div>
+</div>
+	</div><!-- /.ew-extended-search -->
+</div><!-- /.ew-search-panel -->
+</form>
+} @* Show search form (end) *@
+@Application_List.ShowPageHeader()
+@Application_List.ShowMessages()
+@if (Application_List.TotalRecords > 0 || !Empty(Application.CurrentAction)) {
+<div class="card ew-card ew-grid@(Application_List.IsAddOrEdit ? " ew-grid-add-edit" : "") Application">
+<form name="fApplicationlist" id="fApplicationlist" class="form-inline ew-form ew-list-form" action="@AppPath(CurrentPageName())" method="post">
+@if (Application_List.CheckToken) {
+	@Html.AntiForgeryToken()
+}
+<div id="gmp_Application" class="@ResponsiveTableClass() card-body ew-grid-middle-panel">
+@if (Application_List.TotalRecords > 0 || Application_List.IsGridEdit) {
+<table id="tbl_Applicationlist" class="table ew-table"><!-- .ew-table -->
+<thead>
+	<tr class="ew-table-header">
+@{
+
+	// Header row
+	Application.RowType = Config.RowTypeHeader;
+
+	// Render list options
+	await Application_List.RenderListOptions();
+
+	// Render list options (header, left)
+	Application_List.ListOptions.Render("header", "left");
+}
+@if (Application_List._Name.Visible) { // Application_List._Name.Visible (begin)
+	if (Application_List.SortUrl(Application_List._Name) == "") {
+		<th data-name="_Name" class="@(Application_List._Name.HeaderCellClass)"><div id="elh_Application__Name" class="Application__Name"><div class="ew-table-header-caption">@Html.Raw(Application_List._Name.Caption)</div></div></th>
+	} else {
+		<th data-name="_Name" class="@(Application_List._Name.HeaderCellClass)"><div class="ew-pointer" onclick="ew.sort(event, '@Html.Raw(Application_List.SortUrl(Application_List._Name))', 1);"><div id="elh_Application__Name" class="Application__Name">
+			<div class="ew-table-header-btn"><span class="ew-table-header-caption">@Html.Raw(Application_List._Name.Caption)@Html.Raw(Language.Phrase("SrchLegend"))</span><span class="ew-table-header-sort">@if (Application_List._Name.Sort == "ASC") {<i class="fas fa-sort-up"></i>} else if (Application_List._Name.Sort == "DESC") {<i class="fas fa-sort-down"></i>}</span></div>
+		</div></div></th>
+	}
+} @* Application_List._Name.Visible (end) *@
+@if (Application_List.ApplicationstatusId.Visible) { // Application_List.ApplicationstatusId.Visible (begin)
+	if (Application_List.SortUrl(Application_List.ApplicationstatusId) == "") {
+		<th data-name="ApplicationstatusId" class="@(Application_List.ApplicationstatusId.HeaderCellClass)"><div id="elh_Application_ApplicationstatusId" class="Application_ApplicationstatusId"><div class="ew-table-header-caption">@Html.Raw(Application_List.ApplicationstatusId.Caption)</div></div></th>
+	} else {
+		<th data-name="ApplicationstatusId" class="@(Application_List.ApplicationstatusId.HeaderCellClass)"><div class="ew-pointer" onclick="ew.sort(event, '@Html.Raw(Application_List.SortUrl(Application_List.ApplicationstatusId))', 1);"><div id="elh_Application_ApplicationstatusId" class="Application_ApplicationstatusId">
+			<div class="ew-table-header-btn"><span class="ew-table-header-caption">@Html.Raw(Application_List.ApplicationstatusId.Caption)</span><span class="ew-table-header-sort">@if (Application_List.ApplicationstatusId.Sort == "ASC") {<i class="fas fa-sort-up"></i>} else if (Application_List.ApplicationstatusId.Sort == "DESC") {<i class="fas fa-sort-down"></i>}</span></div>
+		</div></div></th>
+	}
+} @* Application_List.ApplicationstatusId.Visible (end) *@
+@if (Application_List.BranchId.Visible) { // Application_List.BranchId.Visible (begin)
+	if (Application_List.SortUrl(Application_List.BranchId) == "") {
+		<th data-name="BranchId" class="@(Application_List.BranchId.HeaderCellClass)"><div id="elh_Application_BranchId" class="Application_BranchId"><div class="ew-table-header-caption">@Html.Raw(Application_List.BranchId.Caption)</div></div></th>
+	} else {
+		<th data-name="BranchId" class="@(Application_List.BranchId.HeaderCellClass)"><div class="ew-pointer" onclick="ew.sort(event, '@Html.Raw(Application_List.SortUrl(Application_List.BranchId))', 1);"><div id="elh_Application_BranchId" class="Application_BranchId">
+			<div class="ew-table-header-btn"><span class="ew-table-header-caption">@Html.Raw(Application_List.BranchId.Caption)</span><span class="ew-table-header-sort">@if (Application_List.BranchId.Sort == "ASC") {<i class="fas fa-sort-up"></i>} else if (Application_List.BranchId.Sort == "DESC") {<i class="fas fa-sort-down"></i>}</span></div>
+		</div></div></th>
+	}
+} @* Application_List.BranchId.Visible (end) *@
+@if (Application_List.UserId.Visible) { // Application_List.UserId.Visible (begin)
+	if (Application_List.SortUrl(Application_List.UserId) == "") {
+		<th data-name="UserId" class="@(Application_List.UserId.HeaderCellClass)"><div id="elh_Application_UserId" class="Application_UserId"><div class="ew-table-header-caption">@Html.Raw(Application_List.UserId.Caption)</div></div></th>
+	} else {
+		<th data-name="UserId" class="@(Application_List.UserId.HeaderCellClass)"><div class="ew-pointer" onclick="ew.sort(event, '@Html.Raw(Application_List.SortUrl(Application_List.UserId))', 1);"><div id="elh_Application_UserId" class="Application_UserId">
+			<div class="ew-table-header-btn"><span class="ew-table-header-caption">@Html.Raw(Application_List.UserId.Caption)</span><span class="ew-table-header-sort">@if (Application_List.UserId.Sort == "ASC") {<i class="fas fa-sort-up"></i>} else if (Application_List.UserId.Sort == "DESC") {<i class="fas fa-sort-down"></i>}</span></div>
+		</div></div></th>
+	}
+} @* Application_List.UserId.Visible (end) *@
+@if (Application_List.State.Visible) { // Application_List.State.Visible (begin)
+	if (Application_List.SortUrl(Application_List.State) == "") {
+		<th data-name="State" class="@(Application_List.State.HeaderCellClass)"><div id="elh_Application_State" class="Application_State"><div class="ew-table-header-caption">@Html.Raw(Application_List.State.Caption)</div></div></th>
+	} else {
+		<th data-name="State" class="@(Application_List.State.HeaderCellClass)"><div class="ew-pointer" onclick="ew.sort(event, '@Html.Raw(Application_List.SortUrl(Application_List.State))', 1);"><div id="elh_Application_State" class="Application_State">
+			<div class="ew-table-header-btn"><span class="ew-table-header-caption">@Html.Raw(Application_List.State.Caption)@Html.Raw(Language.Phrase("SrchLegend"))</span><span class="ew-table-header-sort">@if (Application_List.State.Sort == "ASC") {<i class="fas fa-sort-up"></i>} else if (Application_List.State.Sort == "DESC") {<i class="fas fa-sort-down"></i>}</span></div>
+		</div></div></th>
+	}
+} @* Application_List.State.Visible (end) *@
+@if (Application_List.FirstName.Visible) { // Application_List.FirstName.Visible (begin)
+	if (Application_List.SortUrl(Application_List.FirstName) == "") {
+		<th data-name="FirstName" class="@(Application_List.FirstName.HeaderCellClass)"><div id="elh_Application_FirstName" class="Application_FirstName"><div class="ew-table-header-caption">@Html.Raw(Application_List.FirstName.Caption)</div></div></th>
+	} else {
+		<th data-name="FirstName" class="@(Application_List.FirstName.HeaderCellClass)"><div class="ew-pointer" onclick="ew.sort(event, '@Html.Raw(Application_List.SortUrl(Application_List.FirstName))', 1);"><div id="elh_Application_FirstName" class="Application_FirstName">
+			<div class="ew-table-header-btn"><span class="ew-table-header-caption">@Html.Raw(Application_List.FirstName.Caption)@Html.Raw(Language.Phrase("SrchLegend"))</span><span class="ew-table-header-sort">@if (Application_List.FirstName.Sort == "ASC") {<i class="fas fa-sort-up"></i>} else if (Application_List.FirstName.Sort == "DESC") {<i class="fas fa-sort-down"></i>}</span></div>
+		</div></div></th>
+	}
+} @* Application_List.FirstName.Visible (end) *@
+@if (Application_List.LastName.Visible) { // Application_List.LastName.Visible (begin)
+	if (Application_List.SortUrl(Application_List.LastName) == "") {
+		<th data-name="LastName" class="@(Application_List.LastName.HeaderCellClass)"><div id="elh_Application_LastName" class="Application_LastName"><div class="ew-table-header-caption">@Html.Raw(Application_List.LastName.Caption)</div></div></th>
+	} else {
+		<th data-name="LastName" class="@(Application_List.LastName.HeaderCellClass)"><div class="ew-pointer" onclick="ew.sort(event, '@Html.Raw(Application_List.SortUrl(Application_List.LastName))', 1);"><div id="elh_Application_LastName" class="Application_LastName">
+			<div class="ew-table-header-btn"><span class="ew-table-header-caption">@Html.Raw(Application_List.LastName.Caption)@Html.Raw(Language.Phrase("SrchLegend"))</span><span class="ew-table-header-sort">@if (Application_List.LastName.Sort == "ASC") {<i class="fas fa-sort-up"></i>} else if (Application_List.LastName.Sort == "DESC") {<i class="fas fa-sort-down"></i>}</span></div>
+		</div></div></th>
+	}
+} @* Application_List.LastName.Visible (end) *@
+@if (Application_List.EmailAddress.Visible) { // Application_List.EmailAddress.Visible (begin)
+	if (Application_List.SortUrl(Application_List.EmailAddress) == "") {
+		<th data-name="EmailAddress" class="@(Application_List.EmailAddress.HeaderCellClass)"><div id="elh_Application_EmailAddress" class="Application_EmailAddress"><div class="ew-table-header-caption">@Html.Raw(Application_List.EmailAddress.Caption)</div></div></th>
+	} else {
+		<th data-name="EmailAddress" class="@(Application_List.EmailAddress.HeaderCellClass)"><div class="ew-pointer" onclick="ew.sort(event, '@Html.Raw(Application_List.SortUrl(Application_List.EmailAddress))', 1);"><div id="elh_Application_EmailAddress" class="Application_EmailAddress">
+			<div class="ew-table-header-btn"><span class="ew-table-header-caption">@Html.Raw(Application_List.EmailAddress.Caption)@Html.Raw(Language.Phrase("SrchLegend"))</span><span class="ew-table-header-sort">@if (Application_List.EmailAddress.Sort == "ASC") {<i class="fas fa-sort-up"></i>} else if (Application_List.EmailAddress.Sort == "DESC") {<i class="fas fa-sort-down"></i>}</span></div>
+		</div></div></th>
+	}
+} @* Application_List.EmailAddress.Visible (end) *@
+@if (Application_List.PhoneNumber.Visible) { // Application_List.PhoneNumber.Visible (begin)
+	if (Application_List.SortUrl(Application_List.PhoneNumber) == "") {
+		<th data-name="PhoneNumber" class="@(Application_List.PhoneNumber.HeaderCellClass)"><div id="elh_Application_PhoneNumber" class="Application_PhoneNumber"><div class="ew-table-header-caption">@Html.Raw(Application_List.PhoneNumber.Caption)</div></div></th>
+	} else {
+		<th data-name="PhoneNumber" class="@(Application_List.PhoneNumber.HeaderCellClass)"><div class="ew-pointer" onclick="ew.sort(event, '@Html.Raw(Application_List.SortUrl(Application_List.PhoneNumber))', 1);"><div id="elh_Application_PhoneNumber" class="Application_PhoneNumber">
+			<div class="ew-table-header-btn"><span class="ew-table-header-caption">@Html.Raw(Application_List.PhoneNumber.Caption)@Html.Raw(Language.Phrase("SrchLegend"))</span><span class="ew-table-header-sort">@if (Application_List.PhoneNumber.Sort == "ASC") {<i class="fas fa-sort-up"></i>} else if (Application_List.PhoneNumber.Sort == "DESC") {<i class="fas fa-sort-down"></i>}</span></div>
+		</div></div></th>
+	}
+} @* Application_List.PhoneNumber.Visible (end) *@
+@{
+
+	// Render list options (header, right)
+	Application_List.ListOptions.Render("header", "right");
+}
+	</tr>
+</thead>
+<tbody>
+@{ // Begin Code
+if (Application_List.ExportAll && Application_List.IsExport()) {
+	Application_List.StopRecord = Application_List.TotalRecords;
+} else {
+
+	// Set the last record to display
+	if (Application_List.TotalRecords > Application_List.StartRecord + Application_List.DisplayRecords - 1) {
+		Application_List.StopRecord = Application_List.StartRecord + Application_List.DisplayRecords - 1;
+	} else {
+		Application_List.StopRecord = Application_List.TotalRecords;
+	}
+}
+if (Application_List.Recordset != null && Application_List.Recordset.HasRows) {
+	if (!Application_List.Connection.SelectOffset) { // DN
+		for (int i = 1; i <= Application_List.StartRecord - 1; i++) { // Move to first record
+			if (await Application_List.Recordset.ReadAsync()) {
+				Application_List.RecordCount++;
+			}
+		}
+	} else {
+		Application_List.RecordCount = Application_List.StartRecord - 1;
+	}
+} else if (!Application_List.AllowAddDeleteRow && Application_List.StopRecord == 0) {
+	Application_List.StopRecord = Application_List.GridAddRowCount;
+}
+
+// Initialize aggregate
+Application.RowType = Config.RowTypeAggregateInit;
+Application_List.ResetAttributes();
+await Application_List.RenderRow();
+
+// Output data rows
+bool eof = (Application_List.Recordset == null); // DN
+while (Application_List.RecordCount < Application_List.StopRecord) { // Begin While
+	if (!Application_List.IsGridAdd && !eof) { // DN
+		eof = !await Application_List.Recordset.ReadAsync();
+	}
+	Application_List.RecordCount++;
+	if (Application_List.RecordCount >= Application_List.StartRecord) {
+		Application_List.RowCount++;
+
+		// Set up key count
+		Application_List.KeyCount = ConvertToInt(Application_List.RowIndex);
+
+		// Init row class and style
+		Application_List.ResetAttributes();
+		Application_List.CssClass = "";
+		if (Application_List.IsGridAdd) {
+		} else {
+			await Application_List.LoadRowValues(Application_List.Recordset); // Load row values
+		}
+		Application.RowType = Config.RowTypeView; // Render view
+
+		// Set up row id / data-rowindex
+		Application_List.RowAttrs.Add("data-rowindex", Convert.ToString(Application_List.RowCount));
+		Application_List.RowAttrs.Add("id", "r" + Convert.ToString(Application_List.RowCount) + "_Application");
+		Application_List.RowAttrs.Add("data-rowtype", Convert.ToString(Application_List.RowType));
+
+		// Render row
+		await Application_List.RenderRow();
+
+		// Render list options
+		await Application_List.RenderListOptions();
+	@:<tr @Html.Raw(Application.RowAttributes)>
+	@* Render list options (body, left) *@
+	@Application_List.ListOptions.RenderBody("left", Application_List.RowCount)
+	if (Application_List._Name.Visible) { // Application_List._Name.Visible (begin)
+		<td data-name="_Name" @Html.Raw(Application_List._Name.CellAttributes)>
+<span id="el@(Application_List.RowCount)_Application__Name">
+<span @Html.Raw(Application_List._Name.ViewAttributes)>@Html.Raw(Application_List._Name.GetViewValue())</span>
+</span>
+</td>
+	} @* Application_List._Name.Visible (end) *@
+	if (Application_List.ApplicationstatusId.Visible) { // Application_List.ApplicationstatusId.Visible (begin)
+		<td data-name="ApplicationstatusId" @Html.Raw(Application_List.ApplicationstatusId.CellAttributes)>
+<span id="el@(Application_List.RowCount)_Application_ApplicationstatusId">
+<span @Html.Raw(Application_List.ApplicationstatusId.ViewAttributes)>@Html.Raw(Application_List.ApplicationstatusId.GetViewValue())</span>
+</span>
+</td>
+	} @* Application_List.ApplicationstatusId.Visible (end) *@
+	if (Application_List.BranchId.Visible) { // Application_List.BranchId.Visible (begin)
+		<td data-name="BranchId" @Html.Raw(Application_List.BranchId.CellAttributes)>
+<span id="el@(Application_List.RowCount)_Application_BranchId">
+<span @Html.Raw(Application_List.BranchId.ViewAttributes)>@Html.Raw(Application_List.BranchId.GetViewValue())</span>
+</span>
+</td>
+	} @* Application_List.BranchId.Visible (end) *@
+	if (Application_List.UserId.Visible) { // Application_List.UserId.Visible (begin)
+		<td data-name="UserId" @Html.Raw(Application_List.UserId.CellAttributes)>
+<span id="el@(Application_List.RowCount)_Application_UserId">
+<span @Html.Raw(Application_List.UserId.ViewAttributes)>@Html.Raw(Application_List.UserId.GetViewValue())</span>
+</span>
+</td>
+	} @* Application_List.UserId.Visible (end) *@
+	if (Application_List.State.Visible) { // Application_List.State.Visible (begin)
+		<td data-name="State" @Html.Raw(Application_List.State.CellAttributes)>
+<span id="el@(Application_List.RowCount)_Application_State">
+<span @Html.Raw(Application_List.State.ViewAttributes)>@Html.Raw(Application_List.State.GetViewValue())</span>
+</span>
+</td>
+	} @* Application_List.State.Visible (end) *@
+	if (Application_List.FirstName.Visible) { // Application_List.FirstName.Visible (begin)
+		<td data-name="FirstName" @Html.Raw(Application_List.FirstName.CellAttributes)>
+<span id="el@(Application_List.RowCount)_Application_FirstName">
+<span @Html.Raw(Application_List.FirstName.ViewAttributes)>@Html.Raw(Application_List.FirstName.GetViewValue())</span>
+</span>
+</td>
+	} @* Application_List.FirstName.Visible (end) *@
+	if (Application_List.LastName.Visible) { // Application_List.LastName.Visible (begin)
+		<td data-name="LastName" @Html.Raw(Application_List.LastName.CellAttributes)>
+<span id="el@(Application_List.RowCount)_Application_LastName">
+<span @Html.Raw(Application_List.LastName.ViewAttributes)>@Html.Raw(Application_List.LastName.GetViewValue())</span>
+</span>
+</td>
+	} @* Application_List.LastName.Visible (end) *@
+	if (Application_List.EmailAddress.Visible) { // Application_List.EmailAddress.Visible (begin)
+		<td data-name="EmailAddress" @Html.Raw(Application_List.EmailAddress.CellAttributes)>
+<span id="el@(Application_List.RowCount)_Application_EmailAddress">
+<span @Html.Raw(Application_List.EmailAddress.ViewAttributes)>@Html.Raw(Application_List.EmailAddress.GetViewValue())</span>
+</span>
+</td>
+	} @* Application_List.EmailAddress.Visible (end) *@
+	if (Application_List.PhoneNumber.Visible) { // Application_List.PhoneNumber.Visible (begin)
+		<td data-name="PhoneNumber" @Html.Raw(Application_List.PhoneNumber.CellAttributes)>
+<span id="el@(Application_List.RowCount)_Application_PhoneNumber">
+<span @Html.Raw(Application_List.PhoneNumber.ViewAttributes)>@Html.Raw(Application_List.PhoneNumber.GetViewValue())</span>
+</span>
+</td>
+	} @* Application_List.PhoneNumber.Visible (end) *@
+	@* Render list options (body, right) *@
+	@Application_List.ListOptions.RenderBody("right", Application_List.RowCount)
+	@:</tr>
+	} @* End if *@
+} @* End While *@
+} @* End Code *@
+</tbody>
+</table><!-- /.ew-table -->
+} @* End If TotalRecords > 0 *@
+</div><!-- /.ew-grid-middle-panel -->
+@if (Empty(Application.CurrentAction)) {
+<input type="hidden" name="action" id="action" value="">
+}
+</form><!-- /.ew-list-form -->
+@{ Application_List.CloseRecordset(); }
+@if (!Application_List.IsExport()) {
+<div class="card-footer ew-grid-lower-panel">
+@if (!Application_List.IsGridAdd) {
+<form name="ew-pager-form" class="form-inline ew-form ew-pager-form" action="@AppPath(CurrentPageName())">
+@Html.Raw(Application_List.Pager.Render())
+</form>
+}
+<div class="ew-list-other-options">
+@Application_List.OtherOptions.RenderBody("bottom")
+</div>
+<div class="clearfix"></div>
+</div>
+}
+</div><!-- /.ew-grid -->
+}
+@if (Application_List.TotalRecords <= 0 && Empty(Application.CurrentAction)) { // Show other options
+<div class="ew-list-other-options">
+@Application_List.OtherOptions.ForEach(opt => opt.ButtonClass = "").RenderBody()
+</div>
+<div class="clearfix"></div>
+}
+@Application_List.ShowPageFooter()
+@ShowDebugMessage()
+@ElapsedTime()
+@if (!Application_List.IsExport()) {
+<script>
+loadjs.ready("load", function() {
+
+	// Startup script
+	// Write your table-specific startup script here
+	// document.write("page loaded");
+
+});
+</script>
+}

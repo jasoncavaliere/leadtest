@@ -117,7 +117,7 @@ namespace AspNetMaker2020.Models {
 
 			public const string ProjectId = "{DE72B0A5-4A34-400E-B744-FF3F81D69E8F}"; // Project ID (GUID)
 
-			public static string RandomKey = "pRVqkV3rc0e0bh0x"; // Random key for encryption
+			public static string RandomKey = "3JiaydwId6RxeTvh"; // Random key for encryption
 
 			public static string EncryptionKey = ""; // Encryption key for data protection
 
@@ -420,31 +420,31 @@ namespace AspNetMaker2020.Models {
 			public const string TableGridAddRowCount = "gridaddcnt"; // Grid add row count
 
 			// Audit Trail
-			public static bool AuditTrailToDatabase { get; set; } = false; // Write audit trail to DB
+			public static bool AuditTrailToDatabase { get; set; } = true; // Write audit trail to DB
 
 			public static string AuditTrailDbId = "DB"; // Audit trail DBID
 
-			public static string AuditTrailTableName = ""; // Audit trail table name
+			public static string AuditTrailTableName = "AuditTrail"; // Audit trail table name
 
-			public static string AuditTrailTableVar = ""; // Audit trail table var
+			public static string AuditTrailTableVar = "AuditTrail"; // Audit trail table var
 
-			public static string AuditTrailFieldNameDateTime = ""; // Audit trail DateTime field name
+			public static string AuditTrailFieldNameDateTime = "DateTime"; // Audit trail DateTime field name
 
-			public static string AuditTrailFieldNameScript = ""; // Audit trail Script field name
+			public static string AuditTrailFieldNameScript = "Script"; // Audit trail Script field name
 
-			public static string AuditTrailFieldNameUser = ""; // Audit trail User field name
+			public static string AuditTrailFieldNameUser = "User"; // Audit trail User field name
 
-			public static string AuditTrailFieldNameAction = ""; // Audit trail Action field name
+			public static string AuditTrailFieldNameAction = "Action"; // Audit trail Action field name
 
-			public static string AuditTrailFieldNameTable = ""; // Audit trail Table field name
+			public static string AuditTrailFieldNameTable = "Table"; // Audit trail Table field name
 
-			public static string AuditTrailFieldNameField = ""; // Audit trail Field field name
+			public static string AuditTrailFieldNameField = "Field"; // Audit trail Field field name
 
-			public static string AuditTrailFieldNameKeyvalue = ""; // Audit trail Key Value field name
+			public static string AuditTrailFieldNameKeyvalue = "KeyValue"; // Audit trail Key Value field name
 
-			public static string AuditTrailFieldNameOldvalue = ""; // Audit trail Old Value field name
+			public static string AuditTrailFieldNameOldvalue = "OldValue"; // Audit trail Old Value field name
 
-			public static string AuditTrailFieldNameNewvalue = ""; // Audit trail New Value field name
+			public static string AuditTrailFieldNameNewvalue = "NewValue"; // Audit trail New Value field name
 
 			// Security
 			public static bool EncryptionEnabled = false; // Encryption enabled
@@ -748,6 +748,11 @@ namespace AspNetMaker2020.Models {
 				{"_Leads", "__Leads"},
 				{"LeadStatus", "_LeadStatus"},
 				{"Users", "_Users"},
+				{"AuditTrail", "_AuditTrail"},
+				{"ApplicationStatus", "_ApplicationStatus"},
+				{"Application", "_Application"},
+				{"Applications By Status", "_Applications_By_Status"},
+				{"Applications_By_Status", "_Applications_By_Status"},
 			};
 
 			// Boolean html attributes

@@ -1341,12 +1341,6 @@ namespace AspNetMaker2020.Models {
 				item.Visible = true;
 				item.OnLeft = false;
 
-				// "delete"
-				item = ListOptions.Add("delete");
-				item.CssClass = "text-nowrap";
-				item.Visible = true;
-				item.OnLeft = false;
-
 				// List actions
 				item = ListOptions.Add("listactions");
 				item.CssClass = "text-nowrap";
@@ -1420,14 +1414,6 @@ namespace AspNetMaker2020.Models {
 				} else {
 					listOption.Body = "";
 				}
-
-				// "delete"
-				listOption = ListOptions["delete"];
-				isVisible = true;
-				if (isVisible)
-					listOption.Body = "<a class=\"ew-row-link ew-delete\"" + "" + " title=\"" + HtmlTitle(Language.Phrase("DeleteLink")) + "\" data-caption=\"" + HtmlTitle(Language.Phrase("DeleteLink")) + "\" href=\"" + HtmlEncode(AppPath(DeleteUrl)) + "\">" + Language.Phrase("DeleteLink") + "</a>";
-				else
-					listOption.Body = "";
 
 				// Set up list action buttons
 				listOption = ListOptions["listactions"];

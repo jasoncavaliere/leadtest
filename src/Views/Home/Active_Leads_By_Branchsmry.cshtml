@@ -1,0 +1,377 @@
+@{
+
+	// View
+	View = this;
+	SetClientVar("login", LoginStatus);
+
+	// Global Page Rendering event
+	Page_Rendering();
+
+	// Page Render event
+	Active_Leads_By_Branch_Summary.Page_Render();
+
+	// Check action result
+	if (Active_Leads_By_Branch_Summary.ActionResult is EmptyResult) { // Terminate page
+		return;
+	}
+
+	// Layout
+	if (DashboardReport) {
+		if (!Active_Leads_By_Branch_Summary.Visible) { // Not visible, return
+			return;
+		}
+		Layout = ""; // No layout
+	} else {
+		Layout = "_Layout";
+	}
+
+	// Local variables (Temp data)
+	#pragma warning disable 168
+	string sqlWrk, filterWrk, whereWrk, curVal;
+	List<Dictionary<string, object>> rswrk;
+	string[] arWrk;
+	List<object> listWrk;
+	Func<string> lookupFilter;
+	#pragma warning restore 168
+}
+@if (!Active_Leads_By_Branch_Summary.IsExport() && !Active_Leads_By_Branch_Summary.DrillDown && !DashboardReport) {
+<script>
+</script>
+<script>
+loadjs.ready("head", function() {
+
+	// Client script
+	// Write your client script here, no need to add script tags.
+
+});
+</script>
+}
+<a id="top"></a>
+@if ((!Active_Leads_By_Branch_Summary.IsExport() || Active_Leads_By_Branch_Summary.IsExport("print")) && !DashboardReport) {
+<!-- Content Container -->
+@:<div id="ew-report" class="ew-report container-fluid">
+}
+<div class="btn-toolbar ew-toolbar">
+@if (!Active_Leads_By_Branch_Summary.DrillDownInPanel) {
+	Active_Leads_By_Branch_Summary.ExportOptions.Render("body");
+	Active_Leads_By_Branch_Summary.SearchOptions.Render("body");
+	Active_Leads_By_Branch_Summary.FilterOptions.Render("body");
+}
+</div>
+@Active_Leads_By_Branch_Summary.ShowPageHeader()
+@Active_Leads_By_Branch_Summary.ShowMessages()
+@if ((!Active_Leads_By_Branch_Summary.IsExport() || Active_Leads_By_Branch_Summary.IsExport("print")) && !DashboardReport) {
+@:<div class="row">
+}
+@if ((!Active_Leads_By_Branch_Summary.IsExport() || Active_Leads_By_Branch_Summary.IsExport("print")) && !DashboardReport) {
+<!-- Center Container -->
+@:<div id="ew-center" class="@(Active_Leads_By_Branch_Summary.CenterContentClass)">
+}
+<!-- Summary report (begin) -->
+@if (true) {
+@Html.Raw("<div id=\"report_summary\">")
+}
+@if (!Active_Leads_By_Branch_Summary.IsExport() && !Active_Leads_By_Branch_Summary.DrillDown && !DashboardReport) {
+}
+@while (Active_Leads_By_Branch_Summary.GroupCount <= Active_Leads_By_Branch_Summary.GroupRecords.Count && Active_Leads_By_Branch_Summary.GroupCount <= Active_Leads_By_Branch_Summary.DisplayGroups) {
+
+	// Show header
+	if (Active_Leads_By_Branch_Summary.ShowHeader) {
+if (Active_Leads_By_Branch_Summary.GroupCount > 1) {
+@:</tbody>
+@:</table>
+if (true) {
+@:</div>
+<!-- /.ew-grid-middle-panel -->
+<!-- Report grid (end) -->
+}
+if (!Active_Leads_By_Branch_Summary.IsExport() && !(Active_Leads_By_Branch_Summary.DrillDown && Active_Leads_By_Branch_Summary.TotalGroups > 0)) {
+<!-- Bottom pager -->
+<div class="card-footer ew-grid-lower-panel">
+<form name="ew-pager-form" class="form-inline ew-form ew-pager-form" action="@AppPath(CurrentPageName())">
+@Active_Leads_By_Branch_Summary.Pager.Render()
+</form>
+</div>
+}
+if (true) {
+@:</div>
+<!-- /.ew-grid -->
+}
+@Html.Raw(Active_Leads_By_Branch_Summary.PageBreakContent)
+}
+if (true) {
+	if (!Active_Leads_By_Branch_Summary.IsExport("word") && !Active_Leads_By_Branch_Summary.IsExport("excel")) { // DN
+	@:<div class="card ew-card ew-grid" style="@Html.Raw(Active_Leads_By_Branch_Summary.ReportTableStyle)">
+	} else { // DN
+	@:<div class="ew-grid" style="@Html.Raw(Active_Leads_By_Branch_Summary.ReportTableStyle)">
+	}
+}
+if (true) {
+<!-- Report grid (begin) -->
+@:<div id="gmp_Active_Leads_By_Branch" class="@ResponsiveTableClass() card-body ew-grid-middle-panel">
+}
+@:<table class="@Active_Leads_By_Branch_Summary.ReportTableClass">
+<thead>
+	<!-- Table header -->
+	<tr class="ew-table-header">
+@if (Active_Leads_By_Branch_Summary.BranchId.Visible) { // Active_Leads_By_Branch_Summary.BranchId.Visible (begin)
+	if (Active_Leads_By_Branch_Summary.BranchId.ShowGroupHeaderAsRow) {
+	<th data-name="BranchId">&nbsp;</th>
+	} else {
+		if (Empty(Active_Leads_By_Branch_Summary.SortUrl(Active_Leads_By_Branch_Summary.BranchId))) {
+	<th data-name="BranchId" class="@(Active_Leads_By_Branch_Summary.BranchId.HeaderCellClass)"><div class="Active_Leads_By_Branch_BranchId"><div class="ew-table-header-caption">@Html.Raw(Active_Leads_By_Branch_Summary.BranchId.Caption)</div></div></th>
+		} else {
+	<th data-name="BranchId" class="@(Active_Leads_By_Branch_Summary.BranchId.HeaderCellClass)"><div class="ew-pointer" onclick="ew.sort(event, '@Html.Raw(Active_Leads_By_Branch_Summary.SortUrl(Active_Leads_By_Branch_Summary.BranchId))', 1);"><div class="Active_Leads_By_Branch_BranchId">
+		<div class="ew-table-header-btn"><span class="ew-table-header-caption">@Html.Raw(Active_Leads_By_Branch_Summary.BranchId.Caption)</span><span class="ew-table-header-sort">@if (Active_Leads_By_Branch_Summary.BranchId.Sort == "ASC") {<i class="fas fa-sort-up"></i>} else if (Active_Leads_By_Branch_Summary.BranchId.Sort == "DESC") {<i class="fas fa-sort-down"></i>}</span></div>
+	</div></div></th>
+		}
+	}
+} @* Active_Leads_By_Branch_Summary.BranchId.Visible (end) *@
+@if (Active_Leads_By_Branch_Summary.LeadStatusId.Visible) { // Active_Leads_By_Branch_Summary.LeadStatusId.Visible (begin)
+	if (Active_Leads_By_Branch_Summary.LeadStatusId.ShowGroupHeaderAsRow) {
+	<th data-name="LeadStatusId">&nbsp;</th>
+	} else {
+		if (Empty(Active_Leads_By_Branch_Summary.SortUrl(Active_Leads_By_Branch_Summary.LeadStatusId))) {
+	<th data-name="LeadStatusId" class="@(Active_Leads_By_Branch_Summary.LeadStatusId.HeaderCellClass)"><div class="Active_Leads_By_Branch_LeadStatusId"><div class="ew-table-header-caption">@Html.Raw(Active_Leads_By_Branch_Summary.LeadStatusId.Caption)</div></div></th>
+		} else {
+	<th data-name="LeadStatusId" class="@(Active_Leads_By_Branch_Summary.LeadStatusId.HeaderCellClass)"><div class="ew-pointer" onclick="ew.sort(event, '@Html.Raw(Active_Leads_By_Branch_Summary.SortUrl(Active_Leads_By_Branch_Summary.LeadStatusId))', 1);"><div class="Active_Leads_By_Branch_LeadStatusId">
+		<div class="ew-table-header-btn"><span class="ew-table-header-caption">@Html.Raw(Active_Leads_By_Branch_Summary.LeadStatusId.Caption)</span><span class="ew-table-header-sort">@if (Active_Leads_By_Branch_Summary.LeadStatusId.Sort == "ASC") {<i class="fas fa-sort-up"></i>} else if (Active_Leads_By_Branch_Summary.LeadStatusId.Sort == "DESC") {<i class="fas fa-sort-down"></i>}</span></div>
+	</div></div></th>
+		}
+	}
+} @* Active_Leads_By_Branch_Summary.LeadStatusId.Visible (end) *@
+@if (Active_Leads_By_Branch_Summary.LeadId.Visible) { // Active_Leads_By_Branch_Summary.LeadId.Visible (begin)
+	if (Empty(Active_Leads_By_Branch_Summary.SortUrl(Active_Leads_By_Branch_Summary.LeadId))) {
+	<th data-name="LeadId" class="@(Active_Leads_By_Branch_Summary.LeadId.HeaderCellClass)"><div class="Active_Leads_By_Branch_LeadId"><div class="ew-table-header-caption">@Html.Raw(Active_Leads_By_Branch_Summary.LeadId.Caption)</div></div></th>
+	} else {
+	<th data-name="LeadId" class="@(Active_Leads_By_Branch_Summary.LeadId.HeaderCellClass)"><div class="ew-pointer" onclick="ew.sort(event, '@Html.Raw(Active_Leads_By_Branch_Summary.SortUrl(Active_Leads_By_Branch_Summary.LeadId))', 1);"><div class="Active_Leads_By_Branch_LeadId">
+		<div class="ew-table-header-btn"><span class="ew-table-header-caption">@Html.Raw(Active_Leads_By_Branch_Summary.LeadId.Caption)</span><span class="ew-table-header-sort">@if (Active_Leads_By_Branch_Summary.LeadId.Sort == "ASC") {<i class="fas fa-sort-up"></i>} else if (Active_Leads_By_Branch_Summary.LeadId.Sort == "DESC") {<i class="fas fa-sort-down"></i>}</span></div>
+	</div></div></th>
+	}
+} @* Active_Leads_By_Branch_Summary.LeadId.Visible (end) *@
+@if (Active_Leads_By_Branch_Summary._Name.Visible) { // Active_Leads_By_Branch_Summary._Name.Visible (begin)
+	if (Empty(Active_Leads_By_Branch_Summary.SortUrl(Active_Leads_By_Branch_Summary._Name))) {
+	<th data-name="_Name" class="@(Active_Leads_By_Branch_Summary._Name.HeaderCellClass)"><div class="Active_Leads_By_Branch__Name"><div class="ew-table-header-caption">@Html.Raw(Active_Leads_By_Branch_Summary._Name.Caption)</div></div></th>
+	} else {
+	<th data-name="_Name" class="@(Active_Leads_By_Branch_Summary._Name.HeaderCellClass)"><div class="ew-pointer" onclick="ew.sort(event, '@Html.Raw(Active_Leads_By_Branch_Summary.SortUrl(Active_Leads_By_Branch_Summary._Name))', 1);"><div class="Active_Leads_By_Branch__Name">
+		<div class="ew-table-header-btn"><span class="ew-table-header-caption">@Html.Raw(Active_Leads_By_Branch_Summary._Name.Caption)</span><span class="ew-table-header-sort">@if (Active_Leads_By_Branch_Summary._Name.Sort == "ASC") {<i class="fas fa-sort-up"></i>} else if (Active_Leads_By_Branch_Summary._Name.Sort == "DESC") {<i class="fas fa-sort-down"></i>}</span></div>
+	</div></div></th>
+	}
+} @* Active_Leads_By_Branch_Summary._Name.Visible (end) *@
+	</tr>
+</thead>
+@:<tbody>
+		if (Active_Leads_By_Branch_Summary.TotalGroups == 0) {
+			break; // Show header only
+		}
+		Active_Leads_By_Branch_Summary.ShowHeader = false;
+	} // End show header
+
+	// Build detail SQL
+	string where = DetailFilterSql(Active_Leads_By_Branch_Summary.BranchId, Active_Leads_By_Branch_Summary.SqlFirstGroupField, Active_Leads_By_Branch_Summary.BranchId.GroupValue, Active_Leads_By_Branch_Summary.DbId); // DN
+	if (!Empty(Active_Leads_By_Branch_Summary.PageFirstGroupFilter)) {
+		Active_Leads_By_Branch_Summary.PageFirstGroupFilter += " OR ";
+	}
+	Active_Leads_By_Branch_Summary.PageFirstGroupFilter += where;
+	if (!Empty(Active_Leads_By_Branch_Summary.Filter)) {
+		where = "(" + Active_Leads_By_Branch_Summary.Filter + ") AND (" + where + ")";
+	}
+	sqlWrk = BuildReportSql(Active_Leads_By_Branch_Summary.SqlSelect, Active_Leads_By_Branch_Summary.SqlWhere, Active_Leads_By_Branch_Summary.SqlGroupBy, Active_Leads_By_Branch_Summary.SqlHaving, Active_Leads_By_Branch_Summary.SqlOrderBy, where, Active_Leads_By_Branch_Summary.Sort);
+	Active_Leads_By_Branch_Summary.DetailRecords = await Active_Leads_By_Branch_Summary.Connection.GetRowsAsync(sqlWrk); // DN
+	Active_Leads_By_Branch_Summary.DetailRecordCount = Active_Leads_By_Branch_Summary.DetailRecords?.Count ?? 0; // DN
+
+	// Load detail records
+	Active_Leads_By_Branch_Summary.BranchId.Records = Active_Leads_By_Branch_Summary.DetailRecords;
+	Active_Leads_By_Branch_Summary.BranchId.LevelBreak = true; // Set field level break
+		Active_Leads_By_Branch_Summary.GroupCounter[1] = Active_Leads_By_Branch_Summary.GroupCount;
+		Active_Leads_By_Branch_Summary.BranchId.GetCnt(Active_Leads_By_Branch_Summary.BranchId.Records); // Get record count
+if (Active_Leads_By_Branch_Summary.BranchId.Visible && Active_Leads_By_Branch_Summary.BranchId.ShowGroupHeaderAsRow) {
+
+	// Render header row
+	Active_Leads_By_Branch_Summary.ResetAttributes();
+	Active_Leads_By_Branch_Summary.RowType = Config.RowTypeTotal;
+	Active_Leads_By_Branch_Summary.RowTotalType = Config.RowTotalGroup;
+	Active_Leads_By_Branch_Summary.RowTotalSubType = Config.RowTotalHeader;
+	Active_Leads_By_Branch_Summary.RowGroupLevel = 1;
+	await Active_Leads_By_Branch_Summary.RenderRow();
+	@:<tr @Html.Raw(Active_Leads_By_Branch_Summary.RowAttributes)>
+if (Active_Leads_By_Branch_Summary.BranchId.Visible) {
+		<td data-field="BranchId" @Html.Raw(Active_Leads_By_Branch_Summary.BranchId.CellAttributes)><span class="ew-group-toggle icon-collapse"></span></td>
+}
+		@:<td data-field="BranchId" colspan="@(Active_Leads_By_Branch_Summary.GroupColumnCount + Active_Leads_By_Branch_Summary.DetailColumnCount - 1)" @Html.Raw(Active_Leads_By_Branch_Summary.BranchId.CellAttributes)>
+if (Empty(Active_Leads_By_Branch_Summary.SortUrl(Active_Leads_By_Branch_Summary.BranchId))) {
+		<span class="ew-summary-caption Active_Leads_By_Branch_BranchId"><span class="ew-table-header-caption">@Html.Raw(Active_Leads_By_Branch_Summary.BranchId.Caption)</span></span>
+} else {
+		<span class="ew-table-header-btn ew-pointer ew-summary-caption Active_Leads_By_Branch_BranchId" onclick="ew.sort(event, '@Html.Raw(Active_Leads_By_Branch_Summary.SortUrl(Active_Leads_By_Branch_Summary.BranchId))', 1);">
+			<span class="ew-table-header-caption">@Html.Raw(Active_Leads_By_Branch_Summary.BranchId.Caption)</span>
+			<span class="ew-table-header-sort">@if (Active_Leads_By_Branch_Summary.BranchId.Sort == "ASC") {<i class="fas fa-sort-up"></i>} else if (Active_Leads_By_Branch_Summary.BranchId.Sort == "DESC") {<i class="fas fa-sort-down"></i>}</span>
+		</span>
+}
+		@Html.Raw(Language.Phrase("SummaryColon"))<span @Html.Raw(Active_Leads_By_Branch_Summary.BranchId.ViewAttributes)>@Html.Raw(Active_Leads_By_Branch_Summary.BranchId.GroupViewValue)</span>
+		<span class="ew-summary-count">(<span class="ew-aggregate-caption">@Html.Raw(Language.Phrase("RptCnt"))</span>@Html.Raw(Language.Phrase("AggregateEqual"))<span class="ew-aggregate-value">@FormatNumber(Active_Leads_By_Branch_Summary.BranchId.Count, 0)</span>)</span>
+		@:</td>
+	@:</tr>
+}
+	Active_Leads_By_Branch_Summary.LeadStatusId.GetDistinctValues(Active_Leads_By_Branch_Summary.BranchId.Records);
+	Active_Leads_By_Branch_Summary.SetGroupCount(Active_Leads_By_Branch_Summary.LeadStatusId.DistinctValues.Count, Active_Leads_By_Branch_Summary.GroupCounter[1]);
+	Active_Leads_By_Branch_Summary.GroupCounter[2] = 0; // Init group count index
+	foreach (var LeadStatusId in Active_Leads_By_Branch_Summary.LeadStatusId.DistinctValues) { // Load records for this distinct value
+		Active_Leads_By_Branch_Summary.LeadStatusId.GroupValue = LeadStatusId; // Set group value
+		Active_Leads_By_Branch_Summary.LeadStatusId.GetDistinctRecords(Active_Leads_By_Branch_Summary.BranchId.Records, Active_Leads_By_Branch_Summary.LeadStatusId.GroupValue);
+		Active_Leads_By_Branch_Summary.LeadStatusId.LevelBreak = true; // Set field level break
+		Active_Leads_By_Branch_Summary.GroupCounter[2]++;
+		Active_Leads_By_Branch_Summary.LeadStatusId.GetCnt(Active_Leads_By_Branch_Summary.LeadStatusId.Records); // Get record count
+		Active_Leads_By_Branch_Summary.SetGroupCount(Active_Leads_By_Branch_Summary.LeadStatusId.Count, Active_Leads_By_Branch_Summary.GroupCounter[1], Active_Leads_By_Branch_Summary.GroupCounter[2]);
+if (Active_Leads_By_Branch_Summary.LeadStatusId.Visible && Active_Leads_By_Branch_Summary.LeadStatusId.ShowGroupHeaderAsRow) {
+
+	// Render header row
+	Active_Leads_By_Branch_Summary.LeadStatusId.SetDbValue(LeadStatusId); // Set current value for LeadStatusId
+	Active_Leads_By_Branch_Summary.ResetAttributes();
+	Active_Leads_By_Branch_Summary.RowType = Config.RowTypeTotal;
+	Active_Leads_By_Branch_Summary.RowTotalType = Config.RowTotalGroup;
+	Active_Leads_By_Branch_Summary.RowTotalSubType = Config.RowTotalHeader;
+	Active_Leads_By_Branch_Summary.RowGroupLevel = 2;
+	await Active_Leads_By_Branch_Summary.RenderRow();
+	@:<tr @Html.Raw(Active_Leads_By_Branch_Summary.RowAttributes)>
+if (Active_Leads_By_Branch_Summary.BranchId.Visible) {
+		<td data-field="BranchId" @Html.Raw(Active_Leads_By_Branch_Summary.BranchId.CellAttributes)></td>
+}
+if (Active_Leads_By_Branch_Summary.LeadStatusId.Visible) {
+		<td data-field="LeadStatusId" @Html.Raw(Active_Leads_By_Branch_Summary.LeadStatusId.CellAttributes)><span class="ew-group-toggle icon-collapse"></span></td>
+}
+		@:<td data-field="LeadStatusId" colspan="@(Active_Leads_By_Branch_Summary.GroupColumnCount + Active_Leads_By_Branch_Summary.DetailColumnCount - 2)" @Html.Raw(Active_Leads_By_Branch_Summary.LeadStatusId.CellAttributes)>
+if (Empty(Active_Leads_By_Branch_Summary.SortUrl(Active_Leads_By_Branch_Summary.LeadStatusId))) {
+		<span class="ew-summary-caption Active_Leads_By_Branch_LeadStatusId"><span class="ew-table-header-caption">@Html.Raw(Active_Leads_By_Branch_Summary.LeadStatusId.Caption)</span></span>
+} else {
+		<span class="ew-table-header-btn ew-pointer ew-summary-caption Active_Leads_By_Branch_LeadStatusId" onclick="ew.sort(event, '@Html.Raw(Active_Leads_By_Branch_Summary.SortUrl(Active_Leads_By_Branch_Summary.LeadStatusId))', 1);">
+			<span class="ew-table-header-caption">@Html.Raw(Active_Leads_By_Branch_Summary.LeadStatusId.Caption)</span>
+			<span class="ew-table-header-sort">@if (Active_Leads_By_Branch_Summary.LeadStatusId.Sort == "ASC") {<i class="fas fa-sort-up"></i>} else if (Active_Leads_By_Branch_Summary.LeadStatusId.Sort == "DESC") {<i class="fas fa-sort-down"></i>}</span>
+		</span>
+}
+		@Html.Raw(Language.Phrase("SummaryColon"))<span @Html.Raw(Active_Leads_By_Branch_Summary.LeadStatusId.ViewAttributes)>@Html.Raw(Active_Leads_By_Branch_Summary.LeadStatusId.GroupViewValue)</span>
+		<span class="ew-summary-count">(<span class="ew-aggregate-caption">@Html.Raw(Language.Phrase("RptCnt"))</span>@Html.Raw(Language.Phrase("AggregateEqual"))<span class="ew-aggregate-value">@FormatNumber(Active_Leads_By_Branch_Summary.LeadStatusId.Count, 0)</span>)</span>
+		@:</td>
+	@:</tr>
+}
+	Active_Leads_By_Branch_Summary.RecordCount = 0; // Reset record count
+	foreach (var record in Active_Leads_By_Branch_Summary.LeadStatusId.Records) {
+		Active_Leads_By_Branch_Summary.RecordCount++;
+		Active_Leads_By_Branch_Summary.RecordIndex++;
+		Active_Leads_By_Branch_Summary.LoadRowValues(record);
+
+		// Render detail row
+		Active_Leads_By_Branch_Summary.ResetAttributes();
+		Active_Leads_By_Branch_Summary.RowType = Config.RowTypeDetail;
+		await Active_Leads_By_Branch_Summary.RenderRow();
+	@:<tr @Html.Raw(Active_Leads_By_Branch_Summary.RowAttributes)>
+if (Active_Leads_By_Branch_Summary.BranchId.Visible) {
+	if (Active_Leads_By_Branch_Summary.BranchId.ShowGroupHeaderAsRow) {
+		<td data-field="BranchId" @Html.Raw(Active_Leads_By_Branch_Summary.BranchId.CellAttributes)>&nbsp;</td>
+	} else {
+		<td data-field="BranchId" @Html.Raw(Active_Leads_By_Branch_Summary.BranchId.CellAttributes)><span @Html.Raw(Active_Leads_By_Branch_Summary.BranchId.ViewAttributes)>@Html.Raw(Active_Leads_By_Branch_Summary.BranchId.GroupViewValue)</span></td>
+	}
+}
+if (Active_Leads_By_Branch_Summary.LeadStatusId.Visible) {
+	if (Active_Leads_By_Branch_Summary.LeadStatusId.ShowGroupHeaderAsRow) {
+		<td data-field="LeadStatusId" @Html.Raw(Active_Leads_By_Branch_Summary.LeadStatusId.CellAttributes)>&nbsp;</td>
+	} else {
+		<td data-field="LeadStatusId" @Html.Raw(Active_Leads_By_Branch_Summary.LeadStatusId.CellAttributes)><span @Html.Raw(Active_Leads_By_Branch_Summary.LeadStatusId.ViewAttributes)>@Html.Raw(Active_Leads_By_Branch_Summary.LeadStatusId.GroupViewValue)</span></td>
+	}
+}
+if (Active_Leads_By_Branch_Summary.LeadId.Visible) {
+		<td data-field="LeadId" @Html.Raw(Active_Leads_By_Branch_Summary.LeadId.CellAttributes)>
+<span @Html.Raw(Active_Leads_By_Branch_Summary.LeadId.ViewAttributes)>@Html.Raw(Active_Leads_By_Branch_Summary.LeadId.GetViewValue())</span>
+</td>
+}
+if (Active_Leads_By_Branch_Summary._Name.Visible) {
+		<td data-field="_Name" @Html.Raw(Active_Leads_By_Branch_Summary._Name.CellAttributes)>
+<span @Html.Raw(Active_Leads_By_Branch_Summary._Name.ViewAttributes)>@Html.Raw(Active_Leads_By_Branch_Summary._Name.GetViewValue())</span>
+</td>
+}
+	@:</tr>
+	}
+	} // End group level 1
+
+	// Next group
+	Active_Leads_By_Branch_Summary.LoadGroupRowValues();
+
+	// Show header if page break
+	if (Active_Leads_By_Branch_Summary.IsExport()) {
+		Active_Leads_By_Branch_Summary.ShowHeader = (Active_Leads_By_Branch_Summary.ExportPageBreakCount == 0) ? false : (Active_Leads_By_Branch_Summary.GroupCount % Active_Leads_By_Branch_Summary.ExportPageBreakCount == 0);
+	}
+
+	// Page_Breaking server event
+	if (Active_Leads_By_Branch_Summary.ShowHeader) {
+		bool pageShowHeader = Active_Leads_By_Branch_Summary.ShowHeader;
+		string pageBreakContent = Active_Leads_By_Branch_Summary.PageBreakContent;
+		Active_Leads_By_Branch_Summary.Page_Breaking(ref pageShowHeader, ref pageBreakContent);
+		Active_Leads_By_Branch_Summary.ShowHeader = pageShowHeader;
+		Active_Leads_By_Branch_Summary.PageBreakContent = pageBreakContent;
+	}
+	Active_Leads_By_Branch_Summary.GroupCount++;
+} @* End while *@
+@if (Active_Leads_By_Branch_Summary.TotalGroups > 0) {
+@:</tbody>
+@:<tfoot>
+	Active_Leads_By_Branch_Summary.ResetAttributes();
+	Active_Leads_By_Branch_Summary.RowType = Config.RowTypeTotal;
+	Active_Leads_By_Branch_Summary.RowTotalType = Config.RowTotalGrand;
+	Active_Leads_By_Branch_Summary.RowTotalSubType = Config.RowTotalFooter;
+	Active_Leads_By_Branch_Summary.RowAttrs["class"] = "ew-rpt-grand-summary";
+	await Active_Leads_By_Branch_Summary.RenderRow();
+if (Active_Leads_By_Branch_Summary.BranchId.ShowCompactSummaryFooter) {
+	<tr @Html.Raw(Active_Leads_By_Branch_Summary.RowAttributes)><td colspan="@(Active_Leads_By_Branch_Summary.GroupColumnCount + Active_Leads_By_Branch_Summary.DetailColumnCount)">@Html.Raw(Language.Phrase("RptGrandSummary")) <span class="ew-summary-count">(<span class="ew-aggregate-caption">@Html.Raw(Language.Phrase("RptCnt"))</span>@Html.Raw(Language.Phrase("AggregateEqual"))<span class="ew-aggregate-value">@FormatNumber(Active_Leads_By_Branch_Summary.TotalCount, 0)</span>)</span></td></tr>
+} else {
+	<tr @Html.Raw(Active_Leads_By_Branch_Summary.RowAttributes)><td colspan="@(Active_Leads_By_Branch_Summary.GroupColumnCount + Active_Leads_By_Branch_Summary.DetailColumnCount)">@Html.Raw(Language.Phrase("RptGrandSummary")) <span class="ew-summary-count">(@FormatNumber(Active_Leads_By_Branch_Summary.TotalCount, 0) @Html.Raw(Language.Phrase("RptDtlRec")))</span></td></tr>
+}
+@:</tfoot>
+@:</table>
+if (true) {
+@:</div>
+<!-- /.ew-grid-middle-panel -->
+<!-- Report grid (end) -->
+}
+if (!Active_Leads_By_Branch_Summary.IsExport() && !(Active_Leads_By_Branch_Summary.DrillDown && Active_Leads_By_Branch_Summary.TotalGroups > 0)) {
+<!-- Bottom pager -->
+<div class="card-footer ew-grid-lower-panel">
+<form name="ew-pager-form" class="form-inline ew-form ew-pager-form" action="@AppPath(CurrentPageName())">
+@Active_Leads_By_Branch_Summary.Pager.Render()
+</form>
+</div>
+}
+if (true) {
+@:</div>
+<!-- /.ew-grid -->
+}
+}
+@if (true) {
+@Html.Raw("</div>")
+<!-- /#report-summary -->
+}
+<!-- Summary report (end) -->
+@if ((!Active_Leads_By_Branch_Summary.IsExport() || Active_Leads_By_Branch_Summary.IsExport("print")) && !DashboardReport) {
+@:</div>
+<!-- /#ew-center -->
+}
+@if ((!Active_Leads_By_Branch_Summary.IsExport() || Active_Leads_By_Branch_Summary.IsExport("print")) && !DashboardReport) {
+@:</div>
+<!-- /.row -->
+}
+@if ((!Active_Leads_By_Branch_Summary.IsExport() || Active_Leads_By_Branch_Summary.IsExport("print")) && !DashboardReport) {
+@:</div>
+<!-- /.ew-report -->
+}
+@Active_Leads_By_Branch_Summary.ShowPageFooter()
+@ShowDebugMessage()
+@ElapsedTime()
+@if (!Active_Leads_By_Branch_Summary.IsExport() && !Active_Leads_By_Branch_Summary.DrillDown && !DashboardReport) {
+<script>
+loadjs.ready("load", function() {
+
+	// Startup script
+	// Write your table-specific startup script here
+	// document.write("page loaded");
+
+});
+</script>
+}

@@ -1,0 +1,333 @@
+@{
+
+	// View
+	View = this;
+	SetClientVar("login", LoginStatus);
+
+	// Global Page Rendering event
+	Page_Rendering();
+
+	// Page Render event
+	Application_Edit.Page_Render();
+
+	// Check action result
+	if (Application_Edit.ActionResult is EmptyResult) { // Terminate page
+		return;
+	}
+
+	// Layout
+	Layout = "_Layout";
+
+	// Local variables (Temp data)
+	#pragma warning disable 168
+	string sqlWrk, filterWrk, whereWrk, curVal;
+	List<Dictionary<string, object>> rswrk;
+	string[] arWrk;
+	List<object> listWrk;
+	Func<string> lookupFilter;
+	#pragma warning restore 168
+}
+<script>
+var fApplicationedit, currentPageID;
+loadjs.ready("head", function() {
+
+	// Form object
+	currentPageID = ew.PAGE_ID = "edit";
+	fApplicationedit = currentForm = new ew.Form("fApplicationedit", "edit");
+
+	// Validate form
+	fApplicationedit.validate = function() {
+		if (!this.validateRequired)
+			return true; // Ignore validation
+		var $ = jQuery, fobj = this.getForm(), $fobj = $(fobj);
+		if ($fobj.find("#confirm").val() == "confirm")
+			return true;
+		var elm, felm, uelm, addcnt = 0;
+		var $k = $fobj.find("#" + this.formKeyCountName); // Get key_count
+		var rowcnt = ($k[0]) ? parseInt($k.val(), 10) : 1;
+		var startcnt = (rowcnt == 0) ? 0 : 1; // Check rowcnt == 0 => Inline-Add
+		var gridinsert = ["insert", "gridinsert"].includes($fobj.find("#action").val()) && $k[0];
+		for (var i = startcnt; i <= rowcnt; i++) {
+			var infix = ($k[0]) ? String(i) : "";
+			$fobj.data("rowindex", infix);
+			@if (Application_Edit.ApplicationId.Required) {
+				<text>
+				elm = this.getElements("x" + infix + "_ApplicationId");
+				if (elm && !ew.isHidden(elm) && !ew.hasValue(elm))
+					return this.onError(elm, "@Html.Raw(JsEncode(Convert.ToString(Application_Edit.ApplicationId.RequiredErrorMessage).Replace("%s", Application_Edit.ApplicationId.Caption)))");
+				</text>
+			}
+			@if (Application_Edit._Name.Required) {
+				<text>
+				elm = this.getElements("x" + infix + "__Name");
+				if (elm && !ew.isHidden(elm) && !ew.hasValue(elm))
+					return this.onError(elm, "@Html.Raw(JsEncode(Convert.ToString(Application_Edit._Name.RequiredErrorMessage).Replace("%s", Application_Edit._Name.Caption)))");
+				</text>
+			}
+			@if (Application_Edit.ApplicationstatusId.Required) {
+				<text>
+				elm = this.getElements("x" + infix + "_ApplicationstatusId");
+				if (elm && !ew.isHidden(elm) && !ew.hasValue(elm))
+					return this.onError(elm, "@Html.Raw(JsEncode(Convert.ToString(Application_Edit.ApplicationstatusId.RequiredErrorMessage).Replace("%s", Application_Edit.ApplicationstatusId.Caption)))");
+				</text>
+			}
+			@if (Application_Edit.BranchId.Required) {
+				<text>
+				elm = this.getElements("x" + infix + "_BranchId");
+				if (elm && !ew.isHidden(elm) && !ew.hasValue(elm))
+					return this.onError(elm, "@Html.Raw(JsEncode(Convert.ToString(Application_Edit.BranchId.RequiredErrorMessage).Replace("%s", Application_Edit.BranchId.Caption)))");
+				</text>
+			}
+			@if (Application_Edit.UserId.Required) {
+				<text>
+				elm = this.getElements("x" + infix + "_UserId");
+				if (elm && !ew.isHidden(elm) && !ew.hasValue(elm))
+					return this.onError(elm, "@Html.Raw(JsEncode(Convert.ToString(Application_Edit.UserId.RequiredErrorMessage).Replace("%s", Application_Edit.UserId.Caption)))");
+				</text>
+			}
+				elm = this.getElements("x" + infix + "_UserId");
+				if (elm && !ew.checkGuid(elm.value))
+					return this.onError(elm, "@(JsEncode(Application_Edit.UserId.ErrorMessage))");
+			@if (Application_Edit.State.Required) {
+				<text>
+				elm = this.getElements("x" + infix + "_State");
+				if (elm && !ew.isHidden(elm) && !ew.hasValue(elm))
+					return this.onError(elm, "@Html.Raw(JsEncode(Convert.ToString(Application_Edit.State.RequiredErrorMessage).Replace("%s", Application_Edit.State.Caption)))");
+				</text>
+			}
+			@if (Application_Edit.FirstName.Required) {
+				<text>
+				elm = this.getElements("x" + infix + "_FirstName");
+				if (elm && !ew.isHidden(elm) && !ew.hasValue(elm))
+					return this.onError(elm, "@Html.Raw(JsEncode(Convert.ToString(Application_Edit.FirstName.RequiredErrorMessage).Replace("%s", Application_Edit.FirstName.Caption)))");
+				</text>
+			}
+			@if (Application_Edit.LastName.Required) {
+				<text>
+				elm = this.getElements("x" + infix + "_LastName");
+				if (elm && !ew.isHidden(elm) && !ew.hasValue(elm))
+					return this.onError(elm, "@Html.Raw(JsEncode(Convert.ToString(Application_Edit.LastName.RequiredErrorMessage).Replace("%s", Application_Edit.LastName.Caption)))");
+				</text>
+			}
+			@if (Application_Edit.BlobUrl.Required) {
+				<text>
+				elm = this.getElements("x" + infix + "_BlobUrl");
+				if (elm && !ew.isHidden(elm) && !ew.hasValue(elm))
+					return this.onError(elm, "@Html.Raw(JsEncode(Convert.ToString(Application_Edit.BlobUrl.RequiredErrorMessage).Replace("%s", Application_Edit.BlobUrl.Caption)))");
+				</text>
+			}
+			@if (Application_Edit.EmailAddress.Required) {
+				<text>
+				elm = this.getElements("x" + infix + "_EmailAddress");
+				if (elm && !ew.isHidden(elm) && !ew.hasValue(elm))
+					return this.onError(elm, "@Html.Raw(JsEncode(Convert.ToString(Application_Edit.EmailAddress.RequiredErrorMessage).Replace("%s", Application_Edit.EmailAddress.Caption)))");
+				</text>
+			}
+			@if (Application_Edit.PhoneNumber.Required) {
+				<text>
+				elm = this.getElements("x" + infix + "_PhoneNumber");
+				if (elm && !ew.isHidden(elm) && !ew.hasValue(elm))
+					return this.onError(elm, "@Html.Raw(JsEncode(Convert.ToString(Application_Edit.PhoneNumber.RequiredErrorMessage).Replace("%s", Application_Edit.PhoneNumber.Caption)))");
+				</text>
+			}
+
+				// Call Form_CustomValidate event
+				if (!this.Form_CustomValidate(fobj))
+					return false;
+		}
+
+		// Process detail forms
+		var dfs = $fobj.find("input[name='detailpage']").get();
+		for (var i = 0; i < dfs.length; i++) {
+			var df = dfs[i], val = df.value;
+			if (val && ew.forms[val])
+				if (!ew.forms[val].validate())
+					return false;
+		}
+		return true;
+	}
+
+	// Form_CustomValidate
+	fApplicationedit.Form_CustomValidate = function(fobj) { // DO NOT CHANGE THIS LINE!
+
+		// Your custom validation code here, return false if invalid.
+		return true;
+	}
+
+	// Use JavaScript validation or not
+	fApplicationedit.validateRequired = @(Config.ClientValidate ? "true" : "false");
+
+	// Dynamic selection lists
+	fApplicationedit.lists["x_ApplicationstatusId"] = @Html.Raw(Application_Edit.ApplicationstatusId.Lookup.ToClientList(Application_Edit));
+	fApplicationedit.lists["x_ApplicationstatusId"].options = @Html.Raw(ConvertToJson(Application_Edit.ApplicationstatusId.LookupOptions));
+	fApplicationedit.lists["x_BranchId"] = @Html.Raw(Application_Edit.BranchId.Lookup.ToClientList(Application_Edit));
+	fApplicationedit.lists["x_BranchId"].options = @Html.Raw(ConvertToJson(Application_Edit.BranchId.LookupOptions));
+	loadjs.done("fApplicationedit");
+});
+</script>
+<script>
+loadjs.ready("head", function() {
+
+	// Client script
+	// Write your client script here, no need to add script tags.
+
+});
+</script>
+@Application_Edit.ShowPageHeader()
+@Application_Edit.ShowMessages()
+<form name="fApplicationedit" id="fApplicationedit" class="@(Application_Edit.FormClassName)" action="@AppPath(CurrentPageName())" method="post">
+@if (Application_Edit.CheckToken) {
+	@Html.AntiForgeryToken()
+}
+<input type="hidden" name="action" id="action" value="update">
+@if (Application_Edit.IsModal) {
+<input type="hidden" name="modal" value="@ConvertToInt(Application_Edit.IsModal)">
+}
+<div class="ew-edit-div"><!-- page* -->
+@if (Application_Edit._Name.Visible) { // Application_Edit._Name.Visible (begin)
+	<div id="r__Name" class="form-group row">
+		<label id="elh_Application__Name" for="x__Name" class="@(Application_Edit.LeftColumnClass)">@Html.Raw(Application_Edit._Name.Caption)@Html.Raw(Application_Edit._Name.Required ? Language.Phrase("FieldRequiredIndicator") : "")</label>
+		<div class="@(Application_Edit.RightColumnClass)"><div @Html.Raw(Application_Edit._Name.CellAttributes)>
+<span id="el_Application__Name">
+<input type="text" data-table="Application" data-field="x__Name" name="x__Name" id="x__Name" size="30" maxlength="100" placeholder="@Html.Raw(HtmlEncode(Application_Edit._Name.PlaceHolder))" value="@(Application_Edit._Name.EditValue)" @Html.Raw(Application_Edit._Name.EditAttributes)>
+</span>
+@Html.Raw(Application_Edit._Name.CustomMsg)</div></div>
+	</div>
+} @* Application_Edit._Name.Visible (end) *@
+@if (Application_Edit.ApplicationstatusId.Visible) { // Application_Edit.ApplicationstatusId.Visible (begin)
+	<div id="r_ApplicationstatusId" class="form-group row">
+		<label id="elh_Application_ApplicationstatusId" for="x_ApplicationstatusId" class="@(Application_Edit.LeftColumnClass)">@Html.Raw(Application_Edit.ApplicationstatusId.Caption)@Html.Raw(Application_Edit.ApplicationstatusId.Required ? Language.Phrase("FieldRequiredIndicator") : "")</label>
+		<div class="@(Application_Edit.RightColumnClass)"><div @Html.Raw(Application_Edit.ApplicationstatusId.CellAttributes)>
+<span id="el_Application_ApplicationstatusId">
+<div class="btn-group ew-dropdown-list" role="group">
+	<div class="btn-group" role="group">
+		<button type="button" class="btn form-control dropdown-toggle ew-dropdown-toggle" aria-haspopup="true" aria-expanded="false"@Html.Raw(Application_Edit.ApplicationstatusId.ReadOnly ? " readonly" : " data-toggle=\"dropdown\"")>@(Application_Edit.ApplicationstatusId.ViewValue)</button>
+		<div id="dsl_x_ApplicationstatusId" data-repeatcolumn="1" class="dropdown-menu">
+			<div class="ew-items" style="overflow-x: hidden;">
+@(Application_Edit.ApplicationstatusId.RadioButtonListHtml(true, "x_ApplicationstatusId"))
+			</div><!-- /.ew-items -->
+		</div><!-- /.dropdown-menu -->
+		<div id="tp_x_ApplicationstatusId" class="ew-template"><input type="radio" class="custom-control-input" data-table="Application" data-field="x_ApplicationstatusId" data-value-separator="@(Application_Edit.ApplicationstatusId.DisplayValueSeparatorAttribute)" name="x_ApplicationstatusId" id="x_ApplicationstatusId" value="{value}" @Html.Raw(Application_Edit.ApplicationstatusId.EditAttributes)></div>
+	</div><!-- /.btn-group -->
+	@if (!Application_Edit.ApplicationstatusId.ReadOnly) {
+	<button type="button" class="btn btn-default ew-dropdown-clear" disabled>
+		<i class="fas fa-times ew-icon"></i>
+	</button>
+	}
+</div><!-- /.ew-dropdown-list -->
+@Html.Raw(Application_Edit.ApplicationstatusId.Lookup.GetParamTag(Application_Edit, "p_x_ApplicationstatusId"))
+</span>
+@Html.Raw(Application_Edit.ApplicationstatusId.CustomMsg)</div></div>
+	</div>
+} @* Application_Edit.ApplicationstatusId.Visible (end) *@
+@if (Application_Edit.BranchId.Visible) { // Application_Edit.BranchId.Visible (begin)
+	<div id="r_BranchId" class="form-group row">
+		<label id="elh_Application_BranchId" for="x_BranchId" class="@(Application_Edit.LeftColumnClass)">@Html.Raw(Application_Edit.BranchId.Caption)@Html.Raw(Application_Edit.BranchId.Required ? Language.Phrase("FieldRequiredIndicator") : "")</label>
+		<div class="@(Application_Edit.RightColumnClass)"><div @Html.Raw(Application_Edit.BranchId.CellAttributes)>
+<span id="el_Application_BranchId">
+<div class="input-group">
+	<select class="custom-select ew-custom-select" data-table="Application" data-field="x_BranchId" data-value-separator="@(Application_Edit.BranchId.DisplayValueSeparatorAttribute)" id="x_BranchId" name="x_BranchId" @Html.Raw(Application_Edit.BranchId.EditAttributes)>
+			@(Application_Edit.BranchId.SelectOptionListHtml("x_BranchId"))
+		</select>
+</div>
+@Html.Raw(Application_Edit.BranchId.Lookup.GetParamTag(Application_Edit, "p_x_BranchId"))
+</span>
+@Html.Raw(Application_Edit.BranchId.CustomMsg)</div></div>
+	</div>
+} @* Application_Edit.BranchId.Visible (end) *@
+@if (Application_Edit.UserId.Visible) { // Application_Edit.UserId.Visible (begin)
+	<div id="r_UserId" class="form-group row">
+		<label id="elh_Application_UserId" for="x_UserId" class="@(Application_Edit.LeftColumnClass)">@Html.Raw(Application_Edit.UserId.Caption)@Html.Raw(Application_Edit.UserId.Required ? Language.Phrase("FieldRequiredIndicator") : "")</label>
+		<div class="@(Application_Edit.RightColumnClass)"><div @Html.Raw(Application_Edit.UserId.CellAttributes)>
+<span id="el_Application_UserId">
+<input type="text" data-table="Application" data-field="x_UserId" name="x_UserId" id="x_UserId" size="38" maxlength="38" placeholder="@Html.Raw(HtmlEncode(Application_Edit.UserId.PlaceHolder))" value="@(Application_Edit.UserId.EditValue)" @Html.Raw(Application_Edit.UserId.EditAttributes)>
+</span>
+@Html.Raw(Application_Edit.UserId.CustomMsg)</div></div>
+	</div>
+} @* Application_Edit.UserId.Visible (end) *@
+@if (Application_Edit.State.Visible) { // Application_Edit.State.Visible (begin)
+	<div id="r_State" class="form-group row">
+		<label id="elh_Application_State" for="x_State" class="@(Application_Edit.LeftColumnClass)">@Html.Raw(Application_Edit.State.Caption)@Html.Raw(Application_Edit.State.Required ? Language.Phrase("FieldRequiredIndicator") : "")</label>
+		<div class="@(Application_Edit.RightColumnClass)"><div @Html.Raw(Application_Edit.State.CellAttributes)>
+<span id="el_Application_State">
+<input type="text" data-table="Application" data-field="x_State" name="x_State" id="x_State" size="30" maxlength="100" placeholder="@Html.Raw(HtmlEncode(Application_Edit.State.PlaceHolder))" value="@(Application_Edit.State.EditValue)" @Html.Raw(Application_Edit.State.EditAttributes)>
+</span>
+@Html.Raw(Application_Edit.State.CustomMsg)</div></div>
+	</div>
+} @* Application_Edit.State.Visible (end) *@
+@if (Application_Edit.FirstName.Visible) { // Application_Edit.FirstName.Visible (begin)
+	<div id="r_FirstName" class="form-group row">
+		<label id="elh_Application_FirstName" for="x_FirstName" class="@(Application_Edit.LeftColumnClass)">@Html.Raw(Application_Edit.FirstName.Caption)@Html.Raw(Application_Edit.FirstName.Required ? Language.Phrase("FieldRequiredIndicator") : "")</label>
+		<div class="@(Application_Edit.RightColumnClass)"><div @Html.Raw(Application_Edit.FirstName.CellAttributes)>
+<span id="el_Application_FirstName">
+<input type="text" data-table="Application" data-field="x_FirstName" name="x_FirstName" id="x_FirstName" size="30" maxlength="50" placeholder="@Html.Raw(HtmlEncode(Application_Edit.FirstName.PlaceHolder))" value="@(Application_Edit.FirstName.EditValue)" @Html.Raw(Application_Edit.FirstName.EditAttributes)>
+</span>
+@Html.Raw(Application_Edit.FirstName.CustomMsg)</div></div>
+	</div>
+} @* Application_Edit.FirstName.Visible (end) *@
+@if (Application_Edit.LastName.Visible) { // Application_Edit.LastName.Visible (begin)
+	<div id="r_LastName" class="form-group row">
+		<label id="elh_Application_LastName" for="x_LastName" class="@(Application_Edit.LeftColumnClass)">@Html.Raw(Application_Edit.LastName.Caption)@Html.Raw(Application_Edit.LastName.Required ? Language.Phrase("FieldRequiredIndicator") : "")</label>
+		<div class="@(Application_Edit.RightColumnClass)"><div @Html.Raw(Application_Edit.LastName.CellAttributes)>
+<span id="el_Application_LastName">
+<input type="text" data-table="Application" data-field="x_LastName" name="x_LastName" id="x_LastName" size="30" maxlength="10" placeholder="@Html.Raw(HtmlEncode(Application_Edit.LastName.PlaceHolder))" value="@(Application_Edit.LastName.EditValue)" @Html.Raw(Application_Edit.LastName.EditAttributes)>
+</span>
+@Html.Raw(Application_Edit.LastName.CustomMsg)</div></div>
+	</div>
+} @* Application_Edit.LastName.Visible (end) *@
+@if (Application_Edit.BlobUrl.Visible) { // Application_Edit.BlobUrl.Visible (begin)
+	<div id="r_BlobUrl" class="form-group row">
+		<label id="elh_Application_BlobUrl" for="x_BlobUrl" class="@(Application_Edit.LeftColumnClass)">@Html.Raw(Application_Edit.BlobUrl.Caption)@Html.Raw(Application_Edit.BlobUrl.Required ? Language.Phrase("FieldRequiredIndicator") : "")</label>
+		<div class="@(Application_Edit.RightColumnClass)"><div @Html.Raw(Application_Edit.BlobUrl.CellAttributes)>
+<span id="el_Application_BlobUrl">
+<input type="text" data-table="Application" data-field="x_BlobUrl" name="x_BlobUrl" id="x_BlobUrl" size="30" maxlength="500" placeholder="@Html.Raw(HtmlEncode(Application_Edit.BlobUrl.PlaceHolder))" value="@(Application_Edit.BlobUrl.EditValue)" @Html.Raw(Application_Edit.BlobUrl.EditAttributes)>
+</span>
+@Html.Raw(Application_Edit.BlobUrl.CustomMsg)</div></div>
+	</div>
+} @* Application_Edit.BlobUrl.Visible (end) *@
+@if (Application_Edit.EmailAddress.Visible) { // Application_Edit.EmailAddress.Visible (begin)
+	<div id="r_EmailAddress" class="form-group row">
+		<label id="elh_Application_EmailAddress" for="x_EmailAddress" class="@(Application_Edit.LeftColumnClass)">@Html.Raw(Application_Edit.EmailAddress.Caption)@Html.Raw(Application_Edit.EmailAddress.Required ? Language.Phrase("FieldRequiredIndicator") : "")</label>
+		<div class="@(Application_Edit.RightColumnClass)"><div @Html.Raw(Application_Edit.EmailAddress.CellAttributes)>
+<span id="el_Application_EmailAddress">
+<input type="text" data-table="Application" data-field="x_EmailAddress" name="x_EmailAddress" id="x_EmailAddress" size="30" maxlength="50" placeholder="@Html.Raw(HtmlEncode(Application_Edit.EmailAddress.PlaceHolder))" value="@(Application_Edit.EmailAddress.EditValue)" @Html.Raw(Application_Edit.EmailAddress.EditAttributes)>
+</span>
+@Html.Raw(Application_Edit.EmailAddress.CustomMsg)</div></div>
+	</div>
+} @* Application_Edit.EmailAddress.Visible (end) *@
+@if (Application_Edit.PhoneNumber.Visible) { // Application_Edit.PhoneNumber.Visible (begin)
+	<div id="r_PhoneNumber" class="form-group row">
+		<label id="elh_Application_PhoneNumber" for="x_PhoneNumber" class="@(Application_Edit.LeftColumnClass)">@Html.Raw(Application_Edit.PhoneNumber.Caption)@Html.Raw(Application_Edit.PhoneNumber.Required ? Language.Phrase("FieldRequiredIndicator") : "")</label>
+		<div class="@(Application_Edit.RightColumnClass)"><div @Html.Raw(Application_Edit.PhoneNumber.CellAttributes)>
+<span id="el_Application_PhoneNumber">
+<input type="text" data-table="Application" data-field="x_PhoneNumber" name="x_PhoneNumber" id="x_PhoneNumber" size="30" maxlength="50" placeholder="@Html.Raw(HtmlEncode(Application_Edit.PhoneNumber.PlaceHolder))" value="@(Application_Edit.PhoneNumber.EditValue)" @Html.Raw(Application_Edit.PhoneNumber.EditAttributes)>
+</span>
+@Html.Raw(Application_Edit.PhoneNumber.CustomMsg)</div></div>
+	</div>
+} @* Application_Edit.PhoneNumber.Visible (end) *@
+</div><!-- /page* -->
+<span id="el_Application_ApplicationId">
+<input type="hidden" data-table="Application" data-field="x_ApplicationId" name="x_ApplicationId" id="x_ApplicationId" value="@Html.Raw(HtmlEncode(Application_Edit.ApplicationId.CurrentValue))">
+</span>
+@{ Application_Edit.CloseRecordset(); }
+@if (!Application_Edit.IsModal) {
+@:<div class="form-group row"><!-- buttons .form-group -->
+	@:<div class="@(Application_Edit.OffsetColumnClass)"><!-- buttons offset -->
+<button class="btn btn-primary ew-btn" name="btn-action" id="btn-action" type="submit">@Html.Raw(Language.Phrase("SaveBtn"))</button>
+<button class="btn btn-default ew-btn" name="btn-cancel" id="btn-cancel" type="button" data-href="@AppPath(Application_Edit.ReturnUrl)">@Html.Raw(Language.Phrase("CancelBtn"))</button>
+	@:</div><!-- /buttons offset -->
+@:</div><!-- /buttons .form-group -->
+}
+</form>
+@Application_Edit.ShowPageFooter()
+@ShowDebugMessage()
+@ElapsedTime()
+<script>
+loadjs.ready("load", function() {
+
+	// Startup script
+	// Write your table-specific startup script here
+	// document.write("page loaded");
+
+});
+</script>

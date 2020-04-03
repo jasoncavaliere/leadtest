@@ -577,15 +577,15 @@ namespace AspNetMaker2020.Models {
 					Security ??= CreateSecurity(); // DN
 				}
 				CurrentAction = Param("action"); // Set up current action
-				LeadId.SetVisibility();
+				LeadId.Visible = false;
 				_Name.SetVisibility();
-				State.SetVisibility();
+				State.Visible = false;
 				LeadStatusId.SetVisibility();
 				BranchId.SetVisibility();
 				UserId.SetVisibility();
-				FirstName.SetVisibility();
-				LastName.SetVisibility();
-				BlobUrl.SetVisibility();
+				FirstName.Visible = false;
+				LastName.Visible = false;
+				BlobUrl.Visible = false;
 				EmailAddress.SetVisibility();
 				PhoneNumber.SetVisibility();
 				HideFieldsForAddEdit();
@@ -768,7 +768,7 @@ namespace AspNetMaker2020.Models {
 				if (RowType == Config.RowTypeView) { // View row
 
 					// LeadId
-					LeadId.ViewValue = Convert.ToString(LeadId.CurrentValue); // DN
+					LeadId.ViewValue = LeadId.CurrentValue;
 					LeadId.ViewCustomAttributes = "";
 
 					// Name
@@ -845,17 +845,9 @@ namespace AspNetMaker2020.Models {
 					PhoneNumber.ViewValue = Convert.ToString(PhoneNumber.CurrentValue); // DN
 					PhoneNumber.ViewCustomAttributes = "";
 
-					// LeadId
-					LeadId.HrefValue = "";
-					LeadId.TooltipValue = "";
-
 					// Name
 					_Name.HrefValue = "";
 					_Name.TooltipValue = "";
-
-					// State
-					State.HrefValue = "";
-					State.TooltipValue = "";
 
 					// LeadStatusId
 					LeadStatusId.HrefValue = "";
@@ -868,18 +860,6 @@ namespace AspNetMaker2020.Models {
 					// UserId
 					UserId.HrefValue = "";
 					UserId.TooltipValue = "";
-
-					// FirstName
-					FirstName.HrefValue = "";
-					FirstName.TooltipValue = "";
-
-					// LastName
-					LastName.HrefValue = "";
-					LastName.TooltipValue = "";
-
-					// BlobUrl
-					BlobUrl.HrefValue = "";
-					BlobUrl.TooltipValue = "";
 
 					// EmailAddress
 					EmailAddress.HrefValue = "";

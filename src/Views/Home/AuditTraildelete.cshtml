@@ -1,0 +1,174 @@
+@{
+
+	// View
+	View = this;
+	SetClientVar("login", LoginStatus);
+
+	// Global Page Rendering event
+	Page_Rendering();
+
+	// Page Render event
+	AuditTrail_Delete.Page_Render();
+
+	// Check action result
+	if (AuditTrail_Delete.ActionResult is EmptyResult) { // Terminate page
+		return;
+	}
+
+	// Layout
+	Layout = "_Layout";
+
+	// Local variables (Temp data)
+	#pragma warning disable 168
+	string sqlWrk, filterWrk, whereWrk, curVal;
+	List<Dictionary<string, object>> rswrk;
+	string[] arWrk;
+	List<object> listWrk;
+	Func<string> lookupFilter;
+	#pragma warning restore 168
+}
+<script>
+var fAuditTraildelete, currentPageID;
+loadjs.ready("head", function() {
+
+	// Form object
+	currentPageID = ew.PAGE_ID = "delete";
+	fAuditTraildelete = currentForm = new ew.Form("fAuditTraildelete", "delete");
+	loadjs.done("fAuditTraildelete");
+});
+</script>
+<script>
+loadjs.ready("head", function() {
+
+	// Client script
+	// Write your client script here, no need to add script tags.
+
+});
+</script>
+@AuditTrail_Delete.ShowPageHeader()
+@AuditTrail_Delete.ShowMessages()
+<form name="fAuditTraildelete" id="fAuditTraildelete" class="form-inline ew-form ew-delete-form" action="@AppPath(CurrentPageName())" method="post">
+@if (AuditTrail_Delete.CheckToken) {
+	@Html.AntiForgeryToken()
+}
+<input type="hidden" name="action" id="action" value="delete">
+@foreach (string key in AuditTrail_Delete.RecordKeys) {
+<input type="hidden" name="key_m[]" value="@key">
+}
+<div class="card ew-card ew-grid">
+<div class="@ResponsiveTableClass() card-body ew-grid-middle-panel">
+<table class="table ew-table">
+	<thead>
+	<tr class="ew-table-header">
+@if (AuditTrail_Delete.Id.Visible) { // AuditTrail_Delete.Id.Visible (begin)
+		<th class="@Html.Raw(AuditTrail_Delete.Id.HeaderCellClass)"><span id="elh_AuditTrail_Id" class="AuditTrail_Id">@Html.Raw(AuditTrail_Delete.Id.Caption)</span></th>
+} @* AuditTrail_Delete.Id.Visible (end) *@
+@if (AuditTrail_Delete._DateTime.Visible) { // AuditTrail_Delete._DateTime.Visible (begin)
+		<th class="@Html.Raw(AuditTrail_Delete._DateTime.HeaderCellClass)"><span id="elh_AuditTrail__DateTime" class="AuditTrail__DateTime">@Html.Raw(AuditTrail_Delete._DateTime.Caption)</span></th>
+} @* AuditTrail_Delete._DateTime.Visible (end) *@
+@if (AuditTrail_Delete.Script.Visible) { // AuditTrail_Delete.Script.Visible (begin)
+		<th class="@Html.Raw(AuditTrail_Delete.Script.HeaderCellClass)"><span id="elh_AuditTrail_Script" class="AuditTrail_Script">@Html.Raw(AuditTrail_Delete.Script.Caption)</span></th>
+} @* AuditTrail_Delete.Script.Visible (end) *@
+@if (AuditTrail_Delete._User.Visible) { // AuditTrail_Delete._User.Visible (begin)
+		<th class="@Html.Raw(AuditTrail_Delete._User.HeaderCellClass)"><span id="elh_AuditTrail__User" class="AuditTrail__User">@Html.Raw(AuditTrail_Delete._User.Caption)</span></th>
+} @* AuditTrail_Delete._User.Visible (end) *@
+@if (AuditTrail_Delete.Action.Visible) { // AuditTrail_Delete.Action.Visible (begin)
+		<th class="@Html.Raw(AuditTrail_Delete.Action.HeaderCellClass)"><span id="elh_AuditTrail_Action" class="AuditTrail_Action">@Html.Raw(AuditTrail_Delete.Action.Caption)</span></th>
+} @* AuditTrail_Delete.Action.Visible (end) *@
+@if (AuditTrail_Delete._Table.Visible) { // AuditTrail_Delete._Table.Visible (begin)
+		<th class="@Html.Raw(AuditTrail_Delete._Table.HeaderCellClass)"><span id="elh_AuditTrail__Table" class="AuditTrail__Table">@Html.Raw(AuditTrail_Delete._Table.Caption)</span></th>
+} @* AuditTrail_Delete._Table.Visible (end) *@
+@if (AuditTrail_Delete._Field.Visible) { // AuditTrail_Delete._Field.Visible (begin)
+		<th class="@Html.Raw(AuditTrail_Delete._Field.HeaderCellClass)"><span id="elh_AuditTrail__Field" class="AuditTrail__Field">@Html.Raw(AuditTrail_Delete._Field.Caption)</span></th>
+} @* AuditTrail_Delete._Field.Visible (end) *@
+	</tr>
+	</thead>
+	<tbody>
+@{ AuditTrail_Delete.RecordCount = 0; }
+@while (AuditTrail_Delete.Recordset != null && await AuditTrail_Delete.Recordset.ReadAsync()) { // DN
+	AuditTrail_Delete.RecordCount++;
+	AuditTrail_Delete.RowCount++;
+
+	// Set row properties
+	AuditTrail_Delete.ResetAttributes();
+	AuditTrail_Delete.RowType = Config.RowTypeView; // View
+
+	// Get the field contents
+	await AuditTrail_Delete.LoadRowValues(AuditTrail_Delete.Recordset);
+
+	// Render row
+	await AuditTrail_Delete.RenderRow();
+	<tr @Html.Raw(AuditTrail.RowAttributes)>
+@if (AuditTrail_Delete.Id.Visible) { // AuditTrail_Delete.Id.Visible (begin)
+		<td @Html.Raw(AuditTrail_Delete.Id.CellAttributes)>
+<span id="el@(AuditTrail_Delete.RowCount)_AuditTrail_Id" class="AuditTrail_Id">
+<span @Html.Raw(AuditTrail_Delete.Id.ViewAttributes)>@Html.Raw(AuditTrail_Delete.Id.GetViewValue())</span>
+</span>
+</td>
+} @* AuditTrail_Delete.Id.Visible (end) *@
+@if (AuditTrail_Delete._DateTime.Visible) { // AuditTrail_Delete._DateTime.Visible (begin)
+		<td @Html.Raw(AuditTrail_Delete._DateTime.CellAttributes)>
+<span id="el@(AuditTrail_Delete.RowCount)_AuditTrail__DateTime" class="AuditTrail__DateTime">
+<span @Html.Raw(AuditTrail_Delete._DateTime.ViewAttributes)>@Html.Raw(AuditTrail_Delete._DateTime.GetViewValue())</span>
+</span>
+</td>
+} @* AuditTrail_Delete._DateTime.Visible (end) *@
+@if (AuditTrail_Delete.Script.Visible) { // AuditTrail_Delete.Script.Visible (begin)
+		<td @Html.Raw(AuditTrail_Delete.Script.CellAttributes)>
+<span id="el@(AuditTrail_Delete.RowCount)_AuditTrail_Script" class="AuditTrail_Script">
+<span @Html.Raw(AuditTrail_Delete.Script.ViewAttributes)>@Html.Raw(AuditTrail_Delete.Script.GetViewValue())</span>
+</span>
+</td>
+} @* AuditTrail_Delete.Script.Visible (end) *@
+@if (AuditTrail_Delete._User.Visible) { // AuditTrail_Delete._User.Visible (begin)
+		<td @Html.Raw(AuditTrail_Delete._User.CellAttributes)>
+<span id="el@(AuditTrail_Delete.RowCount)_AuditTrail__User" class="AuditTrail__User">
+<span @Html.Raw(AuditTrail_Delete._User.ViewAttributes)>@Html.Raw(AuditTrail_Delete._User.GetViewValue())</span>
+</span>
+</td>
+} @* AuditTrail_Delete._User.Visible (end) *@
+@if (AuditTrail_Delete.Action.Visible) { // AuditTrail_Delete.Action.Visible (begin)
+		<td @Html.Raw(AuditTrail_Delete.Action.CellAttributes)>
+<span id="el@(AuditTrail_Delete.RowCount)_AuditTrail_Action" class="AuditTrail_Action">
+<span @Html.Raw(AuditTrail_Delete.Action.ViewAttributes)>@Html.Raw(AuditTrail_Delete.Action.GetViewValue())</span>
+</span>
+</td>
+} @* AuditTrail_Delete.Action.Visible (end) *@
+@if (AuditTrail_Delete._Table.Visible) { // AuditTrail_Delete._Table.Visible (begin)
+		<td @Html.Raw(AuditTrail_Delete._Table.CellAttributes)>
+<span id="el@(AuditTrail_Delete.RowCount)_AuditTrail__Table" class="AuditTrail__Table">
+<span @Html.Raw(AuditTrail_Delete._Table.ViewAttributes)>@Html.Raw(AuditTrail_Delete._Table.GetViewValue())</span>
+</span>
+</td>
+} @* AuditTrail_Delete._Table.Visible (end) *@
+@if (AuditTrail_Delete._Field.Visible) { // AuditTrail_Delete._Field.Visible (begin)
+		<td @Html.Raw(AuditTrail_Delete._Field.CellAttributes)>
+<span id="el@(AuditTrail_Delete.RowCount)_AuditTrail__Field" class="AuditTrail__Field">
+<span @Html.Raw(AuditTrail_Delete._Field.ViewAttributes)>@Html.Raw(AuditTrail_Delete._Field.GetViewValue())</span>
+</span>
+</td>
+} @* AuditTrail_Delete._Field.Visible (end) *@
+	</tr>
+}
+@{ AuditTrail_Delete.CloseRecordset(); }
+</tbody>
+</table>
+</div>
+</div>
+<div>
+<button class="btn btn-primary ew-btn" name="btn-action" id="btn-action" type="submit">@Html.Raw(Language.Phrase("DeleteBtn"))</button>
+<button class="btn btn-default ew-btn" name="btn-cancel" id="btn-cancel" type="button" data-href="@AppPath(AuditTrail_Delete.ReturnUrl)">@Language.Phrase("CancelBtn")</button>
+</div>
+</form>
+@AuditTrail_Delete.ShowPageFooter()
+@ShowDebugMessage()
+@ElapsedTime()
+<script>
+loadjs.ready("load", function() {
+
+	// Startup script
+	// Write your table-specific startup script here
+	// document.write("page loaded");
+
+});
+</script>

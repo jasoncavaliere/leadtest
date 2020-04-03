@@ -166,10 +166,9 @@ namespace AspNetMaker2020.Models {
 					SelectMultiple = false,
 					VirtualSearch = false,
 					ViewTag = "FORMATTED TEXT",
-					HtmlTag = "TEXT",
+					HtmlTag = "HIDDEN",
 					IsPrimaryKey = true, // Primary key field
 					Nullable = false, // NOT NULL field
-					Required = true, // Required field
 					Sortable = true, // Allow sort
 					DefaultErrorMessage = Language.Phrase("IncorrectGUID"),
 					IsUpload = false
@@ -401,6 +400,7 @@ namespace AspNetMaker2020.Models {
 					ViewTag = "FORMATTED TEXT",
 					HtmlTag = "TEXT",
 					Sortable = true, // Allow sort
+					DefaultErrorMessage = Language.Phrase("IncorrectEmail"),
 					IsUpload = false
 				};
 				EmailAddress.Init(this); // DN
@@ -414,8 +414,8 @@ namespace AspNetMaker2020.Models {
 					Name = "PhoneNumber",
 					Expression = "[PhoneNumber]",
 					BasicSearchExpression = "[PhoneNumber]",
-					Type = 130,
-					DbType = SqlDbType.NChar,
+					Type = 200,
+					DbType = SqlDbType.VarChar,
 					DateTimeFormat = -1,
 					VirtualExpression = "[PhoneNumber]",
 					IsVirtual = false,
@@ -425,6 +425,7 @@ namespace AspNetMaker2020.Models {
 					ViewTag = "FORMATTED TEXT",
 					HtmlTag = "TEXT",
 					Sortable = true, // Allow sort
+					DefaultErrorMessage = Language.Phrase("IncorrectPhone"),
 					IsUpload = false
 				};
 				PhoneNumber.Init(this); // DN
@@ -1064,7 +1065,7 @@ namespace AspNetMaker2020.Models {
 				// PhoneNumber
 				// LeadId
 
-				LeadId.ViewValue = Convert.ToString(LeadId.CurrentValue); // DN
+				LeadId.ViewValue = LeadId.CurrentValue;
 				LeadId.ViewCustomAttributes = "";
 
 				// Name
@@ -1202,8 +1203,6 @@ namespace AspNetMaker2020.Models {
 
 				// LeadId
 				LeadId.EditAttrs["class"] = "form-control";
-				LeadId.EditValue = LeadId.CurrentValue; // DN
-				LeadId.PlaceHolder = RemoveHtml(LeadId.Caption);
 
 				// Name
 				_Name.EditAttrs["class"] = "form-control";
@@ -1421,6 +1420,33 @@ namespace AspNetMaker2020.Models {
 				return JsonBoolResult.FalseResult; // Incorrect key
 			}
 			#pragma warning restore 1998
+
+			// Send email after add success
+			public async Task<string> SendEmailOnAdd(Dictionary<string, object> rs) {
+				var table = "Leads";
+				var subject = table + " " + Language.Phrase("RecordInserted");
+				var action = Language.Phrase("ActionInserted");
+
+				// Get key value
+				var key = "";
+				if (key != "")
+					key += Config.CompositeKeySeparator;
+				key += rs["LeadId"];
+				var email = new Email();
+				await email.Load(Config.EmailNotifyTemplate);
+				email.ReplaceSender(Config.SenderEmail); // Replace Sender
+				email.ReplaceRecipient(Config.RecipientEmail); // Replace Recipient
+				email.ReplaceSubject(subject); // Replace Subject
+				email.ReplaceContent("<!--table-->", table);
+				email.ReplaceContent("<!--key-->", key);
+				email.ReplaceContent("<!--action-->", action);
+				bool emailSent = false;
+				if (Email_Sending(email, new Dictionary<string, dynamic>(StringComparer.OrdinalIgnoreCase) {{"rsnew", rs}}))
+					emailSent = await email.SendAsync();
+
+				// Send email result
+				return !emailSent ? email.SendError : "OK"; // DN
+			}
 
 			// Table level events
 			// Recordset Selecting event

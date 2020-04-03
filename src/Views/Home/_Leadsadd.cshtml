@@ -57,9 +57,6 @@ loadjs.ready("head", function() {
 					return this.onError(elm, "@Html.Raw(JsEncode(Convert.ToString(_Leads_Add.LeadId.RequiredErrorMessage).Replace("%s", _Leads_Add.LeadId.Caption)))");
 				</text>
 			}
-				elm = this.getElements("x" + infix + "_LeadId");
-				if (elm && !ew.checkGuid(elm.value))
-					return this.onError(elm, "@(JsEncode(_Leads_Add.LeadId.ErrorMessage))");
 			@if (_Leads_Add._Name.Required) {
 				<text>
 				elm = this.getElements("x" + infix + "__Name");
@@ -126,6 +123,9 @@ loadjs.ready("head", function() {
 					return this.onError(elm, "@Html.Raw(JsEncode(Convert.ToString(_Leads_Add.EmailAddress.RequiredErrorMessage).Replace("%s", _Leads_Add.EmailAddress.Caption)))");
 				</text>
 			}
+				elm = this.getElements("x" + infix + "_EmailAddress");
+				if (elm && !ew.checkEmail(elm.value))
+					return this.onError(elm, "@(JsEncode(_Leads_Add.EmailAddress.ErrorMessage))");
 			@if (_Leads_Add.PhoneNumber.Required) {
 				<text>
 				elm = this.getElements("x" + infix + "_PhoneNumber");
@@ -133,6 +133,9 @@ loadjs.ready("head", function() {
 					return this.onError(elm, "@Html.Raw(JsEncode(Convert.ToString(_Leads_Add.PhoneNumber.RequiredErrorMessage).Replace("%s", _Leads_Add.PhoneNumber.Caption)))");
 				</text>
 			}
+				elm = this.getElements("x" + infix + "_PhoneNumber");
+				if (elm && !ew.checkPhone(elm.value))
+					return this.onError(elm, "@(JsEncode(_Leads_Add.PhoneNumber.ErrorMessage))");
 
 				// Call Form_CustomValidate event
 				if (!this.Form_CustomValidate(fobj))
@@ -187,7 +190,7 @@ loadjs.ready("head", function() {
 <div class="ew-add-div"><!-- page* -->
 @if (_Leads_Add.LeadId.Visible) { // _Leads_Add.LeadId.Visible (begin)
 	<div id="r_LeadId" class="form-group row">
-		<label id="elh__Leads_LeadId" for="x_LeadId" class="@(_Leads_Add.LeftColumnClass)">@Html.Raw(_Leads_Add.LeadId.Caption)@Html.Raw(_Leads_Add.LeadId.Required ? Language.Phrase("FieldRequiredIndicator") : "")</label>
+		<label id="elh__Leads_LeadId" class="@(_Leads_Add.LeftColumnClass)">@Html.Raw(_Leads_Add.LeadId.Caption)@Html.Raw(_Leads_Add.LeadId.Required ? Language.Phrase("FieldRequiredIndicator") : "")</label>
 		<div class="@(_Leads_Add.RightColumnClass)"><div @Html.Raw(_Leads_Add.LeadId.CellAttributes)>
 <span id="el__Leads_LeadId">
 <input type="text" data-table="_Leads" data-field="x_LeadId" name="x_LeadId" id="x_LeadId" size="38" maxlength="38" placeholder="@Html.Raw(HtmlEncode(_Leads_Add.LeadId.PlaceHolder))" value="@(_Leads_Add.LeadId.EditValue)" @Html.Raw(_Leads_Add.LeadId.EditAttributes)>

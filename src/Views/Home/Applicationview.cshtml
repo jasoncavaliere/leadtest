@@ -1,0 +1,191 @@
+@{
+
+	// View
+	View = this;
+	SetClientVar("login", LoginStatus);
+
+	// Global Page Rendering event
+	Page_Rendering();
+
+	// Page Render event
+	Application_View.Page_Render();
+
+	// Check action result
+	if (Application_View.ActionResult is EmptyResult) { // Terminate page
+		return;
+	}
+
+	// Layout
+	Layout = "_Layout";
+
+	// Local variables (Temp data)
+	#pragma warning disable 168
+	string sqlWrk, filterWrk, whereWrk, curVal;
+	List<Dictionary<string, object>> rswrk;
+	string[] arWrk;
+	List<object> listWrk;
+	Func<string> lookupFilter;
+	#pragma warning restore 168
+}
+@if (!Application_View.IsExport()) {
+<script>
+var fApplicationview, currentPageID;
+loadjs.ready("head", function() {
+
+	// Form object
+	currentPageID = ew.PAGE_ID = "view";
+	fApplicationview = currentForm = new ew.Form("fApplicationview", "view");
+	loadjs.done("fApplicationview");
+});
+</script>
+<script>
+loadjs.ready("head", function() {
+
+	// Client script
+	// Write your client script here, no need to add script tags.
+
+});
+</script>
+}
+@if (!Application_View.IsExport()) {
+<div class="btn-toolbar ew-toolbar">
+	@Application_View.ExportOptions.RenderBody()
+	@Application_View.OtherOptions.RenderBody()
+	<div class="clearfix"></div>
+</div>
+}
+@Application_View.ShowPageHeader()
+@Application_View.ShowMessages()
+<form name="fApplicationview" id="fApplicationview" class="form-inline ew-form ew-view-form" method="post">
+@if (Application_View.CheckToken) {
+	@Html.AntiForgeryToken()
+}
+<input type="hidden" name="modal" value="@ConvertToInt(Application_View.IsModal)">
+<table class="table table-striped table-sm ew-view-table">
+@if (Application_View.ApplicationId.Visible) { // Application_View.ApplicationId.Visible (begin)
+	<tr id="r_ApplicationId">
+		<td class="@(Application_View.TableLeftColumnClass)"><span id="elh_Application_ApplicationId">@Html.Raw(Application_View.ApplicationId.Caption)</span></td>
+		<td data-name="ApplicationId" @Html.Raw(Application_View.ApplicationId.CellAttributes)>
+<span id="el_Application_ApplicationId">
+<span @Html.Raw(Application_View.ApplicationId.ViewAttributes)>@Html.Raw(Application_View.ApplicationId.GetViewValue())</span>
+</span>
+</td>
+	</tr>
+} @* Application_View.ApplicationId.Visible (end) *@
+@if (Application_View._Name.Visible) { // Application_View._Name.Visible (begin)
+	<tr id="r__Name">
+		<td class="@(Application_View.TableLeftColumnClass)"><span id="elh_Application__Name">@Html.Raw(Application_View._Name.Caption)</span></td>
+		<td data-name="_Name" @Html.Raw(Application_View._Name.CellAttributes)>
+<span id="el_Application__Name">
+<span @Html.Raw(Application_View._Name.ViewAttributes)>@Html.Raw(Application_View._Name.GetViewValue())</span>
+</span>
+</td>
+	</tr>
+} @* Application_View._Name.Visible (end) *@
+@if (Application_View.ApplicationstatusId.Visible) { // Application_View.ApplicationstatusId.Visible (begin)
+	<tr id="r_ApplicationstatusId">
+		<td class="@(Application_View.TableLeftColumnClass)"><span id="elh_Application_ApplicationstatusId">@Html.Raw(Application_View.ApplicationstatusId.Caption)</span></td>
+		<td data-name="ApplicationstatusId" @Html.Raw(Application_View.ApplicationstatusId.CellAttributes)>
+<span id="el_Application_ApplicationstatusId">
+<span @Html.Raw(Application_View.ApplicationstatusId.ViewAttributes)>@Html.Raw(Application_View.ApplicationstatusId.GetViewValue())</span>
+</span>
+</td>
+	</tr>
+} @* Application_View.ApplicationstatusId.Visible (end) *@
+@if (Application_View.BranchId.Visible) { // Application_View.BranchId.Visible (begin)
+	<tr id="r_BranchId">
+		<td class="@(Application_View.TableLeftColumnClass)"><span id="elh_Application_BranchId">@Html.Raw(Application_View.BranchId.Caption)</span></td>
+		<td data-name="BranchId" @Html.Raw(Application_View.BranchId.CellAttributes)>
+<span id="el_Application_BranchId">
+<span @Html.Raw(Application_View.BranchId.ViewAttributes)>@Html.Raw(Application_View.BranchId.GetViewValue())</span>
+</span>
+</td>
+	</tr>
+} @* Application_View.BranchId.Visible (end) *@
+@if (Application_View.UserId.Visible) { // Application_View.UserId.Visible (begin)
+	<tr id="r_UserId">
+		<td class="@(Application_View.TableLeftColumnClass)"><span id="elh_Application_UserId">@Html.Raw(Application_View.UserId.Caption)</span></td>
+		<td data-name="UserId" @Html.Raw(Application_View.UserId.CellAttributes)>
+<span id="el_Application_UserId">
+<span @Html.Raw(Application_View.UserId.ViewAttributes)>@Html.Raw(Application_View.UserId.GetViewValue())</span>
+</span>
+</td>
+	</tr>
+} @* Application_View.UserId.Visible (end) *@
+@if (Application_View.State.Visible) { // Application_View.State.Visible (begin)
+	<tr id="r_State">
+		<td class="@(Application_View.TableLeftColumnClass)"><span id="elh_Application_State">@Html.Raw(Application_View.State.Caption)</span></td>
+		<td data-name="State" @Html.Raw(Application_View.State.CellAttributes)>
+<span id="el_Application_State">
+<span @Html.Raw(Application_View.State.ViewAttributes)>@Html.Raw(Application_View.State.GetViewValue())</span>
+</span>
+</td>
+	</tr>
+} @* Application_View.State.Visible (end) *@
+@if (Application_View.FirstName.Visible) { // Application_View.FirstName.Visible (begin)
+	<tr id="r_FirstName">
+		<td class="@(Application_View.TableLeftColumnClass)"><span id="elh_Application_FirstName">@Html.Raw(Application_View.FirstName.Caption)</span></td>
+		<td data-name="FirstName" @Html.Raw(Application_View.FirstName.CellAttributes)>
+<span id="el_Application_FirstName">
+<span @Html.Raw(Application_View.FirstName.ViewAttributes)>@Html.Raw(Application_View.FirstName.GetViewValue())</span>
+</span>
+</td>
+	</tr>
+} @* Application_View.FirstName.Visible (end) *@
+@if (Application_View.LastName.Visible) { // Application_View.LastName.Visible (begin)
+	<tr id="r_LastName">
+		<td class="@(Application_View.TableLeftColumnClass)"><span id="elh_Application_LastName">@Html.Raw(Application_View.LastName.Caption)</span></td>
+		<td data-name="LastName" @Html.Raw(Application_View.LastName.CellAttributes)>
+<span id="el_Application_LastName">
+<span @Html.Raw(Application_View.LastName.ViewAttributes)>@Html.Raw(Application_View.LastName.GetViewValue())</span>
+</span>
+</td>
+	</tr>
+} @* Application_View.LastName.Visible (end) *@
+@if (Application_View.BlobUrl.Visible) { // Application_View.BlobUrl.Visible (begin)
+	<tr id="r_BlobUrl">
+		<td class="@(Application_View.TableLeftColumnClass)"><span id="elh_Application_BlobUrl">@Html.Raw(Application_View.BlobUrl.Caption)</span></td>
+		<td data-name="BlobUrl" @Html.Raw(Application_View.BlobUrl.CellAttributes)>
+<span id="el_Application_BlobUrl">
+<span @Html.Raw(Application_View.BlobUrl.ViewAttributes)>@Html.Raw(Application_View.BlobUrl.GetViewValue())</span>
+</span>
+</td>
+	</tr>
+} @* Application_View.BlobUrl.Visible (end) *@
+@if (Application_View.EmailAddress.Visible) { // Application_View.EmailAddress.Visible (begin)
+	<tr id="r_EmailAddress">
+		<td class="@(Application_View.TableLeftColumnClass)"><span id="elh_Application_EmailAddress">@Html.Raw(Application_View.EmailAddress.Caption)</span></td>
+		<td data-name="EmailAddress" @Html.Raw(Application_View.EmailAddress.CellAttributes)>
+<span id="el_Application_EmailAddress">
+<span @Html.Raw(Application_View.EmailAddress.ViewAttributes)>@Html.Raw(Application_View.EmailAddress.GetViewValue())</span>
+</span>
+</td>
+	</tr>
+} @* Application_View.EmailAddress.Visible (end) *@
+@if (Application_View.PhoneNumber.Visible) { // Application_View.PhoneNumber.Visible (begin)
+	<tr id="r_PhoneNumber">
+		<td class="@(Application_View.TableLeftColumnClass)"><span id="elh_Application_PhoneNumber">@Html.Raw(Application_View.PhoneNumber.Caption)</span></td>
+		<td data-name="PhoneNumber" @Html.Raw(Application_View.PhoneNumber.CellAttributes)>
+<span id="el_Application_PhoneNumber">
+<span @Html.Raw(Application_View.PhoneNumber.ViewAttributes)>@Html.Raw(Application_View.PhoneNumber.GetViewValue())</span>
+</span>
+</td>
+	</tr>
+} @* Application_View.PhoneNumber.Visible (end) *@
+</table>
+@{ Application_View.CloseRecordset(); }
+</form>
+@Application_View.ShowPageFooter()
+@ShowDebugMessage()
+@ElapsedTime()
+@if (!Application_View.IsExport()) {
+<script>
+loadjs.ready("load", function() {
+
+	// Startup script
+	// Write your table-specific startup script here
+	// document.write("page loaded");
+
+});
+</script>
+}

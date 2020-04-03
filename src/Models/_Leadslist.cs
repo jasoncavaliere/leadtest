@@ -815,15 +815,15 @@ namespace AspNetMaker2020.Models {
 
 				// Set up list options
 				await SetupListOptions();
-				LeadId.SetVisibility();
+				LeadId.Visible = false;
 				_Name.SetVisibility();
-				State.SetVisibility();
+				State.Visible = false;
 				LeadStatusId.SetVisibility();
 				BranchId.SetVisibility();
 				UserId.SetVisibility();
-				FirstName.SetVisibility();
-				LastName.SetVisibility();
-				BlobUrl.SetVisibility();
+				FirstName.Visible = false;
+				LastName.Visible = false;
+				BlobUrl.Visible = false;
 				EmailAddress.SetVisibility();
 				PhoneNumber.SetVisibility();
 				HideFieldsForAddEdit();
@@ -860,7 +860,7 @@ namespace AspNetMaker2020.Models {
 				await SetupLookupOptions(BranchId);
 
 				// Search filters
-				string srchBasic = ""; // Basic search filter
+				string srchAdvanced = ""; // Advanced search filter
 				string filter = "";
 
 				// Get command
@@ -904,10 +904,10 @@ namespace AspNetMaker2020.Models {
 					}
 
 					// Get default search criteria
-					AddFilter(ref DefaultSearchWhere, BasicSearchWhere(true));
+					AddFilter(ref DefaultSearchWhere, AdvancedSearchWhere(true));
 
-					// Get basic search values
-					LoadBasicSearchValues();
+					// Get and validate search values for advanced search
+					LoadSearchValues(); // Get search values
 
 					// Process filter list
 					var filterResult = await ProcessFilterList();
@@ -918,6 +918,8 @@ namespace AspNetMaker2020.Models {
 							Response.Clear();
 						return Controller.Json(filterResult);
 					}
+					if (!ValidateSearch())
+						FailureMessage = SearchError;
 
 					// Restore search parms from Session if not searching / reset / export
 					if ((IsExport() || Command != "search" && Command != "reset" && Command != "resetall") && Command != "json" && CheckSearchParms())
@@ -929,9 +931,9 @@ namespace AspNetMaker2020.Models {
 					// Set up sorting order
 					SetupSortOrder();
 
-					// Get basic search criteria
+					// Get search criteria for advanced search
 					if (Empty(SearchError))
-						srchBasic = BasicSearchWhere();
+						srchAdvanced = AdvancedSearchWhere();
 				}
 
 				// Restore display records
@@ -949,14 +951,13 @@ namespace AspNetMaker2020.Models {
 				// Load search default if no existing search criteria
 				if (!CheckSearchParms()) {
 
-					// Load basic search from default
-					BasicSearch.LoadDefault();
-					if (!Empty(BasicSearch.Keyword))
-						srchBasic = BasicSearchWhere();
+					// Load advanced search from default
+					if (LoadAdvancedSearchDefault())
+						srchAdvanced = AdvancedSearchWhere();
 				}
 
 				// Build search criteria
-				AddFilter(ref SearchWhere, srchBasic);
+				AddFilter(ref SearchWhere, srchAdvanced);
 
 				// Call Recordset_Searching event
 				Recordset_Searching(ref SearchWhere);
@@ -1084,7 +1085,6 @@ namespace AspNetMaker2020.Models {
 				filters.Merge(JObject.Parse(BlobUrl.AdvancedSearch.ToJson())); // Field BlobUrl
 				filters.Merge(JObject.Parse(EmailAddress.AdvancedSearch.ToJson())); // Field EmailAddress
 				filters.Merge(JObject.Parse(PhoneNumber.AdvancedSearch.ToJson())); // Field PhoneNumber
-				filters.Merge(JObject.Parse(_Leads.BasicSearch.ToJson()));
 
 				// Return filter list in JSON
 				if (filters.HasValues)
@@ -1220,129 +1220,110 @@ namespace AspNetMaker2020.Models {
 					PhoneNumber.AdvancedSearch.SearchOperator2 = filter["w_PhoneNumber"];
 					PhoneNumber.AdvancedSearch.Save();
 				}
-				if (filter.TryGetValue(Config.TableBasicSearch, out string keyword))
-					BasicSearch.SessionKeyword = keyword;
-				if (filter.TryGetValue(Config.TableBasicSearchType, out string type))
-					BasicSearch.SessionType = type;
 				return true;
 			}
 
-			// Return basic search SQL
-			protected string BasicSearchSql(List<string> keywords, string type) {
+			// Advanced search WHERE clause based on QueryString
+			protected string AdvancedSearchWhere(bool def = false) {
 				string where = "";
-				BuildBasicSearchSql(ref where, _Name, keywords, type);
-				BuildBasicSearchSql(ref where, State, keywords, type);
-				BuildBasicSearchSql(ref where, FirstName, keywords, type);
-				BuildBasicSearchSql(ref where, LastName, keywords, type);
-				BuildBasicSearchSql(ref where, BlobUrl, keywords, type);
-				BuildBasicSearchSql(ref where, EmailAddress, keywords, type);
-				BuildBasicSearchSql(ref where, PhoneNumber, keywords, type);
+				BuildSearchSql(ref where, LeadId, def, false); // LeadId
+				BuildSearchSql(ref where, _Name, def, false); // _Name
+				BuildSearchSql(ref where, State, def, false); // State
+				BuildSearchSql(ref where, LeadStatusId, def, false); // LeadStatusId
+				BuildSearchSql(ref where, BranchId, def, false); // BranchId
+				BuildSearchSql(ref where, UserId, def, false); // UserId
+				BuildSearchSql(ref where, FirstName, def, false); // FirstName
+				BuildSearchSql(ref where, LastName, def, false); // LastName
+				BuildSearchSql(ref where, BlobUrl, def, false); // BlobUrl
+				BuildSearchSql(ref where, EmailAddress, def, false); // EmailAddress
+				BuildSearchSql(ref where, PhoneNumber, def, false); // PhoneNumber
+
+				// Set up search parm
+				if (!def && !Empty(where) && (new List<string> { "", "reset", "resetall" }).Contains(Command))
+					Command = "search";
+				if (!def && Command == "search") {
+					LeadId.AdvancedSearch.Save(); // LeadId
+					_Name.AdvancedSearch.Save(); // Name
+					State.AdvancedSearch.Save(); // State
+					LeadStatusId.AdvancedSearch.Save(); // LeadStatusId
+					BranchId.AdvancedSearch.Save(); // BranchId
+					UserId.AdvancedSearch.Save(); // UserId
+					FirstName.AdvancedSearch.Save(); // FirstName
+					LastName.AdvancedSearch.Save(); // LastName
+					BlobUrl.AdvancedSearch.Save(); // BlobUrl
+					EmailAddress.AdvancedSearch.Save(); // EmailAddress
+					PhoneNumber.AdvancedSearch.Save(); // PhoneNumber
+				}
 				return where;
 			}
 
-			// Build basic search SQL
-			protected void BuildBasicSearchSql(ref string where, DbField fld, List<string> keywords, string type) {
-				string defCond = (type == "OR") ? "OR" : "AND";
-				var sqls = new List<string>(); // List for SQL parts
-				var conds = new List<string>(); // List for search conditions
-				int cnt = keywords.Count;
-				int j = 0; // Number of SQL parts
-				for (int i = 0; i < cnt; i++) {
-					string keyword = keywords[i];
-					keyword = keyword.Trim();
-					string[] ar;
-					if (!Empty(Config.BasicSearchIgnorePattern)) {
-						keyword = Regex.Replace(keyword, Config.BasicSearchIgnorePattern, "\\");
-						ar = keyword.Split('\\');
-					} else {
-						ar = new string[] { keyword };
-					}
-					foreach (var kw in ar) {
-						if (!Empty(kw)) {
-							string wrk = "";
-							if (kw == "OR" && type == "") {
-								if (j > 0)
-									conds[j - 1] = "OR";
-							} else if (kw == Config.NullValue) {
-								wrk = fld.Expression + " IS NULL";
-							} else if (kw == Config.NotNullValue) {
-								wrk = fld.Expression + " IS NOT NULL";
-							} else if (fld.IsVirtual) {
-								wrk = fld.VirtualExpression + Like(QuotedValue("%" + kw + "%", Config.DataTypeString, DbId), DbId);
-							} else if (fld.DataType != Config.DataTypeNumber || IsNumeric(kw)) {
-								wrk = fld.BasicSearchExpression + Like(QuotedValue("%" + kw + "%", Config.DataTypeString, DbId), DbId);
-							}
-							if (!Empty(wrk)) {
-								sqls.Add(wrk); // DN
-								conds.Add(defCond); // DN
-								j++;
-							}
-						}
-					}
+			// Build search SQL
+			public void BuildSearchSql(ref string where, DbField fld, bool def, bool multiValue) {
+				string fldParm = fld.Param;
+				string fldVal = def ? Convert.ToString(fld.AdvancedSearch.SearchValueDefault) : Convert.ToString(fld.AdvancedSearch.SearchValue);
+				string fldOpr = def ? fld.AdvancedSearch.SearchOperatorDefault : fld.AdvancedSearch.SearchOperator;
+				string fldCond = def ? fld.AdvancedSearch.SearchConditionDefault : fld.AdvancedSearch.SearchCondition;
+				string fldVal2 = def ? Convert.ToString(fld.AdvancedSearch.SearchValue2Default) : Convert.ToString(fld.AdvancedSearch.SearchValue2);
+				string fldOpr2 = def ? fld.AdvancedSearch.SearchOperator2Default : fld.AdvancedSearch.SearchOperator2;
+				string wrk = "";
+				fldOpr = fldOpr.Trim().ToUpper();
+				if (Empty(fldOpr))
+					fldOpr = "=";
+				fldOpr2 = fldOpr2.Trim().ToUpper();
+				if (Empty(fldOpr2))
+					fldOpr2 = "=";
+				if (Config.SearchMultiValueOption == 1)
+					multiValue = false;
+				if (multiValue) {
+					string wrk1 = !Empty(fldVal) ? GetMultiSearchSql(fld, fldOpr, fldVal, DbId) : ""; // Field value 1
+					string wrk2 = !Empty(fldVal2) ? GetMultiSearchSql(fld, fldOpr2, fldVal2, DbId) : ""; // Field value 2
+					wrk = wrk1; // Build final SQL
+					if (!Empty(wrk2))
+						wrk = !Empty(wrk) ? "(" + wrk + ") " + fldCond + " (" + wrk2 + ")" : wrk2;
+				} else {
+					fldVal = ConvertSearchValue(fld, fldVal);
+					fldVal2 = ConvertSearchValue(fld, fldVal2);
+					wrk = GetSearchSql(fld, fldVal, fldOpr, fldCond, fldVal2, fldOpr2, DbId);
 				}
-				cnt = sqls.Count;
-				bool quoted = false;
-				string sql = "";
-				if (cnt > 0) {
-					for (int i = 0; i < cnt - 1; i++) {
-						if (conds[i] == "OR") {
-							if (!quoted)
-								sql += "(";
-							quoted = true;
-						}
-						sql += sqls[i];
-						if (quoted && conds[i] != "OR") {
-							sql += ")";
-							quoted = false;
-						}
-						sql += " " + conds[i] + " ";
-					}
-					sql += sqls[cnt - 1];
-					if (quoted)
-						sql += ")";
-				}
-				if (!Empty(sql)) {
-					if (!Empty(where))
-						where += " OR ";
-					where += "(" + sql + ")";
-				}
+				AddFilter(ref where, wrk);
 			}
 
-			// Return basic search WHERE clause based on search keyword and type
-			protected string BasicSearchWhere(bool def = false) {
-				string searchStr = "";
-				string searchKeyword = def ? BasicSearch.KeywordDefault : BasicSearch.Keyword;
-				string searchType = def ? BasicSearch.TypeDefault : BasicSearch.Type;
-
-				// Get search SQL
-				if (!Empty(searchKeyword)) {
-					var ar = BasicSearch.KeywordList(def);
-					if ((searchType == "OR" || searchType == "AND") && ConvertToBool(BasicSearch.BasicSearchAnyFields)) {
-						foreach (var keyword in ar) {
-							if (keyword != "") {
-								if (searchStr != "")
-									searchStr += " " + searchType + " ";
-								searchStr += "(" + BasicSearchSql(new List<string> { keyword }, searchType) + ")";
-							}
-						}
-					} else {
-						searchStr = BasicSearchSql(ar, searchType);
-					}
-					if (!def && (new List<string> {"", "reset", "resetall"}).Contains(Command))
-						Command = "search";
+			// Convert search value
+			protected string ConvertSearchValue(DbField fld, string fldVal) {
+				if (fldVal == Config.NullValue || fldVal == Config.NotNullValue)
+					return fldVal;
+				string value = fldVal;
+				if (fld.DataType == Config.DataTypeBoolean) {
+				} else if (fld.DataType == Config.DataTypeDate || fld.DataType == Config.DataTypeTime) {
+					if (!Empty(fldVal))
+						value = UnformatDateTime(fldVal, fld.DateTimeFormat);
 				}
-				if (!def && Command == "search") {
-					BasicSearch.SessionKeyword = searchKeyword;
-					BasicSearch.SessionType = searchType;
-				}
-				return searchStr;
+				return value;
 			}
 
 			// Check if search parm exists
 			protected bool CheckSearchParms() {
-
-				// Check basic search
-				if (BasicSearch.IssetSession)
+				if (LeadId.AdvancedSearch.IssetSession)
+					return true;
+				if (_Name.AdvancedSearch.IssetSession)
+					return true;
+				if (State.AdvancedSearch.IssetSession)
+					return true;
+				if (LeadStatusId.AdvancedSearch.IssetSession)
+					return true;
+				if (BranchId.AdvancedSearch.IssetSession)
+					return true;
+				if (UserId.AdvancedSearch.IssetSession)
+					return true;
+				if (FirstName.AdvancedSearch.IssetSession)
+					return true;
+				if (LastName.AdvancedSearch.IssetSession)
+					return true;
+				if (BlobUrl.AdvancedSearch.IssetSession)
+					return true;
+				if (EmailAddress.AdvancedSearch.IssetSession)
+					return true;
+				if (PhoneNumber.AdvancedSearch.IssetSession)
 					return true;
 				return false;
 			}
@@ -1352,8 +1333,8 @@ namespace AspNetMaker2020.Models {
 				SearchWhere = "";
 				SessionSearchWhere = SearchWhere;
 
-				// Clear basic search parameters
-				ResetBasicSearchParms();
+				// Clear advanced search parameters
+				ResetAdvancedSearchParms();
 			}
 
 			// Load advanced search default values
@@ -1361,17 +1342,37 @@ namespace AspNetMaker2020.Models {
 				return false;
 			}
 
-			// Clear all basic search parameters
-			protected void ResetBasicSearchParms() {
-				BasicSearch.UnsetSession();
+			// Clear all advanced search parameters
+			protected void ResetAdvancedSearchParms() {
+				LeadId.AdvancedSearch.UnsetSession();
+				_Name.AdvancedSearch.UnsetSession();
+				State.AdvancedSearch.UnsetSession();
+				LeadStatusId.AdvancedSearch.UnsetSession();
+				BranchId.AdvancedSearch.UnsetSession();
+				UserId.AdvancedSearch.UnsetSession();
+				FirstName.AdvancedSearch.UnsetSession();
+				LastName.AdvancedSearch.UnsetSession();
+				BlobUrl.AdvancedSearch.UnsetSession();
+				EmailAddress.AdvancedSearch.UnsetSession();
+				PhoneNumber.AdvancedSearch.UnsetSession();
 			}
 
 			// Restore all search parameters
 			protected void RestoreSearchParms() {
 				RestoreSearch = true;
 
-				// Restore basic search values
-				BasicSearch.Load();
+				// Restore advanced search values
+				LeadId.AdvancedSearch.Load();
+				_Name.AdvancedSearch.Load();
+				State.AdvancedSearch.Load();
+				LeadStatusId.AdvancedSearch.Load();
+				BranchId.AdvancedSearch.Load();
+				UserId.AdvancedSearch.Load();
+				FirstName.AdvancedSearch.Load();
+				LastName.AdvancedSearch.Load();
+				BlobUrl.AdvancedSearch.Load();
+				EmailAddress.AdvancedSearch.Load();
+				PhoneNumber.AdvancedSearch.Load();
 			}
 
 			// Set up sort parameters
@@ -1381,15 +1382,10 @@ namespace AspNetMaker2020.Models {
 				if (Get("order", out StringValues sv)) {
 					CurrentOrder = sv;
 					CurrentOrderType = Get("ordertype");
-					UpdateSort(LeadId); // LeadId
 					UpdateSort(_Name); // Name
-					UpdateSort(State); // State
 					UpdateSort(LeadStatusId); // LeadStatusId
 					UpdateSort(BranchId); // BranchId
 					UpdateSort(UserId); // UserId
-					UpdateSort(FirstName); // FirstName
-					UpdateSort(LastName); // LastName
-					UpdateSort(BlobUrl); // BlobUrl
 					UpdateSort(EmailAddress); // EmailAddress
 					UpdateSort(PhoneNumber); // PhoneNumber
 					StartRecordNumber = 1; // Reset start position
@@ -1425,15 +1421,10 @@ namespace AspNetMaker2020.Models {
 					if (SameText(Command, "resetsort")) {
 						string orderBy = "";
 						SessionOrderBy = orderBy;
-						LeadId.Sort = "";
 						_Name.Sort = "";
-						State.Sort = "";
 						LeadStatusId.Sort = "";
 						BranchId.Sort = "";
 						UserId.Sort = "";
-						FirstName.Sort = "";
-						LastName.Sort = "";
-						BlobUrl.Sort = "";
 						EmailAddress.Sort = "";
 						PhoneNumber.Sort = "";
 					}
@@ -1463,18 +1454,6 @@ namespace AspNetMaker2020.Models {
 
 				// "edit"
 				item = ListOptions.Add("edit");
-				item.CssClass = "text-nowrap";
-				item.Visible = true;
-				item.OnLeft = false;
-
-				// "copy"
-				item = ListOptions.Add("copy");
-				item.CssClass = "text-nowrap";
-				item.Visible = true;
-				item.OnLeft = false;
-
-				// "delete"
-				item = ListOptions.Add("delete");
 				item.CssClass = "text-nowrap";
 				item.Visible = true;
 				item.OnLeft = false;
@@ -1543,24 +1522,6 @@ namespace AspNetMaker2020.Models {
 					listOption.Body = "";
 				}
 
-				// "copy"
-				listOption = ListOptions["copy"];
-				string copycaption = HtmlTitle(Language.Phrase("CopyLink"));
-				isVisible = true;
-				if (isVisible) {
-					listOption.Body = "<a class=\"ew-row-link ew-copy\" title=\"" + copycaption + "\" data-caption=\"" + copycaption + "\" href=\"" + HtmlEncode(AppPath(CopyUrl)) + "\">" + Language.Phrase("CopyLink") + "</a>";
-				} else {
-					listOption.Body = "";
-				}
-
-				// "delete"
-				listOption = ListOptions["delete"];
-				isVisible = true;
-				if (isVisible)
-					listOption.Body = "<a class=\"ew-row-link ew-delete\"" + "" + " title=\"" + HtmlTitle(Language.Phrase("DeleteLink")) + "\" data-caption=\"" + HtmlTitle(Language.Phrase("DeleteLink")) + "\" href=\"" + HtmlEncode(AppPath(DeleteUrl)) + "\">" + Language.Phrase("DeleteLink") + "</a>";
-				else
-					listOption.Body = "";
-
 				// Set up list action buttons
 				listOption = ListOptions["listactions"];
 				if (listOption != null && !IsExport() && CurrentAction == "") {
@@ -1602,13 +1563,6 @@ namespace AspNetMaker2020.Models {
 				ListOptions option;
 				ListOption item;
 				var options = OtherOptions;
-				option = options["addedit"];
-
-				// Add
-				item = option.Add("add");
-				string addcaption = HtmlTitle(Language.Phrase("AddLink"));
-				item.Body = "<a class=\"ew-add-edit ew-add\" title=\"" + addcaption + "\" data-caption=\"" + addcaption + "\" href=\"" + HtmlEncode(AppPath(AddUrl)) + "\">" + Language.Phrase("AddLink") + "</a>";
-				item.Visible = (AddUrl != "");
 				option = options["action"];
 
 				// Set up options default
@@ -1751,14 +1705,129 @@ namespace AspNetMaker2020.Models {
 			// Render list options (extended codes)
 			protected void RenderListOptionsExt() {}
 
-			// Load basic search values // DN
-			protected void LoadBasicSearchValues() {
-				if (Get(Config.TableBasicSearch, out StringValues keyword))
-					BasicSearch.Keyword = keyword;
-				if (!Empty(BasicSearch.Keyword) && Empty(Command))
+			// Load search values for validation // DN
+			protected void LoadSearchValues() {
+
+				// LeadId
+				if (!IsAddOrEdit)
+					if (Query.ContainsKey("x_LeadId"))
+						LeadId.AdvancedSearch.SearchValue = Get("x_LeadId");
+					else
+						LeadId.AdvancedSearch.SearchValue = Get("LeadId"); // Default Value // DN
+				if (!Empty(LeadId.AdvancedSearch.SearchValue) && Command == "")
 					Command = "search";
-				if (Get(Config.TableBasicSearchType, out StringValues type))
-					BasicSearch.Type = type;
+				if (Query.ContainsKey("z_LeadId"))
+					LeadId.AdvancedSearch.SearchOperator = Get("z_LeadId");
+
+				// _Name
+				if (!IsAddOrEdit)
+					if (Query.ContainsKey("x__Name"))
+						_Name.AdvancedSearch.SearchValue = Get("x__Name");
+					else
+						_Name.AdvancedSearch.SearchValue = Get("_Name"); // Default Value // DN
+				if (!Empty(_Name.AdvancedSearch.SearchValue) && Command == "")
+					Command = "search";
+				if (Query.ContainsKey("z__Name"))
+					_Name.AdvancedSearch.SearchOperator = Get("z__Name");
+
+				// State
+				if (!IsAddOrEdit)
+					if (Query.ContainsKey("x_State"))
+						State.AdvancedSearch.SearchValue = Get("x_State");
+					else
+						State.AdvancedSearch.SearchValue = Get("State"); // Default Value // DN
+				if (!Empty(State.AdvancedSearch.SearchValue) && Command == "")
+					Command = "search";
+				if (Query.ContainsKey("z_State"))
+					State.AdvancedSearch.SearchOperator = Get("z_State");
+
+				// LeadStatusId
+				if (!IsAddOrEdit)
+					if (Query.ContainsKey("x_LeadStatusId"))
+						LeadStatusId.AdvancedSearch.SearchValue = Get("x_LeadStatusId");
+					else
+						LeadStatusId.AdvancedSearch.SearchValue = Get("LeadStatusId"); // Default Value // DN
+				if (!Empty(LeadStatusId.AdvancedSearch.SearchValue) && Command == "")
+					Command = "search";
+				if (Query.ContainsKey("z_LeadStatusId"))
+					LeadStatusId.AdvancedSearch.SearchOperator = Get("z_LeadStatusId");
+
+				// BranchId
+				if (!IsAddOrEdit)
+					if (Query.ContainsKey("x_BranchId"))
+						BranchId.AdvancedSearch.SearchValue = Get("x_BranchId");
+					else
+						BranchId.AdvancedSearch.SearchValue = Get("BranchId"); // Default Value // DN
+				if (!Empty(BranchId.AdvancedSearch.SearchValue) && Command == "")
+					Command = "search";
+				if (Query.ContainsKey("z_BranchId"))
+					BranchId.AdvancedSearch.SearchOperator = Get("z_BranchId");
+
+				// UserId
+				if (!IsAddOrEdit)
+					if (Query.ContainsKey("x_UserId"))
+						UserId.AdvancedSearch.SearchValue = Get("x_UserId");
+					else
+						UserId.AdvancedSearch.SearchValue = Get("UserId"); // Default Value // DN
+				if (!Empty(UserId.AdvancedSearch.SearchValue) && Command == "")
+					Command = "search";
+				if (Query.ContainsKey("z_UserId"))
+					UserId.AdvancedSearch.SearchOperator = Get("z_UserId");
+
+				// FirstName
+				if (!IsAddOrEdit)
+					if (Query.ContainsKey("x_FirstName"))
+						FirstName.AdvancedSearch.SearchValue = Get("x_FirstName");
+					else
+						FirstName.AdvancedSearch.SearchValue = Get("FirstName"); // Default Value // DN
+				if (!Empty(FirstName.AdvancedSearch.SearchValue) && Command == "")
+					Command = "search";
+				if (Query.ContainsKey("z_FirstName"))
+					FirstName.AdvancedSearch.SearchOperator = Get("z_FirstName");
+
+				// LastName
+				if (!IsAddOrEdit)
+					if (Query.ContainsKey("x_LastName"))
+						LastName.AdvancedSearch.SearchValue = Get("x_LastName");
+					else
+						LastName.AdvancedSearch.SearchValue = Get("LastName"); // Default Value // DN
+				if (!Empty(LastName.AdvancedSearch.SearchValue) && Command == "")
+					Command = "search";
+				if (Query.ContainsKey("z_LastName"))
+					LastName.AdvancedSearch.SearchOperator = Get("z_LastName");
+
+				// BlobUrl
+				if (!IsAddOrEdit)
+					if (Query.ContainsKey("x_BlobUrl"))
+						BlobUrl.AdvancedSearch.SearchValue = Get("x_BlobUrl");
+					else
+						BlobUrl.AdvancedSearch.SearchValue = Get("BlobUrl"); // Default Value // DN
+				if (!Empty(BlobUrl.AdvancedSearch.SearchValue) && Command == "")
+					Command = "search";
+				if (Query.ContainsKey("z_BlobUrl"))
+					BlobUrl.AdvancedSearch.SearchOperator = Get("z_BlobUrl");
+
+				// EmailAddress
+				if (!IsAddOrEdit)
+					if (Query.ContainsKey("x_EmailAddress"))
+						EmailAddress.AdvancedSearch.SearchValue = Get("x_EmailAddress");
+					else
+						EmailAddress.AdvancedSearch.SearchValue = Get("EmailAddress"); // Default Value // DN
+				if (!Empty(EmailAddress.AdvancedSearch.SearchValue) && Command == "")
+					Command = "search";
+				if (Query.ContainsKey("z_EmailAddress"))
+					EmailAddress.AdvancedSearch.SearchOperator = Get("z_EmailAddress");
+
+				// PhoneNumber
+				if (!IsAddOrEdit)
+					if (Query.ContainsKey("x_PhoneNumber"))
+						PhoneNumber.AdvancedSearch.SearchValue = Get("x_PhoneNumber");
+					else
+						PhoneNumber.AdvancedSearch.SearchValue = Get("PhoneNumber"); // Default Value // DN
+				if (!Empty(PhoneNumber.AdvancedSearch.SearchValue) && Command == "")
+					Command = "search";
+				if (Query.ContainsKey("z_PhoneNumber"))
+					PhoneNumber.AdvancedSearch.SearchOperator = Get("z_PhoneNumber");
 			}
 
 			// Load recordset // DN
@@ -1822,6 +1891,7 @@ namespace AspNetMaker2020.Models {
 				BlobUrl.SetDbValue(row["BlobUrl"]);
 				EmailAddress.SetDbValue(row["EmailAddress"]);
 				PhoneNumber.SetDbValue(row["PhoneNumber"]);
+				string detailFilter;
 			}
 			#pragma warning restore 162, 168, 1998
 
@@ -1896,7 +1966,7 @@ namespace AspNetMaker2020.Models {
 				if (RowType == Config.RowTypeView) { // View row
 
 					// LeadId
-					LeadId.ViewValue = Convert.ToString(LeadId.CurrentValue); // DN
+					LeadId.ViewValue = LeadId.CurrentValue;
 					LeadId.ViewCustomAttributes = "";
 
 					// Name
@@ -1973,17 +2043,9 @@ namespace AspNetMaker2020.Models {
 					PhoneNumber.ViewValue = Convert.ToString(PhoneNumber.CurrentValue); // DN
 					PhoneNumber.ViewCustomAttributes = "";
 
-					// LeadId
-					LeadId.HrefValue = "";
-					LeadId.TooltipValue = "";
-
 					// Name
 					_Name.HrefValue = "";
 					_Name.TooltipValue = "";
-
-					// State
-					State.HrefValue = "";
-					State.TooltipValue = "";
 
 					// LeadStatusId
 					LeadStatusId.HrefValue = "";
@@ -1996,18 +2058,6 @@ namespace AspNetMaker2020.Models {
 					// UserId
 					UserId.HrefValue = "";
 					UserId.TooltipValue = "";
-
-					// FirstName
-					FirstName.HrefValue = "";
-					FirstName.TooltipValue = "";
-
-					// LastName
-					LastName.HrefValue = "";
-					LastName.TooltipValue = "";
-
-					// BlobUrl
-					BlobUrl.HrefValue = "";
-					BlobUrl.TooltipValue = "";
 
 					// EmailAddress
 					EmailAddress.HrefValue = "";
@@ -2024,12 +2074,47 @@ namespace AspNetMaker2020.Models {
 			}
 			#pragma warning restore 1998
 
+			// Validate search
+			protected bool ValidateSearch() {
+
+				// Initialize
+				SearchError = "";
+
+				// Check if validation required
+				if (!Config.ServerValidate)
+					return true;
+
+				// Return validate result
+				bool valid = Empty(SearchError);
+
+				// Call Form_CustomValidate event
+				string formCustomError = "";
+				valid = valid && Form_CustomValidate(ref formCustomError);
+				SearchError = AddMessage(SearchError, formCustomError);
+				return valid;
+			}
+
 			// Save data to memory cache
 			public void SetCache<T>(string key, T value, int span) => Cache.Set<T>(key, value, new MemoryCacheEntryOptions()
 				.SetSlidingExpiration(TimeSpan.FromMilliseconds(span))); // Keep in cache for this time, reset time if accessed
 
 			// Gete data from memory cache
 			public void GetCache<T>(string key) => Cache.Get<T>(key);
+
+			// Load advanced search
+			public void LoadAdvancedSearch() {
+				LeadId.AdvancedSearch.Load();
+				_Name.AdvancedSearch.Load();
+				State.AdvancedSearch.Load();
+				LeadStatusId.AdvancedSearch.Load();
+				BranchId.AdvancedSearch.Load();
+				UserId.AdvancedSearch.Load();
+				FirstName.AdvancedSearch.Load();
+				LastName.AdvancedSearch.Load();
+				BlobUrl.AdvancedSearch.Load();
+				EmailAddress.AdvancedSearch.Load();
+				PhoneNumber.AdvancedSearch.Load();
+			}
 
 			// Set up search options
 			protected void SetupSearchOptions() {
@@ -2038,16 +2123,15 @@ namespace AspNetMaker2020.Models {
 				SearchOptions.Tag = "div";
 				SearchOptions.TagClassName = "ew-search-option";
 
-				// Search button
-				item = SearchOptions.Add("searchtoggle");
-				var searchToggleClass = !Empty(SearchWhere) ? " active" : " active";
-				item.Body = "<button type=\"button\" class=\"btn btn-default ew-search-toggle" + searchToggleClass + "\" title=\"" + Language.Phrase("SearchPanel") + "\" data-caption=\"" + Language.Phrase("SearchPanel") + "\" data-toggle=\"button\" data-form=\"f_Leadslistsrch\">" + Language.Phrase("SearchLink") + "</button>";
-				item.Visible = true;
-
 				// Show all button
 				item = SearchOptions.Add("showall");
 				item.Body = "<a class=\"btn btn-default ew-show-all\" title=\"" + Language.Phrase("ShowAll") + "\" data-caption=\"" + Language.Phrase("ShowAll") + "\" href=\"" + AppPath(PageUrl) + "cmd=reset\">" + Language.Phrase("ShowAllBtn") + "</a>";
 				item.Visible = (SearchWhere != DefaultSearchWhere && SearchWhere != "0=101");
+
+				// Advanced search button
+				item = SearchOptions.Add("advancedsearch");
+				item.Body = "<a class=\"btn btn-default ew-advanced-search\" title=\"" + Language.Phrase("AdvancedSearch") + "\" data-caption=\"" + Language.Phrase("AdvancedSearch") + "\" href=\"" + AppPath("_Leadssrch") + "\">" + Language.Phrase("AdvancedSearchBtn") + "</a>";
+				item.Visible = true;
 
 				// Button group for search
 				SearchOptions.UseDropDownButton = false;

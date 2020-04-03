@@ -1,0 +1,365 @@
+@{
+
+	// View
+	View = this;
+	SetClientVar("login", LoginStatus);
+
+	// Global Page Rendering event
+	Page_Rendering();
+
+	// Page Render event
+	AuditTrail_List.Page_Render();
+
+	// Check action result
+	if (AuditTrail_List.ActionResult is EmptyResult) { // Terminate page
+		return;
+	}
+
+	// Layout
+	Layout = "_Layout";
+
+	// Local variables (Temp data)
+	#pragma warning disable 168
+	string sqlWrk, filterWrk, whereWrk, curVal;
+	List<Dictionary<string, object>> rswrk;
+	string[] arWrk;
+	List<object> listWrk;
+	Func<string> lookupFilter;
+	#pragma warning restore 168
+}
+@if (!AuditTrail_List.IsExport()) {
+<script>
+var fAuditTraillist, currentPageID;
+loadjs.ready("head", function() {
+
+	// Form object
+	currentPageID = ew.PAGE_ID = "list";
+	fAuditTraillist = currentForm = new ew.Form("fAuditTraillist", "list");
+	fAuditTraillist.formKeyCountName = '@(AuditTrail_List.FormKeyCountName)';
+	loadjs.done("fAuditTraillist");
+});
+var fAuditTraillistsrch;
+loadjs.ready("head", function() {
+
+	// Form object for search
+	fAuditTraillistsrch = currentSearchForm = new ew.Form("fAuditTraillistsrch");
+
+	// Dynamic selection lists
+	// Filters
+
+	fAuditTraillistsrch.filterList = @Html.Raw(await AuditTrail_List.GetFilterList());
+	loadjs.done("fAuditTraillistsrch");
+});
+</script>
+<script>
+loadjs.ready("head", function() {
+
+	// Client script
+	// Write your client script here, no need to add script tags.
+
+});
+</script>
+}
+@if (!AuditTrail_List.IsExport()) {
+<div class="btn-toolbar ew-toolbar">
+@if (AuditTrail_List.TotalRecords > 0 && AuditTrail_List.ExportOptions.Visible) {
+	AuditTrail_List.ExportOptions.Render("body");
+}
+@if (AuditTrail_List.ImportOptions.Visible) {
+	AuditTrail_List.ImportOptions.Render("body");
+}
+@if (AuditTrail_List.SearchOptions.Visible) {
+	AuditTrail_List.SearchOptions.Render("body");
+}
+@if (AuditTrail_List.FilterOptions.Visible) {
+	AuditTrail_List.FilterOptions.Render("body");
+}
+<div class="clearfix"></div>
+</div>
+}
+@{ AuditTrail_List.RenderOtherOptions(); }
+@if (!AuditTrail_List.IsExport() && Empty(AuditTrail.CurrentAction)) { @* Show search form (begin) *@
+<form name="fAuditTraillistsrch" id="fAuditTraillistsrch" class="form-inline ew-form ew-ext-search-form" action="@AppPath(CurrentPageName())">
+<div id="fAuditTraillistsrch-search-panel" class="@(AuditTrail_List.SearchPanelClass)"><!-- .ew-search-panel -->
+<input type="hidden" name="cmd" value="search">
+	<div class="ew-extended-search">
+<div id="xsr_@(AuditTrail_List.SearchRowCount + 1)" class="ew-row d-sm-flex">
+	<div class="ew-quick-search input-group">
+		<input type="text" name="@(Config.TableBasicSearch)" id="@(Config.TableBasicSearch)" class="form-control" value="@Html.Raw(HtmlEncode(AuditTrail_List.BasicSearch.SessionKeyword))" placeholder="@(HtmlEncode(Language.Phrase("Search")))">
+		<input type="hidden" name="@(Config.TableBasicSearchType)" id="@(Config.TableBasicSearchType)" value="@(HtmlEncode(AuditTrail_List.BasicSearch.SessionType))">
+		<div class="input-group-append">
+			<button class="btn btn-primary" name="btn-submit" id="btn-submit" type="submit">@Html.Raw(Language.Phrase("SearchBtn"))</button>
+			<button type="button" data-toggle="dropdown" class="btn btn-primary dropdown-toggle dropdown-toggle-split" aria-haspopup="true" aria-expanded="false"><span id="searchtype">@Html.Raw(AuditTrail_List.BasicSearch.TypeNameShort)</span></button>
+			<div class="dropdown-menu dropdown-menu-right">
+				<a class="dropdown-item@((AuditTrail_List.BasicSearch.SessionType == "") ? " active" : "")" href="#" onclick="return ew.setSearchType(this);">@Html.Raw(Language.Phrase("QuickSearchAuto"))</a>
+				<a class="dropdown-item@((AuditTrail_List.BasicSearch.SessionType == "=") ? " active" : "")" href="#" onclick="return ew.setSearchType(this, '=');">@Html.Raw(Language.Phrase("QuickSearchExact"))</a>
+				<a class="dropdown-item@((AuditTrail_List.BasicSearch.SessionType == "AND") ? " active" : "")" href="#" onclick="return ew.setSearchType(this, 'AND');">@Html.Raw(Language.Phrase("QuickSearchAll"))</a>
+				<a class="dropdown-item@((AuditTrail_List.BasicSearch.SessionType == "OR") ? " active" : "")" href="#" onclick="return ew.setSearchType(this, 'OR');">@Html.Raw(Language.Phrase("QuickSearchAny"))</a>
+			</div>
+		</div>
+	</div>
+</div>
+	</div><!-- /.ew-extended-search -->
+</div><!-- /.ew-search-panel -->
+</form>
+} @* Show search form (end) *@
+@AuditTrail_List.ShowPageHeader()
+@AuditTrail_List.ShowMessages()
+@if (AuditTrail_List.TotalRecords > 0 || !Empty(AuditTrail.CurrentAction)) {
+<div class="card ew-card ew-grid@(AuditTrail_List.IsAddOrEdit ? " ew-grid-add-edit" : "") AuditTrail">
+<form name="fAuditTraillist" id="fAuditTraillist" class="form-inline ew-form ew-list-form" action="@AppPath(CurrentPageName())" method="post">
+@if (AuditTrail_List.CheckToken) {
+	@Html.AntiForgeryToken()
+}
+<div id="gmp_AuditTrail" class="@ResponsiveTableClass() card-body ew-grid-middle-panel">
+@if (AuditTrail_List.TotalRecords > 0 || AuditTrail_List.IsGridEdit) {
+<table id="tbl_AuditTraillist" class="table ew-table"><!-- .ew-table -->
+<thead>
+	<tr class="ew-table-header">
+@{
+
+	// Header row
+	AuditTrail.RowType = Config.RowTypeHeader;
+
+	// Render list options
+	await AuditTrail_List.RenderListOptions();
+
+	// Render list options (header, left)
+	AuditTrail_List.ListOptions.Render("header", "left");
+}
+@if (AuditTrail_List.Id.Visible) { // AuditTrail_List.Id.Visible (begin)
+	if (AuditTrail_List.SortUrl(AuditTrail_List.Id) == "") {
+		<th data-name="Id" class="@(AuditTrail_List.Id.HeaderCellClass)"><div id="elh_AuditTrail_Id" class="AuditTrail_Id"><div class="ew-table-header-caption">@Html.Raw(AuditTrail_List.Id.Caption)</div></div></th>
+	} else {
+		<th data-name="Id" class="@(AuditTrail_List.Id.HeaderCellClass)"><div class="ew-pointer" onclick="ew.sort(event, '@Html.Raw(AuditTrail_List.SortUrl(AuditTrail_List.Id))', 1);"><div id="elh_AuditTrail_Id" class="AuditTrail_Id">
+			<div class="ew-table-header-btn"><span class="ew-table-header-caption">@Html.Raw(AuditTrail_List.Id.Caption)</span><span class="ew-table-header-sort">@if (AuditTrail_List.Id.Sort == "ASC") {<i class="fas fa-sort-up"></i>} else if (AuditTrail_List.Id.Sort == "DESC") {<i class="fas fa-sort-down"></i>}</span></div>
+		</div></div></th>
+	}
+} @* AuditTrail_List.Id.Visible (end) *@
+@if (AuditTrail_List._DateTime.Visible) { // AuditTrail_List._DateTime.Visible (begin)
+	if (AuditTrail_List.SortUrl(AuditTrail_List._DateTime) == "") {
+		<th data-name="_DateTime" class="@(AuditTrail_List._DateTime.HeaderCellClass)"><div id="elh_AuditTrail__DateTime" class="AuditTrail__DateTime"><div class="ew-table-header-caption">@Html.Raw(AuditTrail_List._DateTime.Caption)</div></div></th>
+	} else {
+		<th data-name="_DateTime" class="@(AuditTrail_List._DateTime.HeaderCellClass)"><div class="ew-pointer" onclick="ew.sort(event, '@Html.Raw(AuditTrail_List.SortUrl(AuditTrail_List._DateTime))', 1);"><div id="elh_AuditTrail__DateTime" class="AuditTrail__DateTime">
+			<div class="ew-table-header-btn"><span class="ew-table-header-caption">@Html.Raw(AuditTrail_List._DateTime.Caption)</span><span class="ew-table-header-sort">@if (AuditTrail_List._DateTime.Sort == "ASC") {<i class="fas fa-sort-up"></i>} else if (AuditTrail_List._DateTime.Sort == "DESC") {<i class="fas fa-sort-down"></i>}</span></div>
+		</div></div></th>
+	}
+} @* AuditTrail_List._DateTime.Visible (end) *@
+@if (AuditTrail_List.Script.Visible) { // AuditTrail_List.Script.Visible (begin)
+	if (AuditTrail_List.SortUrl(AuditTrail_List.Script) == "") {
+		<th data-name="Script" class="@(AuditTrail_List.Script.HeaderCellClass)"><div id="elh_AuditTrail_Script" class="AuditTrail_Script"><div class="ew-table-header-caption">@Html.Raw(AuditTrail_List.Script.Caption)</div></div></th>
+	} else {
+		<th data-name="Script" class="@(AuditTrail_List.Script.HeaderCellClass)"><div class="ew-pointer" onclick="ew.sort(event, '@Html.Raw(AuditTrail_List.SortUrl(AuditTrail_List.Script))', 1);"><div id="elh_AuditTrail_Script" class="AuditTrail_Script">
+			<div class="ew-table-header-btn"><span class="ew-table-header-caption">@Html.Raw(AuditTrail_List.Script.Caption)@Html.Raw(Language.Phrase("SrchLegend"))</span><span class="ew-table-header-sort">@if (AuditTrail_List.Script.Sort == "ASC") {<i class="fas fa-sort-up"></i>} else if (AuditTrail_List.Script.Sort == "DESC") {<i class="fas fa-sort-down"></i>}</span></div>
+		</div></div></th>
+	}
+} @* AuditTrail_List.Script.Visible (end) *@
+@if (AuditTrail_List._User.Visible) { // AuditTrail_List._User.Visible (begin)
+	if (AuditTrail_List.SortUrl(AuditTrail_List._User) == "") {
+		<th data-name="_User" class="@(AuditTrail_List._User.HeaderCellClass)"><div id="elh_AuditTrail__User" class="AuditTrail__User"><div class="ew-table-header-caption">@Html.Raw(AuditTrail_List._User.Caption)</div></div></th>
+	} else {
+		<th data-name="_User" class="@(AuditTrail_List._User.HeaderCellClass)"><div class="ew-pointer" onclick="ew.sort(event, '@Html.Raw(AuditTrail_List.SortUrl(AuditTrail_List._User))', 1);"><div id="elh_AuditTrail__User" class="AuditTrail__User">
+			<div class="ew-table-header-btn"><span class="ew-table-header-caption">@Html.Raw(AuditTrail_List._User.Caption)@Html.Raw(Language.Phrase("SrchLegend"))</span><span class="ew-table-header-sort">@if (AuditTrail_List._User.Sort == "ASC") {<i class="fas fa-sort-up"></i>} else if (AuditTrail_List._User.Sort == "DESC") {<i class="fas fa-sort-down"></i>}</span></div>
+		</div></div></th>
+	}
+} @* AuditTrail_List._User.Visible (end) *@
+@if (AuditTrail_List.Action.Visible) { // AuditTrail_List.Action.Visible (begin)
+	if (AuditTrail_List.SortUrl(AuditTrail_List.Action) == "") {
+		<th data-name="Action" class="@(AuditTrail_List.Action.HeaderCellClass)"><div id="elh_AuditTrail_Action" class="AuditTrail_Action"><div class="ew-table-header-caption">@Html.Raw(AuditTrail_List.Action.Caption)</div></div></th>
+	} else {
+		<th data-name="Action" class="@(AuditTrail_List.Action.HeaderCellClass)"><div class="ew-pointer" onclick="ew.sort(event, '@Html.Raw(AuditTrail_List.SortUrl(AuditTrail_List.Action))', 1);"><div id="elh_AuditTrail_Action" class="AuditTrail_Action">
+			<div class="ew-table-header-btn"><span class="ew-table-header-caption">@Html.Raw(AuditTrail_List.Action.Caption)@Html.Raw(Language.Phrase("SrchLegend"))</span><span class="ew-table-header-sort">@if (AuditTrail_List.Action.Sort == "ASC") {<i class="fas fa-sort-up"></i>} else if (AuditTrail_List.Action.Sort == "DESC") {<i class="fas fa-sort-down"></i>}</span></div>
+		</div></div></th>
+	}
+} @* AuditTrail_List.Action.Visible (end) *@
+@if (AuditTrail_List._Table.Visible) { // AuditTrail_List._Table.Visible (begin)
+	if (AuditTrail_List.SortUrl(AuditTrail_List._Table) == "") {
+		<th data-name="_Table" class="@(AuditTrail_List._Table.HeaderCellClass)"><div id="elh_AuditTrail__Table" class="AuditTrail__Table"><div class="ew-table-header-caption">@Html.Raw(AuditTrail_List._Table.Caption)</div></div></th>
+	} else {
+		<th data-name="_Table" class="@(AuditTrail_List._Table.HeaderCellClass)"><div class="ew-pointer" onclick="ew.sort(event, '@Html.Raw(AuditTrail_List.SortUrl(AuditTrail_List._Table))', 1);"><div id="elh_AuditTrail__Table" class="AuditTrail__Table">
+			<div class="ew-table-header-btn"><span class="ew-table-header-caption">@Html.Raw(AuditTrail_List._Table.Caption)@Html.Raw(Language.Phrase("SrchLegend"))</span><span class="ew-table-header-sort">@if (AuditTrail_List._Table.Sort == "ASC") {<i class="fas fa-sort-up"></i>} else if (AuditTrail_List._Table.Sort == "DESC") {<i class="fas fa-sort-down"></i>}</span></div>
+		</div></div></th>
+	}
+} @* AuditTrail_List._Table.Visible (end) *@
+@if (AuditTrail_List._Field.Visible) { // AuditTrail_List._Field.Visible (begin)
+	if (AuditTrail_List.SortUrl(AuditTrail_List._Field) == "") {
+		<th data-name="_Field" class="@(AuditTrail_List._Field.HeaderCellClass)"><div id="elh_AuditTrail__Field" class="AuditTrail__Field"><div class="ew-table-header-caption">@Html.Raw(AuditTrail_List._Field.Caption)</div></div></th>
+	} else {
+		<th data-name="_Field" class="@(AuditTrail_List._Field.HeaderCellClass)"><div class="ew-pointer" onclick="ew.sort(event, '@Html.Raw(AuditTrail_List.SortUrl(AuditTrail_List._Field))', 1);"><div id="elh_AuditTrail__Field" class="AuditTrail__Field">
+			<div class="ew-table-header-btn"><span class="ew-table-header-caption">@Html.Raw(AuditTrail_List._Field.Caption)@Html.Raw(Language.Phrase("SrchLegend"))</span><span class="ew-table-header-sort">@if (AuditTrail_List._Field.Sort == "ASC") {<i class="fas fa-sort-up"></i>} else if (AuditTrail_List._Field.Sort == "DESC") {<i class="fas fa-sort-down"></i>}</span></div>
+		</div></div></th>
+	}
+} @* AuditTrail_List._Field.Visible (end) *@
+@{
+
+	// Render list options (header, right)
+	AuditTrail_List.ListOptions.Render("header", "right");
+}
+	</tr>
+</thead>
+<tbody>
+@{ // Begin Code
+if (AuditTrail_List.ExportAll && AuditTrail_List.IsExport()) {
+	AuditTrail_List.StopRecord = AuditTrail_List.TotalRecords;
+} else {
+
+	// Set the last record to display
+	if (AuditTrail_List.TotalRecords > AuditTrail_List.StartRecord + AuditTrail_List.DisplayRecords - 1) {
+		AuditTrail_List.StopRecord = AuditTrail_List.StartRecord + AuditTrail_List.DisplayRecords - 1;
+	} else {
+		AuditTrail_List.StopRecord = AuditTrail_List.TotalRecords;
+	}
+}
+if (AuditTrail_List.Recordset != null && AuditTrail_List.Recordset.HasRows) {
+	if (!AuditTrail_List.Connection.SelectOffset) { // DN
+		for (int i = 1; i <= AuditTrail_List.StartRecord - 1; i++) { // Move to first record
+			if (await AuditTrail_List.Recordset.ReadAsync()) {
+				AuditTrail_List.RecordCount++;
+			}
+		}
+	} else {
+		AuditTrail_List.RecordCount = AuditTrail_List.StartRecord - 1;
+	}
+} else if (!AuditTrail_List.AllowAddDeleteRow && AuditTrail_List.StopRecord == 0) {
+	AuditTrail_List.StopRecord = AuditTrail_List.GridAddRowCount;
+}
+
+// Initialize aggregate
+AuditTrail.RowType = Config.RowTypeAggregateInit;
+AuditTrail_List.ResetAttributes();
+await AuditTrail_List.RenderRow();
+
+// Output data rows
+bool eof = (AuditTrail_List.Recordset == null); // DN
+while (AuditTrail_List.RecordCount < AuditTrail_List.StopRecord) { // Begin While
+	if (!AuditTrail_List.IsGridAdd && !eof) { // DN
+		eof = !await AuditTrail_List.Recordset.ReadAsync();
+	}
+	AuditTrail_List.RecordCount++;
+	if (AuditTrail_List.RecordCount >= AuditTrail_List.StartRecord) {
+		AuditTrail_List.RowCount++;
+
+		// Set up key count
+		AuditTrail_List.KeyCount = ConvertToInt(AuditTrail_List.RowIndex);
+
+		// Init row class and style
+		AuditTrail_List.ResetAttributes();
+		AuditTrail_List.CssClass = "";
+		if (AuditTrail_List.IsGridAdd) {
+		} else {
+			await AuditTrail_List.LoadRowValues(AuditTrail_List.Recordset); // Load row values
+		}
+		AuditTrail.RowType = Config.RowTypeView; // Render view
+
+		// Set up row id / data-rowindex
+		AuditTrail_List.RowAttrs.Add("data-rowindex", Convert.ToString(AuditTrail_List.RowCount));
+		AuditTrail_List.RowAttrs.Add("id", "r" + Convert.ToString(AuditTrail_List.RowCount) + "_AuditTrail");
+		AuditTrail_List.RowAttrs.Add("data-rowtype", Convert.ToString(AuditTrail_List.RowType));
+
+		// Render row
+		await AuditTrail_List.RenderRow();
+
+		// Render list options
+		await AuditTrail_List.RenderListOptions();
+	@:<tr @Html.Raw(AuditTrail.RowAttributes)>
+	@* Render list options (body, left) *@
+	@AuditTrail_List.ListOptions.RenderBody("left", AuditTrail_List.RowCount)
+	if (AuditTrail_List.Id.Visible) { // AuditTrail_List.Id.Visible (begin)
+		<td data-name="Id" @Html.Raw(AuditTrail_List.Id.CellAttributes)>
+<span id="el@(AuditTrail_List.RowCount)_AuditTrail_Id">
+<span @Html.Raw(AuditTrail_List.Id.ViewAttributes)>@Html.Raw(AuditTrail_List.Id.GetViewValue())</span>
+</span>
+</td>
+	} @* AuditTrail_List.Id.Visible (end) *@
+	if (AuditTrail_List._DateTime.Visible) { // AuditTrail_List._DateTime.Visible (begin)
+		<td data-name="_DateTime" @Html.Raw(AuditTrail_List._DateTime.CellAttributes)>
+<span id="el@(AuditTrail_List.RowCount)_AuditTrail__DateTime">
+<span @Html.Raw(AuditTrail_List._DateTime.ViewAttributes)>@Html.Raw(AuditTrail_List._DateTime.GetViewValue())</span>
+</span>
+</td>
+	} @* AuditTrail_List._DateTime.Visible (end) *@
+	if (AuditTrail_List.Script.Visible) { // AuditTrail_List.Script.Visible (begin)
+		<td data-name="Script" @Html.Raw(AuditTrail_List.Script.CellAttributes)>
+<span id="el@(AuditTrail_List.RowCount)_AuditTrail_Script">
+<span @Html.Raw(AuditTrail_List.Script.ViewAttributes)>@Html.Raw(AuditTrail_List.Script.GetViewValue())</span>
+</span>
+</td>
+	} @* AuditTrail_List.Script.Visible (end) *@
+	if (AuditTrail_List._User.Visible) { // AuditTrail_List._User.Visible (begin)
+		<td data-name="_User" @Html.Raw(AuditTrail_List._User.CellAttributes)>
+<span id="el@(AuditTrail_List.RowCount)_AuditTrail__User">
+<span @Html.Raw(AuditTrail_List._User.ViewAttributes)>@Html.Raw(AuditTrail_List._User.GetViewValue())</span>
+</span>
+</td>
+	} @* AuditTrail_List._User.Visible (end) *@
+	if (AuditTrail_List.Action.Visible) { // AuditTrail_List.Action.Visible (begin)
+		<td data-name="Action" @Html.Raw(AuditTrail_List.Action.CellAttributes)>
+<span id="el@(AuditTrail_List.RowCount)_AuditTrail_Action">
+<span @Html.Raw(AuditTrail_List.Action.ViewAttributes)>@Html.Raw(AuditTrail_List.Action.GetViewValue())</span>
+</span>
+</td>
+	} @* AuditTrail_List.Action.Visible (end) *@
+	if (AuditTrail_List._Table.Visible) { // AuditTrail_List._Table.Visible (begin)
+		<td data-name="_Table" @Html.Raw(AuditTrail_List._Table.CellAttributes)>
+<span id="el@(AuditTrail_List.RowCount)_AuditTrail__Table">
+<span @Html.Raw(AuditTrail_List._Table.ViewAttributes)>@Html.Raw(AuditTrail_List._Table.GetViewValue())</span>
+</span>
+</td>
+	} @* AuditTrail_List._Table.Visible (end) *@
+	if (AuditTrail_List._Field.Visible) { // AuditTrail_List._Field.Visible (begin)
+		<td data-name="_Field" @Html.Raw(AuditTrail_List._Field.CellAttributes)>
+<span id="el@(AuditTrail_List.RowCount)_AuditTrail__Field">
+<span @Html.Raw(AuditTrail_List._Field.ViewAttributes)>@Html.Raw(AuditTrail_List._Field.GetViewValue())</span>
+</span>
+</td>
+	} @* AuditTrail_List._Field.Visible (end) *@
+	@* Render list options (body, right) *@
+	@AuditTrail_List.ListOptions.RenderBody("right", AuditTrail_List.RowCount)
+	@:</tr>
+	} @* End if *@
+} @* End While *@
+} @* End Code *@
+</tbody>
+</table><!-- /.ew-table -->
+} @* End If TotalRecords > 0 *@
+</div><!-- /.ew-grid-middle-panel -->
+@if (Empty(AuditTrail.CurrentAction)) {
+<input type="hidden" name="action" id="action" value="">
+}
+</form><!-- /.ew-list-form -->
+@{ AuditTrail_List.CloseRecordset(); }
+@if (!AuditTrail_List.IsExport()) {
+<div class="card-footer ew-grid-lower-panel">
+@if (!AuditTrail_List.IsGridAdd) {
+<form name="ew-pager-form" class="form-inline ew-form ew-pager-form" action="@AppPath(CurrentPageName())">
+@Html.Raw(AuditTrail_List.Pager.Render())
+</form>
+}
+<div class="ew-list-other-options">
+@AuditTrail_List.OtherOptions.RenderBody("bottom")
+</div>
+<div class="clearfix"></div>
+</div>
+}
+</div><!-- /.ew-grid -->
+}
+@if (AuditTrail_List.TotalRecords <= 0 && Empty(AuditTrail.CurrentAction)) { // Show other options
+<div class="ew-list-other-options">
+@AuditTrail_List.OtherOptions.ForEach(opt => opt.ButtonClass = "").RenderBody()
+</div>
+<div class="clearfix"></div>
+}
+@AuditTrail_List.ShowPageFooter()
+@ShowDebugMessage()
+@ElapsedTime()
+@if (!AuditTrail_List.IsExport()) {
+<script>
+loadjs.ready("load", function() {
+
+	// Startup script
+	// Write your table-specific startup script here
+	// document.write("page loaded");
+
+});
+</script>
+}

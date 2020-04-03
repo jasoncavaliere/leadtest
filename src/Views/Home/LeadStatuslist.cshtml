@@ -38,18 +38,6 @@ loadjs.ready("head", function() {
 	fLeadStatuslist.formKeyCountName = '@(LeadStatus_List.FormKeyCountName)';
 	loadjs.done("fLeadStatuslist");
 });
-var fLeadStatuslistsrch;
-loadjs.ready("head", function() {
-
-	// Form object for search
-	fLeadStatuslistsrch = currentSearchForm = new ew.Form("fLeadStatuslistsrch");
-
-	// Dynamic selection lists
-	// Filters
-
-	fLeadStatuslistsrch.filterList = @Html.Raw(await LeadStatus_List.GetFilterList());
-	loadjs.done("fLeadStatuslistsrch");
-});
 </script>
 <script>
 loadjs.ready("head", function() {
@@ -68,41 +56,10 @@ loadjs.ready("head", function() {
 @if (LeadStatus_List.ImportOptions.Visible) {
 	LeadStatus_List.ImportOptions.Render("body");
 }
-@if (LeadStatus_List.SearchOptions.Visible) {
-	LeadStatus_List.SearchOptions.Render("body");
-}
-@if (LeadStatus_List.FilterOptions.Visible) {
-	LeadStatus_List.FilterOptions.Render("body");
-}
 <div class="clearfix"></div>
 </div>
 }
 @{ LeadStatus_List.RenderOtherOptions(); }
-@if (!LeadStatus_List.IsExport() && Empty(LeadStatus.CurrentAction)) { @* Show search form (begin) *@
-<form name="fLeadStatuslistsrch" id="fLeadStatuslistsrch" class="form-inline ew-form ew-ext-search-form" action="@AppPath(CurrentPageName())">
-<div id="fLeadStatuslistsrch-search-panel" class="@(LeadStatus_List.SearchPanelClass)"><!-- .ew-search-panel -->
-<input type="hidden" name="cmd" value="search">
-	<div class="ew-extended-search">
-<div id="xsr_@(LeadStatus_List.SearchRowCount + 1)" class="ew-row d-sm-flex">
-	<div class="ew-quick-search input-group">
-		<input type="text" name="@(Config.TableBasicSearch)" id="@(Config.TableBasicSearch)" class="form-control" value="@Html.Raw(HtmlEncode(LeadStatus_List.BasicSearch.SessionKeyword))" placeholder="@(HtmlEncode(Language.Phrase("Search")))">
-		<input type="hidden" name="@(Config.TableBasicSearchType)" id="@(Config.TableBasicSearchType)" value="@(HtmlEncode(LeadStatus_List.BasicSearch.SessionType))">
-		<div class="input-group-append">
-			<button class="btn btn-primary" name="btn-submit" id="btn-submit" type="submit">@Html.Raw(Language.Phrase("SearchBtn"))</button>
-			<button type="button" data-toggle="dropdown" class="btn btn-primary dropdown-toggle dropdown-toggle-split" aria-haspopup="true" aria-expanded="false"><span id="searchtype">@Html.Raw(LeadStatus_List.BasicSearch.TypeNameShort)</span></button>
-			<div class="dropdown-menu dropdown-menu-right">
-				<a class="dropdown-item@((LeadStatus_List.BasicSearch.SessionType == "") ? " active" : "")" href="#" onclick="return ew.setSearchType(this);">@Html.Raw(Language.Phrase("QuickSearchAuto"))</a>
-				<a class="dropdown-item@((LeadStatus_List.BasicSearch.SessionType == "=") ? " active" : "")" href="#" onclick="return ew.setSearchType(this, '=');">@Html.Raw(Language.Phrase("QuickSearchExact"))</a>
-				<a class="dropdown-item@((LeadStatus_List.BasicSearch.SessionType == "AND") ? " active" : "")" href="#" onclick="return ew.setSearchType(this, 'AND');">@Html.Raw(Language.Phrase("QuickSearchAll"))</a>
-				<a class="dropdown-item@((LeadStatus_List.BasicSearch.SessionType == "OR") ? " active" : "")" href="#" onclick="return ew.setSearchType(this, 'OR');">@Html.Raw(Language.Phrase("QuickSearchAny"))</a>
-			</div>
-		</div>
-	</div>
-</div>
-	</div><!-- /.ew-extended-search -->
-</div><!-- /.ew-search-panel -->
-</form>
-} @* Show search form (end) *@
 @LeadStatus_List.ShowPageHeader()
 @LeadStatus_List.ShowMessages()
 @if (LeadStatus_List.TotalRecords > 0 || !Empty(LeadStatus.CurrentAction)) {
@@ -141,7 +98,7 @@ loadjs.ready("head", function() {
 		<th data-name="DisplayName" class="@(LeadStatus_List.DisplayName.HeaderCellClass)"><div id="elh_LeadStatus_DisplayName" class="LeadStatus_DisplayName"><div class="ew-table-header-caption">@Html.Raw(LeadStatus_List.DisplayName.Caption)</div></div></th>
 	} else {
 		<th data-name="DisplayName" class="@(LeadStatus_List.DisplayName.HeaderCellClass)"><div class="ew-pointer" onclick="ew.sort(event, '@Html.Raw(LeadStatus_List.SortUrl(LeadStatus_List.DisplayName))', 1);"><div id="elh_LeadStatus_DisplayName" class="LeadStatus_DisplayName">
-			<div class="ew-table-header-btn"><span class="ew-table-header-caption">@Html.Raw(LeadStatus_List.DisplayName.Caption)@Html.Raw(Language.Phrase("SrchLegend"))</span><span class="ew-table-header-sort">@if (LeadStatus_List.DisplayName.Sort == "ASC") {<i class="fas fa-sort-up"></i>} else if (LeadStatus_List.DisplayName.Sort == "DESC") {<i class="fas fa-sort-down"></i>}</span></div>
+			<div class="ew-table-header-btn"><span class="ew-table-header-caption">@Html.Raw(LeadStatus_List.DisplayName.Caption)</span><span class="ew-table-header-sort">@if (LeadStatus_List.DisplayName.Sort == "ASC") {<i class="fas fa-sort-up"></i>} else if (LeadStatus_List.DisplayName.Sort == "DESC") {<i class="fas fa-sort-down"></i>}</span></div>
 		</div></div></th>
 	}
 } @* LeadStatus_List.DisplayName.Visible (end) *@

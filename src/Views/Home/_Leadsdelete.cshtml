@@ -60,15 +60,9 @@ loadjs.ready("head", function() {
 <table class="table ew-table">
 	<thead>
 	<tr class="ew-table-header">
-@if (_Leads_Delete.LeadId.Visible) { // _Leads_Delete.LeadId.Visible (begin)
-		<th class="@Html.Raw(_Leads_Delete.LeadId.HeaderCellClass)"><span id="elh__Leads_LeadId" class="_Leads_LeadId">@Html.Raw(_Leads_Delete.LeadId.Caption)</span></th>
-} @* _Leads_Delete.LeadId.Visible (end) *@
 @if (_Leads_Delete._Name.Visible) { // _Leads_Delete._Name.Visible (begin)
 		<th class="@Html.Raw(_Leads_Delete._Name.HeaderCellClass)"><span id="elh__Leads__Name" class="_Leads__Name">@Html.Raw(_Leads_Delete._Name.Caption)</span></th>
 } @* _Leads_Delete._Name.Visible (end) *@
-@if (_Leads_Delete.State.Visible) { // _Leads_Delete.State.Visible (begin)
-		<th class="@Html.Raw(_Leads_Delete.State.HeaderCellClass)"><span id="elh__Leads_State" class="_Leads_State">@Html.Raw(_Leads_Delete.State.Caption)</span></th>
-} @* _Leads_Delete.State.Visible (end) *@
 @if (_Leads_Delete.LeadStatusId.Visible) { // _Leads_Delete.LeadStatusId.Visible (begin)
 		<th class="@Html.Raw(_Leads_Delete.LeadStatusId.HeaderCellClass)"><span id="elh__Leads_LeadStatusId" class="_Leads_LeadStatusId">@Html.Raw(_Leads_Delete.LeadStatusId.Caption)</span></th>
 } @* _Leads_Delete.LeadStatusId.Visible (end) *@
@@ -78,15 +72,6 @@ loadjs.ready("head", function() {
 @if (_Leads_Delete.UserId.Visible) { // _Leads_Delete.UserId.Visible (begin)
 		<th class="@Html.Raw(_Leads_Delete.UserId.HeaderCellClass)"><span id="elh__Leads_UserId" class="_Leads_UserId">@Html.Raw(_Leads_Delete.UserId.Caption)</span></th>
 } @* _Leads_Delete.UserId.Visible (end) *@
-@if (_Leads_Delete.FirstName.Visible) { // _Leads_Delete.FirstName.Visible (begin)
-		<th class="@Html.Raw(_Leads_Delete.FirstName.HeaderCellClass)"><span id="elh__Leads_FirstName" class="_Leads_FirstName">@Html.Raw(_Leads_Delete.FirstName.Caption)</span></th>
-} @* _Leads_Delete.FirstName.Visible (end) *@
-@if (_Leads_Delete.LastName.Visible) { // _Leads_Delete.LastName.Visible (begin)
-		<th class="@Html.Raw(_Leads_Delete.LastName.HeaderCellClass)"><span id="elh__Leads_LastName" class="_Leads_LastName">@Html.Raw(_Leads_Delete.LastName.Caption)</span></th>
-} @* _Leads_Delete.LastName.Visible (end) *@
-@if (_Leads_Delete.BlobUrl.Visible) { // _Leads_Delete.BlobUrl.Visible (begin)
-		<th class="@Html.Raw(_Leads_Delete.BlobUrl.HeaderCellClass)"><span id="elh__Leads_BlobUrl" class="_Leads_BlobUrl">@Html.Raw(_Leads_Delete.BlobUrl.Caption)</span></th>
-} @* _Leads_Delete.BlobUrl.Visible (end) *@
 @if (_Leads_Delete.EmailAddress.Visible) { // _Leads_Delete.EmailAddress.Visible (begin)
 		<th class="@Html.Raw(_Leads_Delete.EmailAddress.HeaderCellClass)"><span id="elh__Leads_EmailAddress" class="_Leads_EmailAddress">@Html.Raw(_Leads_Delete.EmailAddress.Caption)</span></th>
 } @* _Leads_Delete.EmailAddress.Visible (end) *@
@@ -111,13 +96,6 @@ loadjs.ready("head", function() {
 	// Render row
 	await _Leads_Delete.RenderRow();
 	<tr @Html.Raw(_Leads.RowAttributes)>
-@if (_Leads_Delete.LeadId.Visible) { // _Leads_Delete.LeadId.Visible (begin)
-		<td @Html.Raw(_Leads_Delete.LeadId.CellAttributes)>
-<span id="el@(_Leads_Delete.RowCount)__Leads_LeadId" class="_Leads_LeadId">
-<span @Html.Raw(_Leads_Delete.LeadId.ViewAttributes)>@Html.Raw(_Leads_Delete.LeadId.GetViewValue())</span>
-</span>
-</td>
-} @* _Leads_Delete.LeadId.Visible (end) *@
 @if (_Leads_Delete._Name.Visible) { // _Leads_Delete._Name.Visible (begin)
 		<td @Html.Raw(_Leads_Delete._Name.CellAttributes)>
 <span id="el@(_Leads_Delete.RowCount)__Leads__Name" class="_Leads__Name">
@@ -125,13 +103,6 @@ loadjs.ready("head", function() {
 </span>
 </td>
 } @* _Leads_Delete._Name.Visible (end) *@
-@if (_Leads_Delete.State.Visible) { // _Leads_Delete.State.Visible (begin)
-		<td @Html.Raw(_Leads_Delete.State.CellAttributes)>
-<span id="el@(_Leads_Delete.RowCount)__Leads_State" class="_Leads_State">
-<span @Html.Raw(_Leads_Delete.State.ViewAttributes)>@Html.Raw(_Leads_Delete.State.GetViewValue())</span>
-</span>
-</td>
-} @* _Leads_Delete.State.Visible (end) *@
 @if (_Leads_Delete.LeadStatusId.Visible) { // _Leads_Delete.LeadStatusId.Visible (begin)
 		<td @Html.Raw(_Leads_Delete.LeadStatusId.CellAttributes)>
 <span id="el@(_Leads_Delete.RowCount)__Leads_LeadStatusId" class="_Leads_LeadStatusId">
@@ -153,27 +124,6 @@ loadjs.ready("head", function() {
 </span>
 </td>
 } @* _Leads_Delete.UserId.Visible (end) *@
-@if (_Leads_Delete.FirstName.Visible) { // _Leads_Delete.FirstName.Visible (begin)
-		<td @Html.Raw(_Leads_Delete.FirstName.CellAttributes)>
-<span id="el@(_Leads_Delete.RowCount)__Leads_FirstName" class="_Leads_FirstName">
-<span @Html.Raw(_Leads_Delete.FirstName.ViewAttributes)>@Html.Raw(_Leads_Delete.FirstName.GetViewValue())</span>
-</span>
-</td>
-} @* _Leads_Delete.FirstName.Visible (end) *@
-@if (_Leads_Delete.LastName.Visible) { // _Leads_Delete.LastName.Visible (begin)
-		<td @Html.Raw(_Leads_Delete.LastName.CellAttributes)>
-<span id="el@(_Leads_Delete.RowCount)__Leads_LastName" class="_Leads_LastName">
-<span @Html.Raw(_Leads_Delete.LastName.ViewAttributes)>@Html.Raw(_Leads_Delete.LastName.GetViewValue())</span>
-</span>
-</td>
-} @* _Leads_Delete.LastName.Visible (end) *@
-@if (_Leads_Delete.BlobUrl.Visible) { // _Leads_Delete.BlobUrl.Visible (begin)
-		<td @Html.Raw(_Leads_Delete.BlobUrl.CellAttributes)>
-<span id="el@(_Leads_Delete.RowCount)__Leads_BlobUrl" class="_Leads_BlobUrl">
-<span @Html.Raw(_Leads_Delete.BlobUrl.ViewAttributes)>@Html.Raw(_Leads_Delete.BlobUrl.GetViewValue())</span>
-</span>
-</td>
-} @* _Leads_Delete.BlobUrl.Visible (end) *@
 @if (_Leads_Delete.EmailAddress.Visible) { // _Leads_Delete.EmailAddress.Visible (begin)
 		<td @Html.Raw(_Leads_Delete.EmailAddress.CellAttributes)>
 <span id="el@(_Leads_Delete.RowCount)__Leads_EmailAddress" class="_Leads_EmailAddress">

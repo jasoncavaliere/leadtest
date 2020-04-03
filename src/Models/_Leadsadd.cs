@@ -1105,7 +1105,7 @@ namespace AspNetMaker2020.Models {
 				if (RowType == Config.RowTypeView) { // View row
 
 					// LeadId
-					LeadId.ViewValue = Convert.ToString(LeadId.CurrentValue); // DN
+					LeadId.ViewValue = LeadId.CurrentValue;
 					LeadId.ViewCustomAttributes = "";
 
 					// Name
@@ -1385,9 +1385,6 @@ namespace AspNetMaker2020.Models {
 						FormError = AddMessage(FormError, Convert.ToString(LeadId.RequiredErrorMessage).Replace("%s", LeadId.Caption));
 					}
 				}
-				if (!CheckGuid(LeadId.FormValue)) {
-					FormError = AddMessage(FormError, LeadId.ErrorMessage);
-				}
 				if (_Name.Required) {
 					if (!_Name.IsDetailKey && Empty(_Name.FormValue)) {
 						FormError = AddMessage(FormError, Convert.ToString(_Name.RequiredErrorMessage).Replace("%s", _Name.Caption));
@@ -1436,10 +1433,16 @@ namespace AspNetMaker2020.Models {
 						FormError = AddMessage(FormError, Convert.ToString(EmailAddress.RequiredErrorMessage).Replace("%s", EmailAddress.Caption));
 					}
 				}
+				if (!CheckEmail(EmailAddress.FormValue)) {
+					FormError = AddMessage(FormError, EmailAddress.ErrorMessage);
+				}
 				if (PhoneNumber.Required) {
 					if (!PhoneNumber.IsDetailKey && Empty(PhoneNumber.FormValue)) {
 						FormError = AddMessage(FormError, Convert.ToString(PhoneNumber.RequiredErrorMessage).Replace("%s", PhoneNumber.Caption));
 					}
+				}
+				if (!CheckPhone(PhoneNumber.FormValue)) {
+					FormError = AddMessage(FormError, PhoneNumber.ErrorMessage);
 				}
 
 				// Return validate result
@@ -1567,6 +1570,11 @@ namespace AspNetMaker2020.Models {
 				// Call Row Inserted event
 				if (result)
 					Row_Inserted(rsold, rsnew);
+				if (result && SendEmail) {
+					var res = await SendEmailOnAdd(rsnew); // DN
+					if (res != "OK")
+						FailureMessage = res;
+				}
 
 				// Write JSON for API request
 				var d = new Dictionary<string, object>();

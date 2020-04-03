@@ -44,20 +44,6 @@ namespace AspNetMaker2020.Controllers
 			return await _Leads_List.Run();
 		}
 
-		// add
-		[Route("_Leadsadd/{LeadId?}")]
-		[Route("Home/_Leadsadd/{LeadId?}")]
-
-		public async Task<IActionResult> _Leadsadd()
-		{
-
-			// Create page object
-			_Leads_Add = new __Leads_Add(this);
-
-			// Run the page
-			return await _Leads_Add.Run();
-		}
-
 		// view
 		[Route("_Leadsview/{LeadId?}")]
 		[Route("Home/_Leadsview/{LeadId?}")]
@@ -86,18 +72,18 @@ namespace AspNetMaker2020.Controllers
 			return await _Leads_Edit.Run();
 		}
 
-		// delete
-		[Route("_Leadsdelete/{LeadId?}")]
-		[Route("Home/_Leadsdelete/{LeadId?}")]
+		// search
+		[Route("_Leadssrch")]
+		[Route("Home/_Leadssrch")]
 
-		public async Task<IActionResult> _Leadsdelete()
+		public async Task<IActionResult> _Leadssrch()
 		{
 
 			// Create page object
-			_Leads_Delete = new __Leads_Delete(this);
+			_Leads_Search = new __Leads_Search(this);
 
 			// Run the page
-			return await _Leads_Delete.Run();
+			return await _Leads_Search.Run();
 		}
 	}
 }

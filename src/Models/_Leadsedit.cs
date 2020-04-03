@@ -839,7 +839,11 @@ namespace AspNetMaker2020.Models {
 				SetupBreadcrumb();
 
 				// Render the record
-				RowType = Config.RowTypeEdit; // Render as Edit
+				if (IsConfirm) { // Confirm page
+					RowType = Config.RowTypeView; // Render as View
+				} else {
+					RowType = Config.RowTypeEdit; // Render as Edit
+				}
 				ResetAttributes();
 				await RenderRow();
 				return PageResult();
@@ -847,7 +851,7 @@ namespace AspNetMaker2020.Models {
 			#pragma warning restore 219
 
 			// Confirm page
-			public bool ConfirmPage = false; // DN
+			public bool ConfirmPage = true; // DN
 			#pragma warning disable 1998
 
 			// Get upload files
@@ -1106,7 +1110,7 @@ namespace AspNetMaker2020.Models {
 				if (RowType == Config.RowTypeView) { // View row
 
 					// LeadId
-					LeadId.ViewValue = Convert.ToString(LeadId.CurrentValue); // DN
+					LeadId.ViewValue = LeadId.CurrentValue;
 					LeadId.ViewCustomAttributes = "";
 
 					// Name
@@ -1230,8 +1234,6 @@ namespace AspNetMaker2020.Models {
 
 					// LeadId
 					LeadId.EditAttrs["class"] = "form-control";
-					LeadId.EditValue = LeadId.CurrentValue; // DN
-					LeadId.PlaceHolder = RemoveHtml(LeadId.Caption);
 
 					// Name
 					_Name.EditAttrs["class"] = "form-control";
@@ -1386,9 +1388,6 @@ namespace AspNetMaker2020.Models {
 						FormError = AddMessage(FormError, Convert.ToString(LeadId.RequiredErrorMessage).Replace("%s", LeadId.Caption));
 					}
 				}
-				if (!CheckGuid(LeadId.FormValue)) {
-					FormError = AddMessage(FormError, LeadId.ErrorMessage);
-				}
 				if (_Name.Required) {
 					if (!_Name.IsDetailKey && Empty(_Name.FormValue)) {
 						FormError = AddMessage(FormError, Convert.ToString(_Name.RequiredErrorMessage).Replace("%s", _Name.Caption));
@@ -1437,10 +1436,16 @@ namespace AspNetMaker2020.Models {
 						FormError = AddMessage(FormError, Convert.ToString(EmailAddress.RequiredErrorMessage).Replace("%s", EmailAddress.Caption));
 					}
 				}
+				if (!CheckEmail(EmailAddress.FormValue)) {
+					FormError = AddMessage(FormError, EmailAddress.ErrorMessage);
+				}
 				if (PhoneNumber.Required) {
 					if (!PhoneNumber.IsDetailKey && Empty(PhoneNumber.FormValue)) {
 						FormError = AddMessage(FormError, Convert.ToString(PhoneNumber.RequiredErrorMessage).Replace("%s", PhoneNumber.Caption));
 					}
+				}
+				if (!CheckPhone(PhoneNumber.FormValue)) {
+					FormError = AddMessage(FormError, PhoneNumber.ErrorMessage);
 				}
 
 				// Return validate result

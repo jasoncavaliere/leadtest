@@ -1,0 +1,304 @@
+@{
+
+	// View
+	View = this;
+	SetClientVar("login", LoginStatus);
+
+	// Global Page Rendering event
+	Page_Rendering();
+
+	// Page Render event
+	Application_Search.Page_Render();
+
+	// Check action result
+	if (Application_Search.ActionResult is EmptyResult) { // Terminate page
+		return;
+	}
+
+	// Layout
+	Layout = "_Layout";
+
+	// Local variables (Temp data)
+	#pragma warning disable 168
+	string sqlWrk, filterWrk, whereWrk, curVal;
+	List<Dictionary<string, object>> rswrk;
+	string[] arWrk;
+	List<object> listWrk;
+	Func<string> lookupFilter;
+	#pragma warning restore 168
+}
+<script>
+@if (!DashboardReport) {
+<text>
+var fApplicationsearch, currentPageID;
+loadjs.ready("head", function() {
+
+	// Form object for search
+	@if (Application_Search.IsModal) {
+	@:fApplicationsearch = currentAdvancedSearchForm = new ew.Form("fApplicationsearch", "search");
+	} else {
+	@:fApplicationsearch = currentForm = new ew.Form("fApplicationsearch", "search");
+	}
+	currentPageID = ew.PAGE_ID = "search";
+
+	// Validate function for search
+	fApplicationsearch.validate = function(fobj) {
+		if (!this.validateRequired)
+			return true; // Ignore validation
+		fobj = fobj || this._form;
+		var infix = "";
+		elm = this.getElements("x" + infix + "_UserId");
+		if (elm && !ew.checkGuid(elm.value))
+			return this.onError(elm, "@(JsEncode(Application_Search.UserId.ErrorMessage))");
+
+		// Call Form_CustomValidate event
+		if (!this.Form_CustomValidate(fobj))
+			return false;
+		return true;
+	}
+
+	// Form_CustomValidate
+	fApplicationsearch.Form_CustomValidate = function(fobj) { // DO NOT CHANGE THIS LINE!
+
+		// Your custom validation code here, return false if invalid.
+		return true;
+	}
+
+	// Use JavaScript validation or not
+	fApplicationsearch.validateRequired = @(Config.ClientValidate ? "true" : "false");
+
+	// Dynamic selection lists
+	fApplicationsearch.lists["x_ApplicationstatusId"] = @Html.Raw(Application_Search.ApplicationstatusId.Lookup.ToClientList(Application_Search));
+	fApplicationsearch.lists["x_ApplicationstatusId"].options = @Html.Raw(ConvertToJson(Application_Search.ApplicationstatusId.LookupOptions));
+	fApplicationsearch.lists["x_BranchId"] = @Html.Raw(Application_Search.BranchId.Lookup.ToClientList(Application_Search));
+	fApplicationsearch.lists["x_BranchId"].options = @Html.Raw(ConvertToJson(Application_Search.BranchId.LookupOptions));
+	loadjs.done("fApplicationsearch");
+});
+</text>
+} @* !DashboardReport *@
+</script>
+<script>
+loadjs.ready("head", function() {
+
+	// Client script
+	// Write your client script here, no need to add script tags.
+
+});
+</script>
+@Application_Search.ShowPageHeader()
+@Application_Search.ShowMessages()
+<form name="fApplicationsearch" id="fApplicationsearch" class="@(Application_Search.FormClassName)" action="@AppPath(CurrentPageName())" method="post">
+@if (Application_Search.CheckToken) {
+	@Html.AntiForgeryToken()
+}
+<input type="hidden" name="action" id="action" value="search">
+<input type="hidden" name="modal" value="@ConvertToInt(Application_Search.IsModal)">
+<div class="ew-search-div"><!-- page* -->
+@if (Application_Search.ApplicationId.Visible) { // Application_Search.ApplicationId.Visible (begin)
+	<div id="r_ApplicationId" class="form-group row">
+		<label class="@(Application_Search.LeftColumnClass)"><span id="elh_Application_ApplicationId">@Html.Raw(Application_Search.ApplicationId.Caption)</span>
+		<span class="ew-search-operator">
+@Html.Raw(Language.Phrase("="))
+<input type="hidden" name="z_ApplicationId" id="z_ApplicationId" value="=">
+</span>
+		</label>
+		<div class="@(Application_Search.RightColumnClass)"><div @Html.Raw(Application_Search.ApplicationId.CellAttributes)>
+			<span id="el_Application_ApplicationId" class="ew-search-field">
+<input type="text" data-table="Application" data-field="x_ApplicationId" name="x_ApplicationId" id="x_ApplicationId" size="38" maxlength="38" placeholder="@Html.Raw(HtmlEncode(Application_Search.ApplicationId.PlaceHolder))" value="@(Application_Search.ApplicationId.EditValue)" @Html.Raw(Application_Search.ApplicationId.EditAttributes)>
+</span>
+		</div></div>
+	</div>
+} @* Application_Search.ApplicationId.Visible (end) *@
+@if (Application_Search._Name.Visible) { // Application_Search._Name.Visible (begin)
+	<div id="r__Name" class="form-group row">
+		<label for="x__Name" class="@(Application_Search.LeftColumnClass)"><span id="elh_Application__Name">@Html.Raw(Application_Search._Name.Caption)</span>
+		<span class="ew-search-operator">
+@Html.Raw(Language.Phrase("LIKE"))
+<input type="hidden" name="z__Name" id="z__Name" value="LIKE">
+</span>
+		</label>
+		<div class="@(Application_Search.RightColumnClass)"><div @Html.Raw(Application_Search._Name.CellAttributes)>
+			<span id="el_Application__Name" class="ew-search-field">
+<input type="text" data-table="Application" data-field="x__Name" name="x__Name" id="x__Name" size="30" maxlength="100" placeholder="@Html.Raw(HtmlEncode(Application_Search._Name.PlaceHolder))" value="@(Application_Search._Name.EditValue)" @Html.Raw(Application_Search._Name.EditAttributes)>
+</span>
+		</div></div>
+	</div>
+} @* Application_Search._Name.Visible (end) *@
+@if (Application_Search.ApplicationstatusId.Visible) { // Application_Search.ApplicationstatusId.Visible (begin)
+	<div id="r_ApplicationstatusId" class="form-group row">
+		<label for="x_ApplicationstatusId" class="@(Application_Search.LeftColumnClass)"><span id="elh_Application_ApplicationstatusId">@Html.Raw(Application_Search.ApplicationstatusId.Caption)</span>
+		<span class="ew-search-operator">
+@Html.Raw(Language.Phrase("="))
+<input type="hidden" name="z_ApplicationstatusId" id="z_ApplicationstatusId" value="=">
+</span>
+		</label>
+		<div class="@(Application_Search.RightColumnClass)"><div @Html.Raw(Application_Search.ApplicationstatusId.CellAttributes)>
+			<span id="el_Application_ApplicationstatusId" class="ew-search-field">
+<div class="btn-group ew-dropdown-list" role="group">
+	<div class="btn-group" role="group">
+		<button type="button" class="btn form-control dropdown-toggle ew-dropdown-toggle" aria-haspopup="true" aria-expanded="false"@Html.Raw(Application_Search.ApplicationstatusId.ReadOnly ? " readonly" : " data-toggle=\"dropdown\"")>@(Application_Search.ApplicationstatusId.AdvancedSearch.ViewValue)</button>
+		<div id="dsl_x_ApplicationstatusId" data-repeatcolumn="1" class="dropdown-menu">
+			<div class="ew-items" style="overflow-x: hidden;">
+@(Application_Search.ApplicationstatusId.RadioButtonListHtml(true, "x_ApplicationstatusId"))
+			</div><!-- /.ew-items -->
+		</div><!-- /.dropdown-menu -->
+		<div id="tp_x_ApplicationstatusId" class="ew-template"><input type="radio" class="custom-control-input" data-table="Application" data-field="x_ApplicationstatusId" data-value-separator="@(Application_Search.ApplicationstatusId.DisplayValueSeparatorAttribute)" name="x_ApplicationstatusId" id="x_ApplicationstatusId" value="{value}" @Html.Raw(Application_Search.ApplicationstatusId.EditAttributes)></div>
+	</div><!-- /.btn-group -->
+	@if (!Application_Search.ApplicationstatusId.ReadOnly) {
+	<button type="button" class="btn btn-default ew-dropdown-clear" disabled>
+		<i class="fas fa-times ew-icon"></i>
+	</button>
+	}
+</div><!-- /.ew-dropdown-list -->
+@Html.Raw(Application_Search.ApplicationstatusId.Lookup.GetParamTag(Application_Search, "p_x_ApplicationstatusId"))
+</span>
+		</div></div>
+	</div>
+} @* Application_Search.ApplicationstatusId.Visible (end) *@
+@if (Application_Search.BranchId.Visible) { // Application_Search.BranchId.Visible (begin)
+	<div id="r_BranchId" class="form-group row">
+		<label for="x_BranchId" class="@(Application_Search.LeftColumnClass)"><span id="elh_Application_BranchId">@Html.Raw(Application_Search.BranchId.Caption)</span>
+		<span class="ew-search-operator">
+@Html.Raw(Language.Phrase("="))
+<input type="hidden" name="z_BranchId" id="z_BranchId" value="=">
+</span>
+		</label>
+		<div class="@(Application_Search.RightColumnClass)"><div @Html.Raw(Application_Search.BranchId.CellAttributes)>
+			<span id="el_Application_BranchId" class="ew-search-field">
+<div class="input-group">
+	<select class="custom-select ew-custom-select" data-table="Application" data-field="x_BranchId" data-value-separator="@(Application_Search.BranchId.DisplayValueSeparatorAttribute)" id="x_BranchId" name="x_BranchId" @Html.Raw(Application_Search.BranchId.EditAttributes)>
+			@(Application_Search.BranchId.SelectOptionListHtml("x_BranchId"))
+		</select>
+</div>
+@Html.Raw(Application_Search.BranchId.Lookup.GetParamTag(Application_Search, "p_x_BranchId"))
+</span>
+		</div></div>
+	</div>
+} @* Application_Search.BranchId.Visible (end) *@
+@if (Application_Search.UserId.Visible) { // Application_Search.UserId.Visible (begin)
+	<div id="r_UserId" class="form-group row">
+		<label for="x_UserId" class="@(Application_Search.LeftColumnClass)"><span id="elh_Application_UserId">@Html.Raw(Application_Search.UserId.Caption)</span>
+		<span class="ew-search-operator">
+@Html.Raw(Language.Phrase("="))
+<input type="hidden" name="z_UserId" id="z_UserId" value="=">
+</span>
+		</label>
+		<div class="@(Application_Search.RightColumnClass)"><div @Html.Raw(Application_Search.UserId.CellAttributes)>
+			<span id="el_Application_UserId" class="ew-search-field">
+<input type="text" data-table="Application" data-field="x_UserId" name="x_UserId" id="x_UserId" size="38" maxlength="38" placeholder="@Html.Raw(HtmlEncode(Application_Search.UserId.PlaceHolder))" value="@(Application_Search.UserId.EditValue)" @Html.Raw(Application_Search.UserId.EditAttributes)>
+</span>
+		</div></div>
+	</div>
+} @* Application_Search.UserId.Visible (end) *@
+@if (Application_Search.State.Visible) { // Application_Search.State.Visible (begin)
+	<div id="r_State" class="form-group row">
+		<label for="x_State" class="@(Application_Search.LeftColumnClass)"><span id="elh_Application_State">@Html.Raw(Application_Search.State.Caption)</span>
+		<span class="ew-search-operator">
+@Html.Raw(Language.Phrase("LIKE"))
+<input type="hidden" name="z_State" id="z_State" value="LIKE">
+</span>
+		</label>
+		<div class="@(Application_Search.RightColumnClass)"><div @Html.Raw(Application_Search.State.CellAttributes)>
+			<span id="el_Application_State" class="ew-search-field">
+<input type="text" data-table="Application" data-field="x_State" name="x_State" id="x_State" size="30" maxlength="100" placeholder="@Html.Raw(HtmlEncode(Application_Search.State.PlaceHolder))" value="@(Application_Search.State.EditValue)" @Html.Raw(Application_Search.State.EditAttributes)>
+</span>
+		</div></div>
+	</div>
+} @* Application_Search.State.Visible (end) *@
+@if (Application_Search.FirstName.Visible) { // Application_Search.FirstName.Visible (begin)
+	<div id="r_FirstName" class="form-group row">
+		<label for="x_FirstName" class="@(Application_Search.LeftColumnClass)"><span id="elh_Application_FirstName">@Html.Raw(Application_Search.FirstName.Caption)</span>
+		<span class="ew-search-operator">
+@Html.Raw(Language.Phrase("LIKE"))
+<input type="hidden" name="z_FirstName" id="z_FirstName" value="LIKE">
+</span>
+		</label>
+		<div class="@(Application_Search.RightColumnClass)"><div @Html.Raw(Application_Search.FirstName.CellAttributes)>
+			<span id="el_Application_FirstName" class="ew-search-field">
+<input type="text" data-table="Application" data-field="x_FirstName" name="x_FirstName" id="x_FirstName" size="30" maxlength="50" placeholder="@Html.Raw(HtmlEncode(Application_Search.FirstName.PlaceHolder))" value="@(Application_Search.FirstName.EditValue)" @Html.Raw(Application_Search.FirstName.EditAttributes)>
+</span>
+		</div></div>
+	</div>
+} @* Application_Search.FirstName.Visible (end) *@
+@if (Application_Search.LastName.Visible) { // Application_Search.LastName.Visible (begin)
+	<div id="r_LastName" class="form-group row">
+		<label for="x_LastName" class="@(Application_Search.LeftColumnClass)"><span id="elh_Application_LastName">@Html.Raw(Application_Search.LastName.Caption)</span>
+		<span class="ew-search-operator">
+@Html.Raw(Language.Phrase("LIKE"))
+<input type="hidden" name="z_LastName" id="z_LastName" value="LIKE">
+</span>
+		</label>
+		<div class="@(Application_Search.RightColumnClass)"><div @Html.Raw(Application_Search.LastName.CellAttributes)>
+			<span id="el_Application_LastName" class="ew-search-field">
+<input type="text" data-table="Application" data-field="x_LastName" name="x_LastName" id="x_LastName" size="30" maxlength="10" placeholder="@Html.Raw(HtmlEncode(Application_Search.LastName.PlaceHolder))" value="@(Application_Search.LastName.EditValue)" @Html.Raw(Application_Search.LastName.EditAttributes)>
+</span>
+		</div></div>
+	</div>
+} @* Application_Search.LastName.Visible (end) *@
+@if (Application_Search.BlobUrl.Visible) { // Application_Search.BlobUrl.Visible (begin)
+	<div id="r_BlobUrl" class="form-group row">
+		<label for="x_BlobUrl" class="@(Application_Search.LeftColumnClass)"><span id="elh_Application_BlobUrl">@Html.Raw(Application_Search.BlobUrl.Caption)</span>
+		<span class="ew-search-operator">
+@Html.Raw(Language.Phrase("LIKE"))
+<input type="hidden" name="z_BlobUrl" id="z_BlobUrl" value="LIKE">
+</span>
+		</label>
+		<div class="@(Application_Search.RightColumnClass)"><div @Html.Raw(Application_Search.BlobUrl.CellAttributes)>
+			<span id="el_Application_BlobUrl" class="ew-search-field">
+<input type="text" data-table="Application" data-field="x_BlobUrl" name="x_BlobUrl" id="x_BlobUrl" size="30" maxlength="500" placeholder="@Html.Raw(HtmlEncode(Application_Search.BlobUrl.PlaceHolder))" value="@(Application_Search.BlobUrl.EditValue)" @Html.Raw(Application_Search.BlobUrl.EditAttributes)>
+</span>
+		</div></div>
+	</div>
+} @* Application_Search.BlobUrl.Visible (end) *@
+@if (Application_Search.EmailAddress.Visible) { // Application_Search.EmailAddress.Visible (begin)
+	<div id="r_EmailAddress" class="form-group row">
+		<label for="x_EmailAddress" class="@(Application_Search.LeftColumnClass)"><span id="elh_Application_EmailAddress">@Html.Raw(Application_Search.EmailAddress.Caption)</span>
+		<span class="ew-search-operator">
+@Html.Raw(Language.Phrase("LIKE"))
+<input type="hidden" name="z_EmailAddress" id="z_EmailAddress" value="LIKE">
+</span>
+		</label>
+		<div class="@(Application_Search.RightColumnClass)"><div @Html.Raw(Application_Search.EmailAddress.CellAttributes)>
+			<span id="el_Application_EmailAddress" class="ew-search-field">
+<input type="text" data-table="Application" data-field="x_EmailAddress" name="x_EmailAddress" id="x_EmailAddress" size="30" maxlength="50" placeholder="@Html.Raw(HtmlEncode(Application_Search.EmailAddress.PlaceHolder))" value="@(Application_Search.EmailAddress.EditValue)" @Html.Raw(Application_Search.EmailAddress.EditAttributes)>
+</span>
+		</div></div>
+	</div>
+} @* Application_Search.EmailAddress.Visible (end) *@
+@if (Application_Search.PhoneNumber.Visible) { // Application_Search.PhoneNumber.Visible (begin)
+	<div id="r_PhoneNumber" class="form-group row">
+		<label for="x_PhoneNumber" class="@(Application_Search.LeftColumnClass)"><span id="elh_Application_PhoneNumber">@Html.Raw(Application_Search.PhoneNumber.Caption)</span>
+		<span class="ew-search-operator">
+@Html.Raw(Language.Phrase("LIKE"))
+<input type="hidden" name="z_PhoneNumber" id="z_PhoneNumber" value="LIKE">
+</span>
+		</label>
+		<div class="@(Application_Search.RightColumnClass)"><div @Html.Raw(Application_Search.PhoneNumber.CellAttributes)>
+			<span id="el_Application_PhoneNumber" class="ew-search-field">
+<input type="text" data-table="Application" data-field="x_PhoneNumber" name="x_PhoneNumber" id="x_PhoneNumber" size="30" maxlength="50" placeholder="@Html.Raw(HtmlEncode(Application_Search.PhoneNumber.PlaceHolder))" value="@(Application_Search.PhoneNumber.EditValue)" @Html.Raw(Application_Search.PhoneNumber.EditAttributes)>
+</span>
+		</div></div>
+	</div>
+} @* Application_Search.PhoneNumber.Visible (end) *@
+</div><!-- /page* -->
+@if (!(Application_Search.IsModal)) {
+	<div class="form-group row"><!-- buttons .form-group -->
+		<div class="@(Application_Search.OffsetColumnClass)"><!-- buttons offset -->
+	<button class="btn btn-primary ew-btn" name="btn-action" id="btn-action" type="submit">@Html.Raw(Language.Phrase("Search"))</button>
+	<button class="btn btn-default ew-btn" name="btn-reset" id="btn-reset" type="button" onclick="ew.clearForm(this.form);">@Html.Raw(Language.Phrase("Reset"))</button>
+		</div><!-- /buttons offset -->
+	</div><!-- /buttons .form-group -->
+}
+</form>
+@Application_Search.ShowPageFooter()
+@ShowDebugMessage()
+@ElapsedTime()
+<script>
+loadjs.ready("load", function() {
+
+	// Startup script
+	// Write your table-specific startup script here
+	// document.write("page loaded");
+
+});
+</script>

@@ -1,0 +1,124 @@
+@{
+
+	// View
+	View = this;
+	SetClientVar("login", LoginStatus);
+
+	// Global Page Rendering event
+	Page_Rendering();
+
+	// Page Render event
+	ApplicationStatus_Delete.Page_Render();
+
+	// Check action result
+	if (ApplicationStatus_Delete.ActionResult is EmptyResult) { // Terminate page
+		return;
+	}
+
+	// Layout
+	Layout = "_Layout";
+
+	// Local variables (Temp data)
+	#pragma warning disable 168
+	string sqlWrk, filterWrk, whereWrk, curVal;
+	List<Dictionary<string, object>> rswrk;
+	string[] arWrk;
+	List<object> listWrk;
+	Func<string> lookupFilter;
+	#pragma warning restore 168
+}
+<script>
+var fApplicationStatusdelete, currentPageID;
+loadjs.ready("head", function() {
+
+	// Form object
+	currentPageID = ew.PAGE_ID = "delete";
+	fApplicationStatusdelete = currentForm = new ew.Form("fApplicationStatusdelete", "delete");
+	loadjs.done("fApplicationStatusdelete");
+});
+</script>
+<script>
+loadjs.ready("head", function() {
+
+	// Client script
+	// Write your client script here, no need to add script tags.
+
+});
+</script>
+@ApplicationStatus_Delete.ShowPageHeader()
+@ApplicationStatus_Delete.ShowMessages()
+<form name="fApplicationStatusdelete" id="fApplicationStatusdelete" class="form-inline ew-form ew-delete-form" action="@AppPath(CurrentPageName())" method="post">
+@if (ApplicationStatus_Delete.CheckToken) {
+	@Html.AntiForgeryToken()
+}
+<input type="hidden" name="action" id="action" value="delete">
+@foreach (string key in ApplicationStatus_Delete.RecordKeys) {
+<input type="hidden" name="key_m[]" value="@key">
+}
+<div class="card ew-card ew-grid">
+<div class="@ResponsiveTableClass() card-body ew-grid-middle-panel">
+<table class="table ew-table">
+	<thead>
+	<tr class="ew-table-header">
+@if (ApplicationStatus_Delete.Id.Visible) { // ApplicationStatus_Delete.Id.Visible (begin)
+		<th class="@Html.Raw(ApplicationStatus_Delete.Id.HeaderCellClass)"><span id="elh_ApplicationStatus_Id" class="ApplicationStatus_Id">@Html.Raw(ApplicationStatus_Delete.Id.Caption)</span></th>
+} @* ApplicationStatus_Delete.Id.Visible (end) *@
+@if (ApplicationStatus_Delete.DisplayName.Visible) { // ApplicationStatus_Delete.DisplayName.Visible (begin)
+		<th class="@Html.Raw(ApplicationStatus_Delete.DisplayName.HeaderCellClass)"><span id="elh_ApplicationStatus_DisplayName" class="ApplicationStatus_DisplayName">@Html.Raw(ApplicationStatus_Delete.DisplayName.Caption)</span></th>
+} @* ApplicationStatus_Delete.DisplayName.Visible (end) *@
+	</tr>
+	</thead>
+	<tbody>
+@{ ApplicationStatus_Delete.RecordCount = 0; }
+@while (ApplicationStatus_Delete.Recordset != null && await ApplicationStatus_Delete.Recordset.ReadAsync()) { // DN
+	ApplicationStatus_Delete.RecordCount++;
+	ApplicationStatus_Delete.RowCount++;
+
+	// Set row properties
+	ApplicationStatus_Delete.ResetAttributes();
+	ApplicationStatus_Delete.RowType = Config.RowTypeView; // View
+
+	// Get the field contents
+	await ApplicationStatus_Delete.LoadRowValues(ApplicationStatus_Delete.Recordset);
+
+	// Render row
+	await ApplicationStatus_Delete.RenderRow();
+	<tr @Html.Raw(ApplicationStatus.RowAttributes)>
+@if (ApplicationStatus_Delete.Id.Visible) { // ApplicationStatus_Delete.Id.Visible (begin)
+		<td @Html.Raw(ApplicationStatus_Delete.Id.CellAttributes)>
+<span id="el@(ApplicationStatus_Delete.RowCount)_ApplicationStatus_Id" class="ApplicationStatus_Id">
+<span @Html.Raw(ApplicationStatus_Delete.Id.ViewAttributes)>@Html.Raw(ApplicationStatus_Delete.Id.GetViewValue())</span>
+</span>
+</td>
+} @* ApplicationStatus_Delete.Id.Visible (end) *@
+@if (ApplicationStatus_Delete.DisplayName.Visible) { // ApplicationStatus_Delete.DisplayName.Visible (begin)
+		<td @Html.Raw(ApplicationStatus_Delete.DisplayName.CellAttributes)>
+<span id="el@(ApplicationStatus_Delete.RowCount)_ApplicationStatus_DisplayName" class="ApplicationStatus_DisplayName">
+<span @Html.Raw(ApplicationStatus_Delete.DisplayName.ViewAttributes)>@Html.Raw(ApplicationStatus_Delete.DisplayName.GetViewValue())</span>
+</span>
+</td>
+} @* ApplicationStatus_Delete.DisplayName.Visible (end) *@
+	</tr>
+}
+@{ ApplicationStatus_Delete.CloseRecordset(); }
+</tbody>
+</table>
+</div>
+</div>
+<div>
+<button class="btn btn-primary ew-btn" name="btn-action" id="btn-action" type="submit">@Html.Raw(Language.Phrase("DeleteBtn"))</button>
+<button class="btn btn-default ew-btn" name="btn-cancel" id="btn-cancel" type="button" data-href="@AppPath(ApplicationStatus_Delete.ReturnUrl)">@Language.Phrase("CancelBtn")</button>
+</div>
+</form>
+@ApplicationStatus_Delete.ShowPageFooter()
+@ShowDebugMessage()
+@ElapsedTime()
+<script>
+loadjs.ready("load", function() {
+
+	// Startup script
+	// Write your table-specific startup script here
+	// document.write("page loaded");
+
+});
+</script>

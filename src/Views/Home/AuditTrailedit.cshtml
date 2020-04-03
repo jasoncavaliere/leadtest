@@ -1,0 +1,306 @@
+@{
+
+	// View
+	View = this;
+	SetClientVar("login", LoginStatus);
+
+	// Global Page Rendering event
+	Page_Rendering();
+
+	// Page Render event
+	AuditTrail_Edit.Page_Render();
+
+	// Check action result
+	if (AuditTrail_Edit.ActionResult is EmptyResult) { // Terminate page
+		return;
+	}
+
+	// Layout
+	Layout = "_Layout";
+
+	// Local variables (Temp data)
+	#pragma warning disable 168
+	string sqlWrk, filterWrk, whereWrk, curVal;
+	List<Dictionary<string, object>> rswrk;
+	string[] arWrk;
+	List<object> listWrk;
+	Func<string> lookupFilter;
+	#pragma warning restore 168
+}
+<script>
+var fAuditTrailedit, currentPageID;
+loadjs.ready("head", function() {
+
+	// Form object
+	currentPageID = ew.PAGE_ID = "edit";
+	fAuditTrailedit = currentForm = new ew.Form("fAuditTrailedit", "edit");
+
+	// Validate form
+	fAuditTrailedit.validate = function() {
+		if (!this.validateRequired)
+			return true; // Ignore validation
+		var $ = jQuery, fobj = this.getForm(), $fobj = $(fobj);
+		if ($fobj.find("#confirm").val() == "confirm")
+			return true;
+		var elm, felm, uelm, addcnt = 0;
+		var $k = $fobj.find("#" + this.formKeyCountName); // Get key_count
+		var rowcnt = ($k[0]) ? parseInt($k.val(), 10) : 1;
+		var startcnt = (rowcnt == 0) ? 0 : 1; // Check rowcnt == 0 => Inline-Add
+		var gridinsert = ["insert", "gridinsert"].includes($fobj.find("#action").val()) && $k[0];
+		for (var i = startcnt; i <= rowcnt; i++) {
+			var infix = ($k[0]) ? String(i) : "";
+			$fobj.data("rowindex", infix);
+			@if (AuditTrail_Edit.Id.Required) {
+				<text>
+				elm = this.getElements("x" + infix + "_Id");
+				if (elm && !ew.isHidden(elm) && !ew.hasValue(elm))
+					return this.onError(elm, "@Html.Raw(JsEncode(Convert.ToString(AuditTrail_Edit.Id.RequiredErrorMessage).Replace("%s", AuditTrail_Edit.Id.Caption)))");
+				</text>
+			}
+			@if (AuditTrail_Edit._DateTime.Required) {
+				<text>
+				elm = this.getElements("x" + infix + "__DateTime");
+				if (elm && !ew.isHidden(elm) && !ew.hasValue(elm))
+					return this.onError(elm, "@Html.Raw(JsEncode(Convert.ToString(AuditTrail_Edit._DateTime.RequiredErrorMessage).Replace("%s", AuditTrail_Edit._DateTime.Caption)))");
+				</text>
+			}
+				elm = this.getElements("x" + infix + "__DateTime");
+				if (elm && !ew.checkDateDef(elm.value))
+					return this.onError(elm, "@(JsEncode(AuditTrail_Edit._DateTime.ErrorMessage))");
+			@if (AuditTrail_Edit.Script.Required) {
+				<text>
+				elm = this.getElements("x" + infix + "_Script");
+				if (elm && !ew.isHidden(elm) && !ew.hasValue(elm))
+					return this.onError(elm, "@Html.Raw(JsEncode(Convert.ToString(AuditTrail_Edit.Script.RequiredErrorMessage).Replace("%s", AuditTrail_Edit.Script.Caption)))");
+				</text>
+			}
+			@if (AuditTrail_Edit._User.Required) {
+				<text>
+				elm = this.getElements("x" + infix + "__User");
+				if (elm && !ew.isHidden(elm) && !ew.hasValue(elm))
+					return this.onError(elm, "@Html.Raw(JsEncode(Convert.ToString(AuditTrail_Edit._User.RequiredErrorMessage).Replace("%s", AuditTrail_Edit._User.Caption)))");
+				</text>
+			}
+			@if (AuditTrail_Edit.Action.Required) {
+				<text>
+				elm = this.getElements("x" + infix + "_Action");
+				if (elm && !ew.isHidden(elm) && !ew.hasValue(elm))
+					return this.onError(elm, "@Html.Raw(JsEncode(Convert.ToString(AuditTrail_Edit.Action.RequiredErrorMessage).Replace("%s", AuditTrail_Edit.Action.Caption)))");
+				</text>
+			}
+			@if (AuditTrail_Edit._Table.Required) {
+				<text>
+				elm = this.getElements("x" + infix + "__Table");
+				if (elm && !ew.isHidden(elm) && !ew.hasValue(elm))
+					return this.onError(elm, "@Html.Raw(JsEncode(Convert.ToString(AuditTrail_Edit._Table.RequiredErrorMessage).Replace("%s", AuditTrail_Edit._Table.Caption)))");
+				</text>
+			}
+			@if (AuditTrail_Edit._Field.Required) {
+				<text>
+				elm = this.getElements("x" + infix + "__Field");
+				if (elm && !ew.isHidden(elm) && !ew.hasValue(elm))
+					return this.onError(elm, "@Html.Raw(JsEncode(Convert.ToString(AuditTrail_Edit._Field.RequiredErrorMessage).Replace("%s", AuditTrail_Edit._Field.Caption)))");
+				</text>
+			}
+			@if (AuditTrail_Edit.KeyValue.Required) {
+				<text>
+				elm = this.getElements("x" + infix + "_KeyValue");
+				if (elm && !ew.isHidden(elm) && !ew.hasValue(elm))
+					return this.onError(elm, "@Html.Raw(JsEncode(Convert.ToString(AuditTrail_Edit.KeyValue.RequiredErrorMessage).Replace("%s", AuditTrail_Edit.KeyValue.Caption)))");
+				</text>
+			}
+			@if (AuditTrail_Edit.OldValue.Required) {
+				<text>
+				elm = this.getElements("x" + infix + "_OldValue");
+				if (elm && !ew.isHidden(elm) && !ew.hasValue(elm))
+					return this.onError(elm, "@Html.Raw(JsEncode(Convert.ToString(AuditTrail_Edit.OldValue.RequiredErrorMessage).Replace("%s", AuditTrail_Edit.OldValue.Caption)))");
+				</text>
+			}
+			@if (AuditTrail_Edit.NewValue.Required) {
+				<text>
+				elm = this.getElements("x" + infix + "_NewValue");
+				if (elm && !ew.isHidden(elm) && !ew.hasValue(elm))
+					return this.onError(elm, "@Html.Raw(JsEncode(Convert.ToString(AuditTrail_Edit.NewValue.RequiredErrorMessage).Replace("%s", AuditTrail_Edit.NewValue.Caption)))");
+				</text>
+			}
+
+				// Call Form_CustomValidate event
+				if (!this.Form_CustomValidate(fobj))
+					return false;
+		}
+
+		// Process detail forms
+		var dfs = $fobj.find("input[name='detailpage']").get();
+		for (var i = 0; i < dfs.length; i++) {
+			var df = dfs[i], val = df.value;
+			if (val && ew.forms[val])
+				if (!ew.forms[val].validate())
+					return false;
+		}
+		return true;
+	}
+
+	// Form_CustomValidate
+	fAuditTrailedit.Form_CustomValidate = function(fobj) { // DO NOT CHANGE THIS LINE!
+
+		// Your custom validation code here, return false if invalid.
+		return true;
+	}
+
+	// Use JavaScript validation or not
+	fAuditTrailedit.validateRequired = @(Config.ClientValidate ? "true" : "false");
+
+	// Dynamic selection lists
+	loadjs.done("fAuditTrailedit");
+});
+</script>
+<script>
+loadjs.ready("head", function() {
+
+	// Client script
+	// Write your client script here, no need to add script tags.
+
+});
+</script>
+@AuditTrail_Edit.ShowPageHeader()
+@AuditTrail_Edit.ShowMessages()
+<form name="fAuditTrailedit" id="fAuditTrailedit" class="@(AuditTrail_Edit.FormClassName)" action="@AppPath(CurrentPageName())" method="post">
+@if (AuditTrail_Edit.CheckToken) {
+	@Html.AntiForgeryToken()
+}
+<input type="hidden" name="action" id="action" value="update">
+@if (AuditTrail_Edit.IsModal) {
+<input type="hidden" name="modal" value="@ConvertToInt(AuditTrail_Edit.IsModal)">
+}
+<div class="ew-edit-div"><!-- page* -->
+@if (AuditTrail_Edit.Id.Visible) { // AuditTrail_Edit.Id.Visible (begin)
+	<div id="r_Id" class="form-group row">
+		<label id="elh_AuditTrail_Id" class="@(AuditTrail_Edit.LeftColumnClass)">@Html.Raw(AuditTrail_Edit.Id.Caption)@Html.Raw(AuditTrail_Edit.Id.Required ? Language.Phrase("FieldRequiredIndicator") : "")</label>
+		<div class="@(AuditTrail_Edit.RightColumnClass)"><div @Html.Raw(AuditTrail_Edit.Id.CellAttributes)>
+<span id="el_AuditTrail_Id">
+<span @Html.Raw(AuditTrail_Edit.Id.ViewAttributes)><input type="text" readonly class="form-control-plaintext" value="@Html.Raw(RemoveHtml(Convert.ToString(AuditTrail_Edit.Id.EditValue)))"></span>
+</span>
+<input type="hidden" data-table="AuditTrail" data-field="x_Id" name="x_Id" id="x_Id" value="@Html.Raw(HtmlEncode(AuditTrail_Edit.Id.CurrentValue))">
+@Html.Raw(AuditTrail_Edit.Id.CustomMsg)</div></div>
+	</div>
+} @* AuditTrail_Edit.Id.Visible (end) *@
+@if (AuditTrail_Edit._DateTime.Visible) { // AuditTrail_Edit._DateTime.Visible (begin)
+	<div id="r__DateTime" class="form-group row">
+		<label id="elh_AuditTrail__DateTime" for="x__DateTime" class="@(AuditTrail_Edit.LeftColumnClass)">@Html.Raw(AuditTrail_Edit._DateTime.Caption)@Html.Raw(AuditTrail_Edit._DateTime.Required ? Language.Phrase("FieldRequiredIndicator") : "")</label>
+		<div class="@(AuditTrail_Edit.RightColumnClass)"><div @Html.Raw(AuditTrail_Edit._DateTime.CellAttributes)>
+<span id="el_AuditTrail__DateTime">
+<input type="text" data-table="AuditTrail" data-field="x__DateTime" name="x__DateTime" id="x__DateTime" maxlength="8" placeholder="@Html.Raw(HtmlEncode(AuditTrail_Edit._DateTime.PlaceHolder))" value="@(AuditTrail_Edit._DateTime.EditValue)" @Html.Raw(AuditTrail_Edit._DateTime.EditAttributes)>
+@if (!AuditTrail_Edit._DateTime.ReadOnly && !AuditTrail_Edit._DateTime.Disabled && !AuditTrail_Edit._DateTime.EditAttrs.ContainsKey("readonly") && !AuditTrail_Edit._DateTime.EditAttrs.ContainsKey("disabled")) {
+<script>
+loadjs.ready(["fAuditTrailedit", "datetimepicker"], function() {
+	ew.createDateTimePicker("fAuditTrailedit", "x__DateTime", {"ignoreReadonly":true,"useCurrent":false,"format":0});
+});
+</script>
+}
+</span>
+@Html.Raw(AuditTrail_Edit._DateTime.CustomMsg)</div></div>
+	</div>
+} @* AuditTrail_Edit._DateTime.Visible (end) *@
+@if (AuditTrail_Edit.Script.Visible) { // AuditTrail_Edit.Script.Visible (begin)
+	<div id="r_Script" class="form-group row">
+		<label id="elh_AuditTrail_Script" for="x_Script" class="@(AuditTrail_Edit.LeftColumnClass)">@Html.Raw(AuditTrail_Edit.Script.Caption)@Html.Raw(AuditTrail_Edit.Script.Required ? Language.Phrase("FieldRequiredIndicator") : "")</label>
+		<div class="@(AuditTrail_Edit.RightColumnClass)"><div @Html.Raw(AuditTrail_Edit.Script.CellAttributes)>
+<span id="el_AuditTrail_Script">
+<input type="text" data-table="AuditTrail" data-field="x_Script" name="x_Script" id="x_Script" size="30" maxlength="255" placeholder="@Html.Raw(HtmlEncode(AuditTrail_Edit.Script.PlaceHolder))" value="@(AuditTrail_Edit.Script.EditValue)" @Html.Raw(AuditTrail_Edit.Script.EditAttributes)>
+</span>
+@Html.Raw(AuditTrail_Edit.Script.CustomMsg)</div></div>
+	</div>
+} @* AuditTrail_Edit.Script.Visible (end) *@
+@if (AuditTrail_Edit._User.Visible) { // AuditTrail_Edit._User.Visible (begin)
+	<div id="r__User" class="form-group row">
+		<label id="elh_AuditTrail__User" for="x__User" class="@(AuditTrail_Edit.LeftColumnClass)">@Html.Raw(AuditTrail_Edit._User.Caption)@Html.Raw(AuditTrail_Edit._User.Required ? Language.Phrase("FieldRequiredIndicator") : "")</label>
+		<div class="@(AuditTrail_Edit.RightColumnClass)"><div @Html.Raw(AuditTrail_Edit._User.CellAttributes)>
+<span id="el_AuditTrail__User">
+<input type="text" data-table="AuditTrail" data-field="x__User" name="x__User" id="x__User" size="30" maxlength="255" placeholder="@Html.Raw(HtmlEncode(AuditTrail_Edit._User.PlaceHolder))" value="@(AuditTrail_Edit._User.EditValue)" @Html.Raw(AuditTrail_Edit._User.EditAttributes)>
+</span>
+@Html.Raw(AuditTrail_Edit._User.CustomMsg)</div></div>
+	</div>
+} @* AuditTrail_Edit._User.Visible (end) *@
+@if (AuditTrail_Edit.Action.Visible) { // AuditTrail_Edit.Action.Visible (begin)
+	<div id="r_Action" class="form-group row">
+		<label id="elh_AuditTrail_Action" for="x_Action" class="@(AuditTrail_Edit.LeftColumnClass)">@Html.Raw(AuditTrail_Edit.Action.Caption)@Html.Raw(AuditTrail_Edit.Action.Required ? Language.Phrase("FieldRequiredIndicator") : "")</label>
+		<div class="@(AuditTrail_Edit.RightColumnClass)"><div @Html.Raw(AuditTrail_Edit.Action.CellAttributes)>
+<span id="el_AuditTrail_Action">
+<input type="text" data-table="AuditTrail" data-field="x_Action" name="x_Action" id="x_Action" size="30" maxlength="255" placeholder="@Html.Raw(HtmlEncode(AuditTrail_Edit.Action.PlaceHolder))" value="@(AuditTrail_Edit.Action.EditValue)" @Html.Raw(AuditTrail_Edit.Action.EditAttributes)>
+</span>
+@Html.Raw(AuditTrail_Edit.Action.CustomMsg)</div></div>
+	</div>
+} @* AuditTrail_Edit.Action.Visible (end) *@
+@if (AuditTrail_Edit._Table.Visible) { // AuditTrail_Edit._Table.Visible (begin)
+	<div id="r__Table" class="form-group row">
+		<label id="elh_AuditTrail__Table" for="x__Table" class="@(AuditTrail_Edit.LeftColumnClass)">@Html.Raw(AuditTrail_Edit._Table.Caption)@Html.Raw(AuditTrail_Edit._Table.Required ? Language.Phrase("FieldRequiredIndicator") : "")</label>
+		<div class="@(AuditTrail_Edit.RightColumnClass)"><div @Html.Raw(AuditTrail_Edit._Table.CellAttributes)>
+<span id="el_AuditTrail__Table">
+<input type="text" data-table="AuditTrail" data-field="x__Table" name="x__Table" id="x__Table" size="30" maxlength="255" placeholder="@Html.Raw(HtmlEncode(AuditTrail_Edit._Table.PlaceHolder))" value="@(AuditTrail_Edit._Table.EditValue)" @Html.Raw(AuditTrail_Edit._Table.EditAttributes)>
+</span>
+@Html.Raw(AuditTrail_Edit._Table.CustomMsg)</div></div>
+	</div>
+} @* AuditTrail_Edit._Table.Visible (end) *@
+@if (AuditTrail_Edit._Field.Visible) { // AuditTrail_Edit._Field.Visible (begin)
+	<div id="r__Field" class="form-group row">
+		<label id="elh_AuditTrail__Field" for="x__Field" class="@(AuditTrail_Edit.LeftColumnClass)">@Html.Raw(AuditTrail_Edit._Field.Caption)@Html.Raw(AuditTrail_Edit._Field.Required ? Language.Phrase("FieldRequiredIndicator") : "")</label>
+		<div class="@(AuditTrail_Edit.RightColumnClass)"><div @Html.Raw(AuditTrail_Edit._Field.CellAttributes)>
+<span id="el_AuditTrail__Field">
+<input type="text" data-table="AuditTrail" data-field="x__Field" name="x__Field" id="x__Field" size="30" maxlength="255" placeholder="@Html.Raw(HtmlEncode(AuditTrail_Edit._Field.PlaceHolder))" value="@(AuditTrail_Edit._Field.EditValue)" @Html.Raw(AuditTrail_Edit._Field.EditAttributes)>
+</span>
+@Html.Raw(AuditTrail_Edit._Field.CustomMsg)</div></div>
+	</div>
+} @* AuditTrail_Edit._Field.Visible (end) *@
+@if (AuditTrail_Edit.KeyValue.Visible) { // AuditTrail_Edit.KeyValue.Visible (begin)
+	<div id="r_KeyValue" class="form-group row">
+		<label id="elh_AuditTrail_KeyValue" for="x_KeyValue" class="@(AuditTrail_Edit.LeftColumnClass)">@Html.Raw(AuditTrail_Edit.KeyValue.Caption)@Html.Raw(AuditTrail_Edit.KeyValue.Required ? Language.Phrase("FieldRequiredIndicator") : "")</label>
+		<div class="@(AuditTrail_Edit.RightColumnClass)"><div @Html.Raw(AuditTrail_Edit.KeyValue.CellAttributes)>
+<span id="el_AuditTrail_KeyValue">
+<textarea data-table="AuditTrail" data-field="x_KeyValue" name="x_KeyValue" id="x_KeyValue" cols="35" rows="4" placeholder="@(HtmlEncode(AuditTrail_Edit.KeyValue.PlaceHolder))" @Html.Raw(AuditTrail_Edit.KeyValue.EditAttributes)>@(AuditTrail_Edit.KeyValue.EditValue)</textarea>
+</span>
+@Html.Raw(AuditTrail_Edit.KeyValue.CustomMsg)</div></div>
+	</div>
+} @* AuditTrail_Edit.KeyValue.Visible (end) *@
+@if (AuditTrail_Edit.OldValue.Visible) { // AuditTrail_Edit.OldValue.Visible (begin)
+	<div id="r_OldValue" class="form-group row">
+		<label id="elh_AuditTrail_OldValue" for="x_OldValue" class="@(AuditTrail_Edit.LeftColumnClass)">@Html.Raw(AuditTrail_Edit.OldValue.Caption)@Html.Raw(AuditTrail_Edit.OldValue.Required ? Language.Phrase("FieldRequiredIndicator") : "")</label>
+		<div class="@(AuditTrail_Edit.RightColumnClass)"><div @Html.Raw(AuditTrail_Edit.OldValue.CellAttributes)>
+<span id="el_AuditTrail_OldValue">
+<textarea data-table="AuditTrail" data-field="x_OldValue" name="x_OldValue" id="x_OldValue" cols="35" rows="4" placeholder="@(HtmlEncode(AuditTrail_Edit.OldValue.PlaceHolder))" @Html.Raw(AuditTrail_Edit.OldValue.EditAttributes)>@(AuditTrail_Edit.OldValue.EditValue)</textarea>
+</span>
+@Html.Raw(AuditTrail_Edit.OldValue.CustomMsg)</div></div>
+	</div>
+} @* AuditTrail_Edit.OldValue.Visible (end) *@
+@if (AuditTrail_Edit.NewValue.Visible) { // AuditTrail_Edit.NewValue.Visible (begin)
+	<div id="r_NewValue" class="form-group row">
+		<label id="elh_AuditTrail_NewValue" for="x_NewValue" class="@(AuditTrail_Edit.LeftColumnClass)">@Html.Raw(AuditTrail_Edit.NewValue.Caption)@Html.Raw(AuditTrail_Edit.NewValue.Required ? Language.Phrase("FieldRequiredIndicator") : "")</label>
+		<div class="@(AuditTrail_Edit.RightColumnClass)"><div @Html.Raw(AuditTrail_Edit.NewValue.CellAttributes)>
+<span id="el_AuditTrail_NewValue">
+<textarea data-table="AuditTrail" data-field="x_NewValue" name="x_NewValue" id="x_NewValue" cols="35" rows="4" placeholder="@(HtmlEncode(AuditTrail_Edit.NewValue.PlaceHolder))" @Html.Raw(AuditTrail_Edit.NewValue.EditAttributes)>@(AuditTrail_Edit.NewValue.EditValue)</textarea>
+</span>
+@Html.Raw(AuditTrail_Edit.NewValue.CustomMsg)</div></div>
+	</div>
+} @* AuditTrail_Edit.NewValue.Visible (end) *@
+</div><!-- /page* -->
+@{ AuditTrail_Edit.CloseRecordset(); }
+@if (!AuditTrail_Edit.IsModal) {
+@:<div class="form-group row"><!-- buttons .form-group -->
+	@:<div class="@(AuditTrail_Edit.OffsetColumnClass)"><!-- buttons offset -->
+<button class="btn btn-primary ew-btn" name="btn-action" id="btn-action" type="submit">@Html.Raw(Language.Phrase("SaveBtn"))</button>
+<button class="btn btn-default ew-btn" name="btn-cancel" id="btn-cancel" type="button" data-href="@AppPath(AuditTrail_Edit.ReturnUrl)">@Html.Raw(Language.Phrase("CancelBtn"))</button>
+	@:</div><!-- /buttons offset -->
+@:</div><!-- /buttons .form-group -->
+}
+</form>
+@AuditTrail_Edit.ShowPageFooter()
+@ShowDebugMessage()
+@ElapsedTime()
+<script>
+loadjs.ready("load", function() {
+
+	// Startup script
+	// Write your table-specific startup script here
+	// document.write("page loaded");
+
+});
+</script>

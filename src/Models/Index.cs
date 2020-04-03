@@ -495,7 +495,7 @@ namespace AspNetMaker2020.Models {
 				// If session expired, show session expired message
 				if (Get<bool>("expired"))
 					FailureMessage = Language.Phrase("SessionExpired");
-				return Terminate("BankBranchlist"); // Exit and go to default page
+				return Terminate("/Applicationlist"); // Exit and go to default page
 				return PageResult();
 			}
 			#pragma warning restore 162, 1998

@@ -849,7 +849,6 @@ namespace AspNetMaker2020.Models {
 				// Set up lookup cache
 				// Search filters
 
-				string srchBasic = ""; // Basic search filter
 				string filter = "";
 
 				// Get command
@@ -892,35 +891,8 @@ namespace AspNetMaker2020.Models {
 							value.HideAllOptions();
 					}
 
-					// Get default search criteria
-					AddFilter(ref DefaultSearchWhere, BasicSearchWhere(true));
-
-					// Get basic search values
-					LoadBasicSearchValues();
-
-					// Process filter list
-					var filterResult = await ProcessFilterList();
-					if (filterResult != null) {
-
-						// Clean output buffer
-						if (!Config.Debug)
-							Response.Clear();
-						return Controller.Json(filterResult);
-					}
-
-					// Restore search parms from Session if not searching / reset / export
-					if ((IsExport() || Command != "search" && Command != "reset" && Command != "resetall") && Command != "json" && CheckSearchParms())
-						RestoreSearchParms();
-
-					// Call Recordset SearchValidated event
-					Recordset_SearchValidated();
-
 					// Set up sorting order
 					SetupSortOrder();
-
-					// Get basic search criteria
-					if (Empty(SearchError))
-						srchBasic = BasicSearchWhere();
 				}
 
 				// Restore display records
@@ -934,30 +906,6 @@ namespace AspNetMaker2020.Models {
 				// Load Sorting Order
 				if (Command != "json")
 					LoadSortOrder();
-
-				// Load search default if no existing search criteria
-				if (!CheckSearchParms()) {
-
-					// Load basic search from default
-					BasicSearch.LoadDefault();
-					if (!Empty(BasicSearch.Keyword))
-						srchBasic = BasicSearchWhere();
-				}
-
-				// Build search criteria
-				AddFilter(ref SearchWhere, srchBasic);
-
-				// Call Recordset_Searching event
-				Recordset_Searching(ref SearchWhere);
-
-				// Save search criteria
-				if (Command == "search" && !RestoreSearch) {
-					SessionSearchWhere = SearchWhere; // Save to Session (rename as SessionSearchWhere property)
-					StartRecord = 1; // Reset start record counter
-					StartRecordNumber = StartRecord;
-				} else if (Command != "json") {
-					SearchWhere = SessionSearchWhere;
-				}
 
 				// Build filter
 				filter = "";
@@ -1056,209 +1004,6 @@ namespace AspNetMaker2020.Models {
 
 			// Check if empty row
 			public bool EmptyRow() => false;
-			#pragma warning disable 162, 1998
-
-			// Get list of filters
-			public async Task<string> GetFilterList() {
-				string filterList = "";
-
-				// Initialize
-				var filters = new JObject(); // DN
-				filters.Merge(JObject.Parse(Id.AdvancedSearch.ToJson())); // Field Id
-				filters.Merge(JObject.Parse(DisplayName.AdvancedSearch.ToJson())); // Field DisplayName
-				filters.Merge(JObject.Parse(LeadStatus.BasicSearch.ToJson()));
-
-				// Return filter list in JSON
-				if (filters.HasValues)
-					filterList = "\"data\":" + filters.ToString();
-				return (filterList != "") ? "{" + filterList + "}" : "null";
-			}
-
-			// Process filter list
-			protected async Task<object> ProcessFilterList() {
-				if (Post("cmd") == "resetfilter") {
-					RestoreFilterList();
-				}
-				return null;
-			}
-			#pragma warning restore 162, 1998
-
-			// Restore list of filters
-			protected bool RestoreFilterList() {
-
-				// Return if not reset filter
-				if (Post("cmd") != "resetfilter")
-					return false;
-				Dictionary<string, string> filter = JsonConvert.DeserializeObject<Dictionary<string, string>>(Post("filter"));
-				Command = "search";
-				string sv;
-
-				// Field Id
-				if (filter.TryGetValue("x_Id", out sv)) {
-					Id.AdvancedSearch.SearchValue = sv;
-					Id.AdvancedSearch.SearchOperator = filter["z_Id"];
-					Id.AdvancedSearch.SearchCondition = filter["v_Id"];
-					Id.AdvancedSearch.SearchValue2 = filter["y_Id"];
-					Id.AdvancedSearch.SearchOperator2 = filter["w_Id"];
-					Id.AdvancedSearch.Save();
-				}
-
-				// Field DisplayName
-				if (filter.TryGetValue("x_DisplayName", out sv)) {
-					DisplayName.AdvancedSearch.SearchValue = sv;
-					DisplayName.AdvancedSearch.SearchOperator = filter["z_DisplayName"];
-					DisplayName.AdvancedSearch.SearchCondition = filter["v_DisplayName"];
-					DisplayName.AdvancedSearch.SearchValue2 = filter["y_DisplayName"];
-					DisplayName.AdvancedSearch.SearchOperator2 = filter["w_DisplayName"];
-					DisplayName.AdvancedSearch.Save();
-				}
-				if (filter.TryGetValue(Config.TableBasicSearch, out string keyword))
-					BasicSearch.SessionKeyword = keyword;
-				if (filter.TryGetValue(Config.TableBasicSearchType, out string type))
-					BasicSearch.SessionType = type;
-				return true;
-			}
-
-			// Return basic search SQL
-			protected string BasicSearchSql(List<string> keywords, string type) {
-				string where = "";
-				BuildBasicSearchSql(ref where, DisplayName, keywords, type);
-				return where;
-			}
-
-			// Build basic search SQL
-			protected void BuildBasicSearchSql(ref string where, DbField fld, List<string> keywords, string type) {
-				string defCond = (type == "OR") ? "OR" : "AND";
-				var sqls = new List<string>(); // List for SQL parts
-				var conds = new List<string>(); // List for search conditions
-				int cnt = keywords.Count;
-				int j = 0; // Number of SQL parts
-				for (int i = 0; i < cnt; i++) {
-					string keyword = keywords[i];
-					keyword = keyword.Trim();
-					string[] ar;
-					if (!Empty(Config.BasicSearchIgnorePattern)) {
-						keyword = Regex.Replace(keyword, Config.BasicSearchIgnorePattern, "\\");
-						ar = keyword.Split('\\');
-					} else {
-						ar = new string[] { keyword };
-					}
-					foreach (var kw in ar) {
-						if (!Empty(kw)) {
-							string wrk = "";
-							if (kw == "OR" && type == "") {
-								if (j > 0)
-									conds[j - 1] = "OR";
-							} else if (kw == Config.NullValue) {
-								wrk = fld.Expression + " IS NULL";
-							} else if (kw == Config.NotNullValue) {
-								wrk = fld.Expression + " IS NOT NULL";
-							} else if (fld.IsVirtual) {
-								wrk = fld.VirtualExpression + Like(QuotedValue("%" + kw + "%", Config.DataTypeString, DbId), DbId);
-							} else if (fld.DataType != Config.DataTypeNumber || IsNumeric(kw)) {
-								wrk = fld.BasicSearchExpression + Like(QuotedValue("%" + kw + "%", Config.DataTypeString, DbId), DbId);
-							}
-							if (!Empty(wrk)) {
-								sqls.Add(wrk); // DN
-								conds.Add(defCond); // DN
-								j++;
-							}
-						}
-					}
-				}
-				cnt = sqls.Count;
-				bool quoted = false;
-				string sql = "";
-				if (cnt > 0) {
-					for (int i = 0; i < cnt - 1; i++) {
-						if (conds[i] == "OR") {
-							if (!quoted)
-								sql += "(";
-							quoted = true;
-						}
-						sql += sqls[i];
-						if (quoted && conds[i] != "OR") {
-							sql += ")";
-							quoted = false;
-						}
-						sql += " " + conds[i] + " ";
-					}
-					sql += sqls[cnt - 1];
-					if (quoted)
-						sql += ")";
-				}
-				if (!Empty(sql)) {
-					if (!Empty(where))
-						where += " OR ";
-					where += "(" + sql + ")";
-				}
-			}
-
-			// Return basic search WHERE clause based on search keyword and type
-			protected string BasicSearchWhere(bool def = false) {
-				string searchStr = "";
-				string searchKeyword = def ? BasicSearch.KeywordDefault : BasicSearch.Keyword;
-				string searchType = def ? BasicSearch.TypeDefault : BasicSearch.Type;
-
-				// Get search SQL
-				if (!Empty(searchKeyword)) {
-					var ar = BasicSearch.KeywordList(def);
-					if ((searchType == "OR" || searchType == "AND") && ConvertToBool(BasicSearch.BasicSearchAnyFields)) {
-						foreach (var keyword in ar) {
-							if (keyword != "") {
-								if (searchStr != "")
-									searchStr += " " + searchType + " ";
-								searchStr += "(" + BasicSearchSql(new List<string> { keyword }, searchType) + ")";
-							}
-						}
-					} else {
-						searchStr = BasicSearchSql(ar, searchType);
-					}
-					if (!def && (new List<string> {"", "reset", "resetall"}).Contains(Command))
-						Command = "search";
-				}
-				if (!def && Command == "search") {
-					BasicSearch.SessionKeyword = searchKeyword;
-					BasicSearch.SessionType = searchType;
-				}
-				return searchStr;
-			}
-
-			// Check if search parm exists
-			protected bool CheckSearchParms() {
-
-				// Check basic search
-				if (BasicSearch.IssetSession)
-					return true;
-				return false;
-			}
-
-			// Clear all search parameters
-			protected void ResetSearchParms() {
-				SearchWhere = "";
-				SessionSearchWhere = SearchWhere;
-
-				// Clear basic search parameters
-				ResetBasicSearchParms();
-			}
-
-			// Load advanced search default values
-			protected bool LoadAdvancedSearchDefault() {
-				return false;
-			}
-
-			// Clear all basic search parameters
-			protected void ResetBasicSearchParms() {
-				BasicSearch.UnsetSession();
-			}
-
-			// Restore all search parameters
-			protected void RestoreSearchParms() {
-				RestoreSearch = true;
-
-				// Restore basic search values
-				BasicSearch.Load();
-			}
 
 			// Set up sort parameters
 			protected void SetupSortOrder() {
@@ -1294,10 +1039,6 @@ namespace AspNetMaker2020.Models {
 				// Get reset cmd
 				if (Command.ToLower().StartsWith("reset")) {
 
-					// Reset search criteria
-					if (SameText(Command, "reset") || SameText(Command, "resetall"))
-						ResetSearchParms();
-
 					// Reset sorting order
 					if (SameText(Command, "resetsort")) {
 						string orderBy = "";
@@ -1331,18 +1072,6 @@ namespace AspNetMaker2020.Models {
 
 				// "edit"
 				item = ListOptions.Add("edit");
-				item.CssClass = "text-nowrap";
-				item.Visible = true;
-				item.OnLeft = false;
-
-				// "copy"
-				item = ListOptions.Add("copy");
-				item.CssClass = "text-nowrap";
-				item.Visible = true;
-				item.OnLeft = false;
-
-				// "delete"
-				item = ListOptions.Add("delete");
 				item.CssClass = "text-nowrap";
 				item.Visible = true;
 				item.OnLeft = false;
@@ -1411,24 +1140,6 @@ namespace AspNetMaker2020.Models {
 					listOption.Body = "";
 				}
 
-				// "copy"
-				listOption = ListOptions["copy"];
-				string copycaption = HtmlTitle(Language.Phrase("CopyLink"));
-				isVisible = true;
-				if (isVisible) {
-					listOption.Body = "<a class=\"ew-row-link ew-copy\" title=\"" + copycaption + "\" data-caption=\"" + copycaption + "\" href=\"" + HtmlEncode(AppPath(CopyUrl)) + "\">" + Language.Phrase("CopyLink") + "</a>";
-				} else {
-					listOption.Body = "";
-				}
-
-				// "delete"
-				listOption = ListOptions["delete"];
-				isVisible = true;
-				if (isVisible)
-					listOption.Body = "<a class=\"ew-row-link ew-delete\"" + "" + " title=\"" + HtmlTitle(Language.Phrase("DeleteLink")) + "\" data-caption=\"" + HtmlTitle(Language.Phrase("DeleteLink")) + "\" href=\"" + HtmlEncode(AppPath(DeleteUrl)) + "\">" + Language.Phrase("DeleteLink") + "</a>";
-				else
-					listOption.Body = "";
-
 				// Set up list action buttons
 				listOption = ListOptions["listactions"];
 				if (listOption != null && !IsExport() && CurrentAction == "") {
@@ -1495,10 +1206,10 @@ namespace AspNetMaker2020.Models {
 				// Filter button
 				item = FilterOptions.Add("savecurrentfilter");
 				item.Body = "<a class=\"ew-save-filter\" data-form=\"fLeadStatuslistsrch\" href=\"#\">" + Language.Phrase("SaveCurrentFilter") + "</a>";
-				item.Visible = true;
+				item.Visible = false;
 				item = FilterOptions.Add("deletefilter");
 				item.Body = "<a class=\"ew-delete-filter\" data-form=\"fLeadStatuslistsrch\" href=\"#\">" + Language.Phrase("DeleteFilter") + "</a>";
-				item.Visible = true;
+				item.Visible = false;
 				FilterOptions.UseDropDownButton = true;
 				FilterOptions.UseButtonGroup = !FilterOptions.UseDropDownButton;
 				FilterOptions.DropDownButtonPhrase = Language.Phrase("Filters");
@@ -1618,16 +1329,6 @@ namespace AspNetMaker2020.Models {
 
 			// Render list options (extended codes)
 			protected void RenderListOptionsExt() {}
-
-			// Load basic search values // DN
-			protected void LoadBasicSearchValues() {
-				if (Get(Config.TableBasicSearch, out StringValues keyword))
-					BasicSearch.Keyword = keyword;
-				if (!Empty(BasicSearch.Keyword) && Empty(Command))
-					Command = "search";
-				if (Get(Config.TableBasicSearchType, out StringValues type))
-					BasicSearch.Type = type;
-			}
 
 			// Load recordset // DN
 			public async Task<DbDataReader> LoadRecordset(int offset = -1, int rowcnt = -1) {
@@ -1773,17 +1474,6 @@ namespace AspNetMaker2020.Models {
 				SearchOptions = new ListOptions();
 				SearchOptions.Tag = "div";
 				SearchOptions.TagClassName = "ew-search-option";
-
-				// Search button
-				item = SearchOptions.Add("searchtoggle");
-				var searchToggleClass = !Empty(SearchWhere) ? " active" : " active";
-				item.Body = "<button type=\"button\" class=\"btn btn-default ew-search-toggle" + searchToggleClass + "\" title=\"" + Language.Phrase("SearchPanel") + "\" data-caption=\"" + Language.Phrase("SearchPanel") + "\" data-toggle=\"button\" data-form=\"fLeadStatuslistsrch\">" + Language.Phrase("SearchLink") + "</button>";
-				item.Visible = true;
-
-				// Show all button
-				item = SearchOptions.Add("showall");
-				item.Body = "<a class=\"btn btn-default ew-show-all\" title=\"" + Language.Phrase("ShowAll") + "\" data-caption=\"" + Language.Phrase("ShowAll") + "\" href=\"" + AppPath(PageUrl) + "cmd=reset\">" + Language.Phrase("ShowAllBtn") + "</a>";
-				item.Visible = (SearchWhere != DefaultSearchWhere && SearchWhere != "0=101");
 
 				// Button group for search
 				SearchOptions.UseDropDownButton = false;

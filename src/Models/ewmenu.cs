@@ -91,9 +91,16 @@ namespace AspNetMaker2020.Models {
 
 			// Sidebar menu
 			var sideMenu = new Menu("menu", true, false);
-			sideMenu.AddMenuItem(1, "mi_BankBranch", Language.MenuPhrase("1", "MenuText"), "BankBranchlist", -1, "", true, false, false, "", "", false);
-			sideMenu.AddMenuItem(2, "mi__Leads", Language.MenuPhrase("2", "MenuText"), "_Leadslist", -1, "", true, false, false, "", "", false);
-			sideMenu.AddMenuItem(3, "mi_LeadStatus", Language.MenuPhrase("3", "MenuText"), "LeadStatuslist", -1, "", true, false, false, "", "", false);
+			sideMenu.AddMenuItem(6, "mci_Pipeline", Language.MenuPhrase("6", "MenuText"), "", -1, "", true, false, true, "", "", false);
+			sideMenu.AddMenuItem(10, "mi_Application", Language.MenuPhrase("10", "MenuText"), "Applicationlist", 6, "", true, false, false, "", "", false);
+			sideMenu.AddMenuItem(12, "mi_Applications_By_Status", Language.MenuPhrase("12", "MenuText"), "Applications_By_Statussmry", 6, "", true, false, false, "", "", false);
+			sideMenu.AddMenuItem(8, "mci_Reports", Language.MenuPhrase("8", "MenuText"), "", -1, "", true, false, true, "", "", false);
+			sideMenu.AddMenuItem(21, "mci_System", Language.MenuPhrase("21", "MenuText"), "", -1, "", true, false, true, "", "", false);
+			sideMenu.AddMenuItem(9, "mi_AuditTrail", Language.MenuPhrase("9", "MenuText"), "AuditTraillist", 21, "", true, false, false, "", "", false);
+			sideMenu.AddMenuItem(7, "mci_Categories", Language.MenuPhrase("7", "MenuText"), "", 21, "", true, false, true, "", "", false);
+			sideMenu.AddMenuItem(1, "mi_BankBranch", Language.MenuPhrase("1", "MenuText"), "BankBranchlist", 7, "", true, false, false, "", "", false);
+			sideMenu.AddMenuItem(4, "mi_Users", Language.MenuPhrase("4", "MenuText"), "Userslist", 7, "", true, false, false, "", "", false);
+			sideMenu.AddMenuItem(11, "mi_ApplicationStatus", Language.MenuPhrase("11", "MenuText"), "ApplicationStatuslist", 7, "", true, false, false, "", "", false);
 			SideMenu = sideMenu.ToScript();
 		}
 	} // End Partial class

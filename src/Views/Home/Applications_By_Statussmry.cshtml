@@ -1,0 +1,317 @@
+@{
+
+	// View
+	View = this;
+	SetClientVar("login", LoginStatus);
+
+	// Global Page Rendering event
+	Page_Rendering();
+
+	// Page Render event
+	Applications_By_Status_Summary.Page_Render();
+
+	// Check action result
+	if (Applications_By_Status_Summary.ActionResult is EmptyResult) { // Terminate page
+		return;
+	}
+
+	// Layout
+	if (DashboardReport) {
+		if (!Applications_By_Status_Summary.Visible) { // Not visible, return
+			return;
+		}
+		Layout = ""; // No layout
+	} else {
+		Layout = "_Layout";
+	}
+
+	// Local variables (Temp data)
+	#pragma warning disable 168
+	string sqlWrk, filterWrk, whereWrk, curVal;
+	List<Dictionary<string, object>> rswrk;
+	string[] arWrk;
+	List<object> listWrk;
+	Func<string> lookupFilter;
+	#pragma warning restore 168
+}
+@if (!Applications_By_Status_Summary.IsExport() && !Applications_By_Status_Summary.DrillDown && !DashboardReport) {
+<script>
+</script>
+<script>
+loadjs.ready("head", function() {
+
+	// Client script
+	// Write your client script here, no need to add script tags.
+
+});
+</script>
+}
+<a id="top"></a>
+@if ((!Applications_By_Status_Summary.IsExport() || Applications_By_Status_Summary.IsExport("print")) && !DashboardReport) {
+<!-- Content Container -->
+@:<div id="ew-report" class="ew-report container-fluid">
+}
+<div class="btn-toolbar ew-toolbar">
+@if (!Applications_By_Status_Summary.DrillDownInPanel) {
+	Applications_By_Status_Summary.ExportOptions.Render("body");
+	Applications_By_Status_Summary.SearchOptions.Render("body");
+	Applications_By_Status_Summary.FilterOptions.Render("body");
+}
+</div>
+@Applications_By_Status_Summary.ShowPageHeader()
+@Applications_By_Status_Summary.ShowMessages()
+@if ((!Applications_By_Status_Summary.IsExport() || Applications_By_Status_Summary.IsExport("print")) && !DashboardReport) {
+@:<div class="row">
+}
+@if ((!Applications_By_Status_Summary.IsExport() || Applications_By_Status_Summary.IsExport("print")) && !DashboardReport) {
+<!-- Center Container -->
+@:<div id="ew-center" class="@(Applications_By_Status_Summary.CenterContentClass)">
+}
+<!-- Summary report (begin) -->
+@if (true) {
+@Html.Raw("<div id=\"report_summary\">")
+}
+@if (!Applications_By_Status_Summary.IsExport() && !Applications_By_Status_Summary.DrillDown && !DashboardReport) {
+}
+@while (Applications_By_Status_Summary.GroupCount <= Applications_By_Status_Summary.GroupRecords.Count && Applications_By_Status_Summary.GroupCount <= Applications_By_Status_Summary.DisplayGroups) {
+
+	// Show header
+	if (Applications_By_Status_Summary.ShowHeader) {
+if (Applications_By_Status_Summary.GroupCount > 1) {
+@:</tbody>
+@:</table>
+if (true) {
+@:</div>
+<!-- /.ew-grid-middle-panel -->
+<!-- Report grid (end) -->
+}
+if (!Applications_By_Status_Summary.IsExport() && !(Applications_By_Status_Summary.DrillDown && Applications_By_Status_Summary.TotalGroups > 0)) {
+<!-- Bottom pager -->
+<div class="card-footer ew-grid-lower-panel">
+<form name="ew-pager-form" class="form-inline ew-form ew-pager-form" action="@AppPath(CurrentPageName())">
+@Applications_By_Status_Summary.Pager.Render()
+</form>
+</div>
+}
+if (true) {
+@:</div>
+<!-- /.ew-grid -->
+}
+@Html.Raw(Applications_By_Status_Summary.PageBreakContent)
+}
+if (true) {
+	if (!Applications_By_Status_Summary.IsExport("word") && !Applications_By_Status_Summary.IsExport("excel")) { // DN
+	@:<div class="card ew-card ew-grid" style="@Html.Raw(Applications_By_Status_Summary.ReportTableStyle)">
+	} else { // DN
+	@:<div class="ew-grid" style="@Html.Raw(Applications_By_Status_Summary.ReportTableStyle)">
+	}
+}
+if (true) {
+<!-- Report grid (begin) -->
+@:<div id="gmp_Applications_By_Status" class="@ResponsiveTableClass() card-body ew-grid-middle-panel">
+}
+@:<table class="@Applications_By_Status_Summary.ReportTableClass">
+<thead>
+	<!-- Table header -->
+	<tr class="ew-table-header">
+@if (Applications_By_Status_Summary.ApplicationstatusId.Visible) { // Applications_By_Status_Summary.ApplicationstatusId.Visible (begin)
+	if (Applications_By_Status_Summary.ApplicationstatusId.ShowGroupHeaderAsRow) {
+	<th data-name="ApplicationstatusId">&nbsp;</th>
+	} else {
+		if (Empty(Applications_By_Status_Summary.SortUrl(Applications_By_Status_Summary.ApplicationstatusId))) {
+	<th data-name="ApplicationstatusId" class="@(Applications_By_Status_Summary.ApplicationstatusId.HeaderCellClass)"><div class="Applications_By_Status_ApplicationstatusId"><div class="ew-table-header-caption">@Html.Raw(Applications_By_Status_Summary.ApplicationstatusId.Caption)</div></div></th>
+		} else {
+	<th data-name="ApplicationstatusId" class="@(Applications_By_Status_Summary.ApplicationstatusId.HeaderCellClass)"><div class="ew-pointer" onclick="ew.sort(event, '@Html.Raw(Applications_By_Status_Summary.SortUrl(Applications_By_Status_Summary.ApplicationstatusId))', 1);"><div class="Applications_By_Status_ApplicationstatusId">
+		<div class="ew-table-header-btn"><span class="ew-table-header-caption">@Html.Raw(Applications_By_Status_Summary.ApplicationstatusId.Caption)</span><span class="ew-table-header-sort">@if (Applications_By_Status_Summary.ApplicationstatusId.Sort == "ASC") {<i class="fas fa-sort-up"></i>} else if (Applications_By_Status_Summary.ApplicationstatusId.Sort == "DESC") {<i class="fas fa-sort-down"></i>}</span></div>
+	</div></div></th>
+		}
+	}
+} @* Applications_By_Status_Summary.ApplicationstatusId.Visible (end) *@
+@if (Applications_By_Status_Summary.ApplicationId.Visible) { // Applications_By_Status_Summary.ApplicationId.Visible (begin)
+	if (Empty(Applications_By_Status_Summary.SortUrl(Applications_By_Status_Summary.ApplicationId))) {
+	<th data-name="ApplicationId" class="@(Applications_By_Status_Summary.ApplicationId.HeaderCellClass)"><div class="Applications_By_Status_ApplicationId"><div class="ew-table-header-caption">@Html.Raw(Applications_By_Status_Summary.ApplicationId.Caption)</div></div></th>
+	} else {
+	<th data-name="ApplicationId" class="@(Applications_By_Status_Summary.ApplicationId.HeaderCellClass)"><div class="ew-pointer" onclick="ew.sort(event, '@Html.Raw(Applications_By_Status_Summary.SortUrl(Applications_By_Status_Summary.ApplicationId))', 1);"><div class="Applications_By_Status_ApplicationId">
+		<div class="ew-table-header-btn"><span class="ew-table-header-caption">@Html.Raw(Applications_By_Status_Summary.ApplicationId.Caption)</span><span class="ew-table-header-sort">@if (Applications_By_Status_Summary.ApplicationId.Sort == "ASC") {<i class="fas fa-sort-up"></i>} else if (Applications_By_Status_Summary.ApplicationId.Sort == "DESC") {<i class="fas fa-sort-down"></i>}</span></div>
+	</div></div></th>
+	}
+} @* Applications_By_Status_Summary.ApplicationId.Visible (end) *@
+@if (Applications_By_Status_Summary._Name.Visible) { // Applications_By_Status_Summary._Name.Visible (begin)
+	if (Empty(Applications_By_Status_Summary.SortUrl(Applications_By_Status_Summary._Name))) {
+	<th data-name="_Name" class="@(Applications_By_Status_Summary._Name.HeaderCellClass)"><div class="Applications_By_Status__Name"><div class="ew-table-header-caption">@Html.Raw(Applications_By_Status_Summary._Name.Caption)</div></div></th>
+	} else {
+	<th data-name="_Name" class="@(Applications_By_Status_Summary._Name.HeaderCellClass)"><div class="ew-pointer" onclick="ew.sort(event, '@Html.Raw(Applications_By_Status_Summary.SortUrl(Applications_By_Status_Summary._Name))', 1);"><div class="Applications_By_Status__Name">
+		<div class="ew-table-header-btn"><span class="ew-table-header-caption">@Html.Raw(Applications_By_Status_Summary._Name.Caption)</span><span class="ew-table-header-sort">@if (Applications_By_Status_Summary._Name.Sort == "ASC") {<i class="fas fa-sort-up"></i>} else if (Applications_By_Status_Summary._Name.Sort == "DESC") {<i class="fas fa-sort-down"></i>}</span></div>
+	</div></div></th>
+	}
+} @* Applications_By_Status_Summary._Name.Visible (end) *@
+	</tr>
+</thead>
+@:<tbody>
+		if (Applications_By_Status_Summary.TotalGroups == 0) {
+			break; // Show header only
+		}
+		Applications_By_Status_Summary.ShowHeader = false;
+	} // End show header
+
+	// Build detail SQL
+	string where = DetailFilterSql(Applications_By_Status_Summary.ApplicationstatusId, Applications_By_Status_Summary.SqlFirstGroupField, Applications_By_Status_Summary.ApplicationstatusId.GroupValue, Applications_By_Status_Summary.DbId); // DN
+	if (!Empty(Applications_By_Status_Summary.PageFirstGroupFilter)) {
+		Applications_By_Status_Summary.PageFirstGroupFilter += " OR ";
+	}
+	Applications_By_Status_Summary.PageFirstGroupFilter += where;
+	if (!Empty(Applications_By_Status_Summary.Filter)) {
+		where = "(" + Applications_By_Status_Summary.Filter + ") AND (" + where + ")";
+	}
+	sqlWrk = BuildReportSql(Applications_By_Status_Summary.SqlSelect, Applications_By_Status_Summary.SqlWhere, Applications_By_Status_Summary.SqlGroupBy, Applications_By_Status_Summary.SqlHaving, Applications_By_Status_Summary.SqlOrderBy, where, Applications_By_Status_Summary.Sort);
+	Applications_By_Status_Summary.DetailRecords = await Applications_By_Status_Summary.Connection.GetRowsAsync(sqlWrk); // DN
+	Applications_By_Status_Summary.DetailRecordCount = Applications_By_Status_Summary.DetailRecords?.Count ?? 0; // DN
+	Applications_By_Status_Summary.SetGroupCount(Applications_By_Status_Summary.DetailRecordCount, Applications_By_Status_Summary.GroupCount);
+
+	// Load detail records
+	Applications_By_Status_Summary.ApplicationstatusId.Records = Applications_By_Status_Summary.DetailRecords;
+	Applications_By_Status_Summary.ApplicationstatusId.LevelBreak = true; // Set field level break
+		Applications_By_Status_Summary.GroupCounter[1] = Applications_By_Status_Summary.GroupCount;
+		Applications_By_Status_Summary.ApplicationstatusId.GetCnt(Applications_By_Status_Summary.ApplicationstatusId.Records); // Get record count
+		Applications_By_Status_Summary.SetGroupCount(Applications_By_Status_Summary.ApplicationstatusId.Count, Applications_By_Status_Summary.GroupCounter[1]);
+if (Applications_By_Status_Summary.ApplicationstatusId.Visible && Applications_By_Status_Summary.ApplicationstatusId.ShowGroupHeaderAsRow) {
+
+	// Render header row
+	Applications_By_Status_Summary.ResetAttributes();
+	Applications_By_Status_Summary.RowType = Config.RowTypeTotal;
+	Applications_By_Status_Summary.RowTotalType = Config.RowTotalGroup;
+	Applications_By_Status_Summary.RowTotalSubType = Config.RowTotalHeader;
+	Applications_By_Status_Summary.RowGroupLevel = 1;
+	await Applications_By_Status_Summary.RenderRow();
+	@:<tr @Html.Raw(Applications_By_Status_Summary.RowAttributes)>
+if (Applications_By_Status_Summary.ApplicationstatusId.Visible) {
+		<td data-field="ApplicationstatusId" @Html.Raw(Applications_By_Status_Summary.ApplicationstatusId.CellAttributes)><span class="ew-group-toggle icon-collapse"></span></td>
+}
+		@:<td data-field="ApplicationstatusId" colspan="@(Applications_By_Status_Summary.GroupColumnCount + Applications_By_Status_Summary.DetailColumnCount - 1)" @Html.Raw(Applications_By_Status_Summary.ApplicationstatusId.CellAttributes)>
+if (Empty(Applications_By_Status_Summary.SortUrl(Applications_By_Status_Summary.ApplicationstatusId))) {
+		<span class="ew-summary-caption Applications_By_Status_ApplicationstatusId"><span class="ew-table-header-caption">@Html.Raw(Applications_By_Status_Summary.ApplicationstatusId.Caption)</span></span>
+} else {
+		<span class="ew-table-header-btn ew-pointer ew-summary-caption Applications_By_Status_ApplicationstatusId" onclick="ew.sort(event, '@Html.Raw(Applications_By_Status_Summary.SortUrl(Applications_By_Status_Summary.ApplicationstatusId))', 1);">
+			<span class="ew-table-header-caption">@Html.Raw(Applications_By_Status_Summary.ApplicationstatusId.Caption)</span>
+			<span class="ew-table-header-sort">@if (Applications_By_Status_Summary.ApplicationstatusId.Sort == "ASC") {<i class="fas fa-sort-up"></i>} else if (Applications_By_Status_Summary.ApplicationstatusId.Sort == "DESC") {<i class="fas fa-sort-down"></i>}</span>
+		</span>
+}
+		@Html.Raw(Language.Phrase("SummaryColon"))<span @Html.Raw(Applications_By_Status_Summary.ApplicationstatusId.ViewAttributes)>@Html.Raw(Applications_By_Status_Summary.ApplicationstatusId.GroupViewValue)</span>
+		<span class="ew-summary-count">(<span class="ew-aggregate-caption">@Html.Raw(Language.Phrase("RptCnt"))</span>@Html.Raw(Language.Phrase("AggregateEqual"))<span class="ew-aggregate-value">@FormatNumber(Applications_By_Status_Summary.ApplicationstatusId.Count, 0)</span>)</span>
+		@:</td>
+	@:</tr>
+}
+	Applications_By_Status_Summary.RecordCount = 0; // Reset record count
+	foreach (var record in Applications_By_Status_Summary.ApplicationstatusId.Records) {
+		Applications_By_Status_Summary.RecordCount++;
+		Applications_By_Status_Summary.RecordIndex++;
+		Applications_By_Status_Summary.LoadRowValues(record);
+
+		// Render detail row
+		Applications_By_Status_Summary.ResetAttributes();
+		Applications_By_Status_Summary.RowType = Config.RowTypeDetail;
+		await Applications_By_Status_Summary.RenderRow();
+	@:<tr @Html.Raw(Applications_By_Status_Summary.RowAttributes)>
+if (Applications_By_Status_Summary.ApplicationstatusId.Visible) {
+	if (Applications_By_Status_Summary.ApplicationstatusId.ShowGroupHeaderAsRow) {
+		<td data-field="ApplicationstatusId" @Html.Raw(Applications_By_Status_Summary.ApplicationstatusId.CellAttributes)>&nbsp;</td>
+	} else {
+		<td data-field="ApplicationstatusId" @Html.Raw(Applications_By_Status_Summary.ApplicationstatusId.CellAttributes)><span @Html.Raw(Applications_By_Status_Summary.ApplicationstatusId.ViewAttributes)>@Html.Raw(Applications_By_Status_Summary.ApplicationstatusId.GroupViewValue)</span></td>
+	}
+}
+if (Applications_By_Status_Summary.ApplicationId.Visible) {
+		<td data-field="ApplicationId" @Html.Raw(Applications_By_Status_Summary.ApplicationId.CellAttributes)>
+<span @Html.Raw(Applications_By_Status_Summary.ApplicationId.ViewAttributes)>@Html.Raw(Applications_By_Status_Summary.ApplicationId.GetViewValue())</span>
+</td>
+}
+if (Applications_By_Status_Summary._Name.Visible) {
+		<td data-field="_Name" @Html.Raw(Applications_By_Status_Summary._Name.CellAttributes)>
+<span @Html.Raw(Applications_By_Status_Summary._Name.ViewAttributes)>@Html.Raw(Applications_By_Status_Summary._Name.GetViewValue())</span>
+</td>
+}
+	@:</tr>
+	}
+
+	// Next group
+	Applications_By_Status_Summary.LoadGroupRowValues();
+
+	// Show header if page break
+	if (Applications_By_Status_Summary.IsExport()) {
+		Applications_By_Status_Summary.ShowHeader = (Applications_By_Status_Summary.ExportPageBreakCount == 0) ? false : (Applications_By_Status_Summary.GroupCount % Applications_By_Status_Summary.ExportPageBreakCount == 0);
+	}
+
+	// Page_Breaking server event
+	if (Applications_By_Status_Summary.ShowHeader) {
+		bool pageShowHeader = Applications_By_Status_Summary.ShowHeader;
+		string pageBreakContent = Applications_By_Status_Summary.PageBreakContent;
+		Applications_By_Status_Summary.Page_Breaking(ref pageShowHeader, ref pageBreakContent);
+		Applications_By_Status_Summary.ShowHeader = pageShowHeader;
+		Applications_By_Status_Summary.PageBreakContent = pageBreakContent;
+	}
+	Applications_By_Status_Summary.GroupCount++;
+} @* End while *@
+@if (Applications_By_Status_Summary.TotalGroups > 0) {
+@:</tbody>
+@:<tfoot>
+	Applications_By_Status_Summary.ResetAttributes();
+	Applications_By_Status_Summary.RowType = Config.RowTypeTotal;
+	Applications_By_Status_Summary.RowTotalType = Config.RowTotalGrand;
+	Applications_By_Status_Summary.RowTotalSubType = Config.RowTotalFooter;
+	Applications_By_Status_Summary.RowAttrs["class"] = "ew-rpt-grand-summary";
+	await Applications_By_Status_Summary.RenderRow();
+if (Applications_By_Status_Summary.ApplicationstatusId.ShowCompactSummaryFooter) {
+	<tr @Html.Raw(Applications_By_Status_Summary.RowAttributes)><td colspan="@(Applications_By_Status_Summary.GroupColumnCount + Applications_By_Status_Summary.DetailColumnCount)">@Html.Raw(Language.Phrase("RptGrandSummary")) <span class="ew-summary-count">(<span class="ew-aggregate-caption">@Html.Raw(Language.Phrase("RptCnt"))</span>@Html.Raw(Language.Phrase("AggregateEqual"))<span class="ew-aggregate-value">@FormatNumber(Applications_By_Status_Summary.TotalCount, 0)</span>)</span></td></tr>
+} else {
+	<tr @Html.Raw(Applications_By_Status_Summary.RowAttributes)><td colspan="@(Applications_By_Status_Summary.GroupColumnCount + Applications_By_Status_Summary.DetailColumnCount)">@Html.Raw(Language.Phrase("RptGrandSummary")) <span class="ew-summary-count">(@FormatNumber(Applications_By_Status_Summary.TotalCount, 0) @Html.Raw(Language.Phrase("RptDtlRec")))</span></td></tr>
+}
+@:</tfoot>
+@:</table>
+if (true) {
+@:</div>
+<!-- /.ew-grid-middle-panel -->
+<!-- Report grid (end) -->
+}
+if (!Applications_By_Status_Summary.IsExport() && !(Applications_By_Status_Summary.DrillDown && Applications_By_Status_Summary.TotalGroups > 0)) {
+<!-- Bottom pager -->
+<div class="card-footer ew-grid-lower-panel">
+<form name="ew-pager-form" class="form-inline ew-form ew-pager-form" action="@AppPath(CurrentPageName())">
+@Applications_By_Status_Summary.Pager.Render()
+</form>
+</div>
+}
+if (true) {
+@:</div>
+<!-- /.ew-grid -->
+}
+}
+@if (true) {
+@Html.Raw("</div>")
+<!-- /#report-summary -->
+}
+<!-- Summary report (end) -->
+@if ((!Applications_By_Status_Summary.IsExport() || Applications_By_Status_Summary.IsExport("print")) && !DashboardReport) {
+@:</div>
+<!-- /#ew-center -->
+}
+@if ((!Applications_By_Status_Summary.IsExport() || Applications_By_Status_Summary.IsExport("print")) && !DashboardReport) {
+@:</div>
+<!-- /.row -->
+}
+@if ((!Applications_By_Status_Summary.IsExport() || Applications_By_Status_Summary.IsExport("print")) && !DashboardReport) {
+@:</div>
+<!-- /.ew-report -->
+}
+@Applications_By_Status_Summary.ShowPageFooter()
+@ShowDebugMessage()
+@ElapsedTime()
+@if (!Applications_By_Status_Summary.IsExport() && !Applications_By_Status_Summary.DrillDown && !DashboardReport) {
+<script>
+loadjs.ready("load", function() {
+
+	// Startup script
+	// Write your table-specific startup script here
+	// document.write("page loaded");
+
+});
+</script>
+}

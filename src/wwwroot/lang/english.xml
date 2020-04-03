@@ -855,14 +855,41 @@
   </global>
   <project>
     <phrase id="footertext" value="&amp;copy;2019 e.World Technology Ltd. All rights reserved." />
-    <menu id="1">
-      <phrase id="menutext" value="Bank Branch" />
+    <menu id="6">
+      <phrase id="menutext" value="Pipeline" />
+    </menu>
+    <menu id="10">
+      <phrase id="menutext" value="Applications" />
+    </menu>
+    <menu id="12">
+      <phrase id="menutext" value="Applications By Status" />
     </menu>
     <menu id="2">
       <phrase id="menutext" value="Leads" />
     </menu>
+    <menu id="8">
+      <phrase id="menutext" value="Reports" />
+    </menu>
+    <menu id="21">
+      <phrase id="menutext" value="System" />
+    </menu>
+    <menu id="9">
+      <phrase id="menutext" value="Audit Trail" />
+    </menu>
+    <menu id="7">
+      <phrase id="menutext" value="Categories" />
+    </menu>
+    <menu id="1">
+      <phrase id="menutext" value="Bank Branch" />
+    </menu>
     <menu id="3">
       <phrase id="menutext" value="Lead Status" />
+    </menu>
+    <menu id="4">
+      <phrase id="menutext" value="Users" />
+    </menu>
+    <menu id="11">
+      <phrase id="menutext" value="Application Status" />
     </menu>
     <table id="bankbranch">
       <phrase id="tblcaption" value="Bank Branch" />
@@ -916,6 +943,129 @@
       </field>
       <field id="displayname">
         <phrase id="fldcaption" value="Display Name" />
+      </field>
+    </table>
+    <table id="users">
+      <phrase id="tblcaption" value="Users" />
+      <field id="id">
+        <phrase id="fldcaption" value="Id" />
+      </field>
+      <field id="_name">
+        <phrase id="fldcaption" value="Name" />
+      </field>
+    </table>
+    <table id="audittrail">
+      <phrase id="tblcaption" value="Audit Trail" />
+      <field id="id">
+        <phrase id="fldcaption" value="Id" />
+      </field>
+      <field id="_datetime">
+        <phrase id="fldcaption" value="Date Time" />
+      </field>
+      <field id="script">
+        <phrase id="fldcaption" value="Script" />
+      </field>
+      <field id="_user">
+        <phrase id="fldcaption" value="User" />
+      </field>
+      <field id="action">
+        <phrase id="fldcaption" value="Action" />
+      </field>
+      <field id="_table">
+        <phrase id="fldcaption" value="Table" />
+      </field>
+      <field id="_field">
+        <phrase id="fldcaption" value="Field" />
+      </field>
+      <field id="keyvalue">
+        <phrase id="fldcaption" value="Key Value" />
+      </field>
+      <field id="oldvalue">
+        <phrase id="fldcaption" value="Old Value" />
+      </field>
+      <field id="newvalue">
+        <phrase id="fldcaption" value="New Value" />
+      </field>
+    </table>
+    <table id="applicationstatus">
+      <phrase id="tblcaption" value="Application Status" />
+      <field id="id">
+        <phrase id="fldcaption" value="Id" />
+      </field>
+      <field id="displayname">
+        <phrase id="fldcaption" value="Display Name" />
+      </field>
+    </table>
+    <table id="application">
+      <phrase id="tblcaption" value="Application" />
+      <field id="applicationid">
+        <phrase id="fldcaption" value="Application Id" />
+      </field>
+      <field id="_name">
+        <phrase id="fldcaption" value="Name" />
+      </field>
+      <field id="applicationstatusid">
+        <phrase id="fldcaption" value="Applicationstatus Id" />
+      </field>
+      <field id="branchid">
+        <phrase id="fldcaption" value="Branch Id" />
+      </field>
+      <field id="userid">
+        <phrase id="fldcaption" value="User Id" />
+      </field>
+      <field id="state">
+        <phrase id="fldcaption" value="State" />
+      </field>
+      <field id="firstname">
+        <phrase id="fldcaption" value="First Name" />
+      </field>
+      <field id="lastname">
+        <phrase id="fldcaption" value="Last Name" />
+      </field>
+      <field id="bloburl">
+        <phrase id="fldcaption" value="Blob Url" />
+      </field>
+      <field id="emailaddress">
+        <phrase id="fldcaption" value="Email Address" />
+      </field>
+      <field id="phonenumber">
+        <phrase id="fldcaption" value="Phone Number" />
+      </field>
+    </table>
+    <table id="applications_by_status">
+      <phrase id="tblcaption" value="Applications By Status" />
+      <field id="applicationid">
+        <phrase id="fldcaption" value="Application Id" />
+      </field>
+      <field id="_name">
+        <phrase id="fldcaption" value="Name" />
+      </field>
+      <field id="applicationstatusid">
+        <phrase id="fldcaption" value="Applicationstatus Id" />
+      </field>
+      <field id="branchid">
+        <phrase id="fldcaption" value="Branch Id" />
+      </field>
+      <field id="userid">
+        <phrase id="fldcaption" value="User Id" />
+      </field>
+      <field id="state">
+        <phrase id="fldcaption" value="State" />
+      </field>
+      <field id="firstname">
+        <phrase id="fldcaption" value="First Name" />
+      </field>
+      <field id="lastname">
+        <phrase id="fldcaption" value="Last Name" />
+      </field>
+      <field id="bloburl">
+        <phrase id="fldcaption" value="Blob Url" />
+      </field>
+      <field id="emailaddress">
+        <phrase id="fldcaption" value="Email Address" />
+      </field>
+      <field id="phonenumber">
+        <phrase id="fldcaption" value="Phone Number" />
       </field>
     </table>
   </project>

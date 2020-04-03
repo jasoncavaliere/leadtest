@@ -78,31 +78,6 @@ loadjs.ready("head", function() {
 </div>
 }
 @{ _Leads_List.RenderOtherOptions(); }
-@if (!_Leads_List.IsExport() && Empty(_Leads.CurrentAction)) { @* Show search form (begin) *@
-<form name="f_Leadslistsrch" id="f_Leadslistsrch" class="form-inline ew-form ew-ext-search-form" action="@AppPath(CurrentPageName())">
-<div id="f_Leadslistsrch-search-panel" class="@(_Leads_List.SearchPanelClass)"><!-- .ew-search-panel -->
-<input type="hidden" name="cmd" value="search">
-	<div class="ew-extended-search">
-<div id="xsr_@(_Leads_List.SearchRowCount + 1)" class="ew-row d-sm-flex">
-	<div class="ew-quick-search input-group">
-		<input type="text" name="@(Config.TableBasicSearch)" id="@(Config.TableBasicSearch)" class="form-control" value="@Html.Raw(HtmlEncode(_Leads_List.BasicSearch.SessionKeyword))" placeholder="@(HtmlEncode(Language.Phrase("Search")))">
-		<input type="hidden" name="@(Config.TableBasicSearchType)" id="@(Config.TableBasicSearchType)" value="@(HtmlEncode(_Leads_List.BasicSearch.SessionType))">
-		<div class="input-group-append">
-			<button class="btn btn-primary" name="btn-submit" id="btn-submit" type="submit">@Html.Raw(Language.Phrase("SearchBtn"))</button>
-			<button type="button" data-toggle="dropdown" class="btn btn-primary dropdown-toggle dropdown-toggle-split" aria-haspopup="true" aria-expanded="false"><span id="searchtype">@Html.Raw(_Leads_List.BasicSearch.TypeNameShort)</span></button>
-			<div class="dropdown-menu dropdown-menu-right">
-				<a class="dropdown-item@((_Leads_List.BasicSearch.SessionType == "") ? " active" : "")" href="#" onclick="return ew.setSearchType(this);">@Html.Raw(Language.Phrase("QuickSearchAuto"))</a>
-				<a class="dropdown-item@((_Leads_List.BasicSearch.SessionType == "=") ? " active" : "")" href="#" onclick="return ew.setSearchType(this, '=');">@Html.Raw(Language.Phrase("QuickSearchExact"))</a>
-				<a class="dropdown-item@((_Leads_List.BasicSearch.SessionType == "AND") ? " active" : "")" href="#" onclick="return ew.setSearchType(this, 'AND');">@Html.Raw(Language.Phrase("QuickSearchAll"))</a>
-				<a class="dropdown-item@((_Leads_List.BasicSearch.SessionType == "OR") ? " active" : "")" href="#" onclick="return ew.setSearchType(this, 'OR');">@Html.Raw(Language.Phrase("QuickSearchAny"))</a>
-			</div>
-		</div>
-	</div>
-</div>
-	</div><!-- /.ew-extended-search -->
-</div><!-- /.ew-search-panel -->
-</form>
-} @* Show search form (end) *@
 @_Leads_List.ShowPageHeader()
 @_Leads_List.ShowMessages()
 @if (_Leads_List.TotalRecords > 0 || !Empty(_Leads.CurrentAction)) {
@@ -127,33 +102,15 @@ loadjs.ready("head", function() {
 	// Render list options (header, left)
 	_Leads_List.ListOptions.Render("header", "left");
 }
-@if (_Leads_List.LeadId.Visible) { // _Leads_List.LeadId.Visible (begin)
-	if (_Leads_List.SortUrl(_Leads_List.LeadId) == "") {
-		<th data-name="LeadId" class="@(_Leads_List.LeadId.HeaderCellClass)"><div id="elh__Leads_LeadId" class="_Leads_LeadId"><div class="ew-table-header-caption">@Html.Raw(_Leads_List.LeadId.Caption)</div></div></th>
-	} else {
-		<th data-name="LeadId" class="@(_Leads_List.LeadId.HeaderCellClass)"><div class="ew-pointer" onclick="ew.sort(event, '@Html.Raw(_Leads_List.SortUrl(_Leads_List.LeadId))', 1);"><div id="elh__Leads_LeadId" class="_Leads_LeadId">
-			<div class="ew-table-header-btn"><span class="ew-table-header-caption">@Html.Raw(_Leads_List.LeadId.Caption)</span><span class="ew-table-header-sort">@if (_Leads_List.LeadId.Sort == "ASC") {<i class="fas fa-sort-up"></i>} else if (_Leads_List.LeadId.Sort == "DESC") {<i class="fas fa-sort-down"></i>}</span></div>
-		</div></div></th>
-	}
-} @* _Leads_List.LeadId.Visible (end) *@
 @if (_Leads_List._Name.Visible) { // _Leads_List._Name.Visible (begin)
 	if (_Leads_List.SortUrl(_Leads_List._Name) == "") {
 		<th data-name="_Name" class="@(_Leads_List._Name.HeaderCellClass)"><div id="elh__Leads__Name" class="_Leads__Name"><div class="ew-table-header-caption">@Html.Raw(_Leads_List._Name.Caption)</div></div></th>
 	} else {
 		<th data-name="_Name" class="@(_Leads_List._Name.HeaderCellClass)"><div class="ew-pointer" onclick="ew.sort(event, '@Html.Raw(_Leads_List.SortUrl(_Leads_List._Name))', 1);"><div id="elh__Leads__Name" class="_Leads__Name">
-			<div class="ew-table-header-btn"><span class="ew-table-header-caption">@Html.Raw(_Leads_List._Name.Caption)@Html.Raw(Language.Phrase("SrchLegend"))</span><span class="ew-table-header-sort">@if (_Leads_List._Name.Sort == "ASC") {<i class="fas fa-sort-up"></i>} else if (_Leads_List._Name.Sort == "DESC") {<i class="fas fa-sort-down"></i>}</span></div>
+			<div class="ew-table-header-btn"><span class="ew-table-header-caption">@Html.Raw(_Leads_List._Name.Caption)</span><span class="ew-table-header-sort">@if (_Leads_List._Name.Sort == "ASC") {<i class="fas fa-sort-up"></i>} else if (_Leads_List._Name.Sort == "DESC") {<i class="fas fa-sort-down"></i>}</span></div>
 		</div></div></th>
 	}
 } @* _Leads_List._Name.Visible (end) *@
-@if (_Leads_List.State.Visible) { // _Leads_List.State.Visible (begin)
-	if (_Leads_List.SortUrl(_Leads_List.State) == "") {
-		<th data-name="State" class="@(_Leads_List.State.HeaderCellClass)"><div id="elh__Leads_State" class="_Leads_State"><div class="ew-table-header-caption">@Html.Raw(_Leads_List.State.Caption)</div></div></th>
-	} else {
-		<th data-name="State" class="@(_Leads_List.State.HeaderCellClass)"><div class="ew-pointer" onclick="ew.sort(event, '@Html.Raw(_Leads_List.SortUrl(_Leads_List.State))', 1);"><div id="elh__Leads_State" class="_Leads_State">
-			<div class="ew-table-header-btn"><span class="ew-table-header-caption">@Html.Raw(_Leads_List.State.Caption)@Html.Raw(Language.Phrase("SrchLegend"))</span><span class="ew-table-header-sort">@if (_Leads_List.State.Sort == "ASC") {<i class="fas fa-sort-up"></i>} else if (_Leads_List.State.Sort == "DESC") {<i class="fas fa-sort-down"></i>}</span></div>
-		</div></div></th>
-	}
-} @* _Leads_List.State.Visible (end) *@
 @if (_Leads_List.LeadStatusId.Visible) { // _Leads_List.LeadStatusId.Visible (begin)
 	if (_Leads_List.SortUrl(_Leads_List.LeadStatusId) == "") {
 		<th data-name="LeadStatusId" class="@(_Leads_List.LeadStatusId.HeaderCellClass)"><div id="elh__Leads_LeadStatusId" class="_Leads_LeadStatusId"><div class="ew-table-header-caption">@Html.Raw(_Leads_List.LeadStatusId.Caption)</div></div></th>
@@ -181,39 +138,12 @@ loadjs.ready("head", function() {
 		</div></div></th>
 	}
 } @* _Leads_List.UserId.Visible (end) *@
-@if (_Leads_List.FirstName.Visible) { // _Leads_List.FirstName.Visible (begin)
-	if (_Leads_List.SortUrl(_Leads_List.FirstName) == "") {
-		<th data-name="FirstName" class="@(_Leads_List.FirstName.HeaderCellClass)"><div id="elh__Leads_FirstName" class="_Leads_FirstName"><div class="ew-table-header-caption">@Html.Raw(_Leads_List.FirstName.Caption)</div></div></th>
-	} else {
-		<th data-name="FirstName" class="@(_Leads_List.FirstName.HeaderCellClass)"><div class="ew-pointer" onclick="ew.sort(event, '@Html.Raw(_Leads_List.SortUrl(_Leads_List.FirstName))', 1);"><div id="elh__Leads_FirstName" class="_Leads_FirstName">
-			<div class="ew-table-header-btn"><span class="ew-table-header-caption">@Html.Raw(_Leads_List.FirstName.Caption)@Html.Raw(Language.Phrase("SrchLegend"))</span><span class="ew-table-header-sort">@if (_Leads_List.FirstName.Sort == "ASC") {<i class="fas fa-sort-up"></i>} else if (_Leads_List.FirstName.Sort == "DESC") {<i class="fas fa-sort-down"></i>}</span></div>
-		</div></div></th>
-	}
-} @* _Leads_List.FirstName.Visible (end) *@
-@if (_Leads_List.LastName.Visible) { // _Leads_List.LastName.Visible (begin)
-	if (_Leads_List.SortUrl(_Leads_List.LastName) == "") {
-		<th data-name="LastName" class="@(_Leads_List.LastName.HeaderCellClass)"><div id="elh__Leads_LastName" class="_Leads_LastName"><div class="ew-table-header-caption">@Html.Raw(_Leads_List.LastName.Caption)</div></div></th>
-	} else {
-		<th data-name="LastName" class="@(_Leads_List.LastName.HeaderCellClass)"><div class="ew-pointer" onclick="ew.sort(event, '@Html.Raw(_Leads_List.SortUrl(_Leads_List.LastName))', 1);"><div id="elh__Leads_LastName" class="_Leads_LastName">
-			<div class="ew-table-header-btn"><span class="ew-table-header-caption">@Html.Raw(_Leads_List.LastName.Caption)@Html.Raw(Language.Phrase("SrchLegend"))</span><span class="ew-table-header-sort">@if (_Leads_List.LastName.Sort == "ASC") {<i class="fas fa-sort-up"></i>} else if (_Leads_List.LastName.Sort == "DESC") {<i class="fas fa-sort-down"></i>}</span></div>
-		</div></div></th>
-	}
-} @* _Leads_List.LastName.Visible (end) *@
-@if (_Leads_List.BlobUrl.Visible) { // _Leads_List.BlobUrl.Visible (begin)
-	if (_Leads_List.SortUrl(_Leads_List.BlobUrl) == "") {
-		<th data-name="BlobUrl" class="@(_Leads_List.BlobUrl.HeaderCellClass)"><div id="elh__Leads_BlobUrl" class="_Leads_BlobUrl"><div class="ew-table-header-caption">@Html.Raw(_Leads_List.BlobUrl.Caption)</div></div></th>
-	} else {
-		<th data-name="BlobUrl" class="@(_Leads_List.BlobUrl.HeaderCellClass)"><div class="ew-pointer" onclick="ew.sort(event, '@Html.Raw(_Leads_List.SortUrl(_Leads_List.BlobUrl))', 1);"><div id="elh__Leads_BlobUrl" class="_Leads_BlobUrl">
-			<div class="ew-table-header-btn"><span class="ew-table-header-caption">@Html.Raw(_Leads_List.BlobUrl.Caption)@Html.Raw(Language.Phrase("SrchLegend"))</span><span class="ew-table-header-sort">@if (_Leads_List.BlobUrl.Sort == "ASC") {<i class="fas fa-sort-up"></i>} else if (_Leads_List.BlobUrl.Sort == "DESC") {<i class="fas fa-sort-down"></i>}</span></div>
-		</div></div></th>
-	}
-} @* _Leads_List.BlobUrl.Visible (end) *@
 @if (_Leads_List.EmailAddress.Visible) { // _Leads_List.EmailAddress.Visible (begin)
 	if (_Leads_List.SortUrl(_Leads_List.EmailAddress) == "") {
 		<th data-name="EmailAddress" class="@(_Leads_List.EmailAddress.HeaderCellClass)"><div id="elh__Leads_EmailAddress" class="_Leads_EmailAddress"><div class="ew-table-header-caption">@Html.Raw(_Leads_List.EmailAddress.Caption)</div></div></th>
 	} else {
 		<th data-name="EmailAddress" class="@(_Leads_List.EmailAddress.HeaderCellClass)"><div class="ew-pointer" onclick="ew.sort(event, '@Html.Raw(_Leads_List.SortUrl(_Leads_List.EmailAddress))', 1);"><div id="elh__Leads_EmailAddress" class="_Leads_EmailAddress">
-			<div class="ew-table-header-btn"><span class="ew-table-header-caption">@Html.Raw(_Leads_List.EmailAddress.Caption)@Html.Raw(Language.Phrase("SrchLegend"))</span><span class="ew-table-header-sort">@if (_Leads_List.EmailAddress.Sort == "ASC") {<i class="fas fa-sort-up"></i>} else if (_Leads_List.EmailAddress.Sort == "DESC") {<i class="fas fa-sort-down"></i>}</span></div>
+			<div class="ew-table-header-btn"><span class="ew-table-header-caption">@Html.Raw(_Leads_List.EmailAddress.Caption)</span><span class="ew-table-header-sort">@if (_Leads_List.EmailAddress.Sort == "ASC") {<i class="fas fa-sort-up"></i>} else if (_Leads_List.EmailAddress.Sort == "DESC") {<i class="fas fa-sort-down"></i>}</span></div>
 		</div></div></th>
 	}
 } @* _Leads_List.EmailAddress.Visible (end) *@
@@ -222,7 +152,7 @@ loadjs.ready("head", function() {
 		<th data-name="PhoneNumber" class="@(_Leads_List.PhoneNumber.HeaderCellClass)"><div id="elh__Leads_PhoneNumber" class="_Leads_PhoneNumber"><div class="ew-table-header-caption">@Html.Raw(_Leads_List.PhoneNumber.Caption)</div></div></th>
 	} else {
 		<th data-name="PhoneNumber" class="@(_Leads_List.PhoneNumber.HeaderCellClass)"><div class="ew-pointer" onclick="ew.sort(event, '@Html.Raw(_Leads_List.SortUrl(_Leads_List.PhoneNumber))', 1);"><div id="elh__Leads_PhoneNumber" class="_Leads_PhoneNumber">
-			<div class="ew-table-header-btn"><span class="ew-table-header-caption">@Html.Raw(_Leads_List.PhoneNumber.Caption)@Html.Raw(Language.Phrase("SrchLegend"))</span><span class="ew-table-header-sort">@if (_Leads_List.PhoneNumber.Sort == "ASC") {<i class="fas fa-sort-up"></i>} else if (_Leads_List.PhoneNumber.Sort == "DESC") {<i class="fas fa-sort-down"></i>}</span></div>
+			<div class="ew-table-header-btn"><span class="ew-table-header-caption">@Html.Raw(_Leads_List.PhoneNumber.Caption)</span><span class="ew-table-header-sort">@if (_Leads_List.PhoneNumber.Sort == "ASC") {<i class="fas fa-sort-up"></i>} else if (_Leads_List.PhoneNumber.Sort == "DESC") {<i class="fas fa-sort-down"></i>}</span></div>
 		</div></div></th>
 	}
 } @* _Leads_List.PhoneNumber.Visible (end) *@
@@ -300,13 +230,6 @@ while (_Leads_List.RecordCount < _Leads_List.StopRecord) { // Begin While
 	@:<tr @Html.Raw(_Leads.RowAttributes)>
 	@* Render list options (body, left) *@
 	@_Leads_List.ListOptions.RenderBody("left", _Leads_List.RowCount)
-	if (_Leads_List.LeadId.Visible) { // _Leads_List.LeadId.Visible (begin)
-		<td data-name="LeadId" @Html.Raw(_Leads_List.LeadId.CellAttributes)>
-<span id="el@(_Leads_List.RowCount)__Leads_LeadId">
-<span @Html.Raw(_Leads_List.LeadId.ViewAttributes)>@Html.Raw(_Leads_List.LeadId.GetViewValue())</span>
-</span>
-</td>
-	} @* _Leads_List.LeadId.Visible (end) *@
 	if (_Leads_List._Name.Visible) { // _Leads_List._Name.Visible (begin)
 		<td data-name="_Name" @Html.Raw(_Leads_List._Name.CellAttributes)>
 <span id="el@(_Leads_List.RowCount)__Leads__Name">
@@ -314,13 +237,6 @@ while (_Leads_List.RecordCount < _Leads_List.StopRecord) { // Begin While
 </span>
 </td>
 	} @* _Leads_List._Name.Visible (end) *@
-	if (_Leads_List.State.Visible) { // _Leads_List.State.Visible (begin)
-		<td data-name="State" @Html.Raw(_Leads_List.State.CellAttributes)>
-<span id="el@(_Leads_List.RowCount)__Leads_State">
-<span @Html.Raw(_Leads_List.State.ViewAttributes)>@Html.Raw(_Leads_List.State.GetViewValue())</span>
-</span>
-</td>
-	} @* _Leads_List.State.Visible (end) *@
 	if (_Leads_List.LeadStatusId.Visible) { // _Leads_List.LeadStatusId.Visible (begin)
 		<td data-name="LeadStatusId" @Html.Raw(_Leads_List.LeadStatusId.CellAttributes)>
 <span id="el@(_Leads_List.RowCount)__Leads_LeadStatusId">
@@ -342,27 +258,6 @@ while (_Leads_List.RecordCount < _Leads_List.StopRecord) { // Begin While
 </span>
 </td>
 	} @* _Leads_List.UserId.Visible (end) *@
-	if (_Leads_List.FirstName.Visible) { // _Leads_List.FirstName.Visible (begin)
-		<td data-name="FirstName" @Html.Raw(_Leads_List.FirstName.CellAttributes)>
-<span id="el@(_Leads_List.RowCount)__Leads_FirstName">
-<span @Html.Raw(_Leads_List.FirstName.ViewAttributes)>@Html.Raw(_Leads_List.FirstName.GetViewValue())</span>
-</span>
-</td>
-	} @* _Leads_List.FirstName.Visible (end) *@
-	if (_Leads_List.LastName.Visible) { // _Leads_List.LastName.Visible (begin)
-		<td data-name="LastName" @Html.Raw(_Leads_List.LastName.CellAttributes)>
-<span id="el@(_Leads_List.RowCount)__Leads_LastName">
-<span @Html.Raw(_Leads_List.LastName.ViewAttributes)>@Html.Raw(_Leads_List.LastName.GetViewValue())</span>
-</span>
-</td>
-	} @* _Leads_List.LastName.Visible (end) *@
-	if (_Leads_List.BlobUrl.Visible) { // _Leads_List.BlobUrl.Visible (begin)
-		<td data-name="BlobUrl" @Html.Raw(_Leads_List.BlobUrl.CellAttributes)>
-<span id="el@(_Leads_List.RowCount)__Leads_BlobUrl">
-<span @Html.Raw(_Leads_List.BlobUrl.ViewAttributes)>@Html.Raw(_Leads_List.BlobUrl.GetViewValue())</span>
-</span>
-</td>
-	} @* _Leads_List.BlobUrl.Visible (end) *@
 	if (_Leads_List.EmailAddress.Visible) { // _Leads_List.EmailAddress.Visible (begin)
 		<td data-name="EmailAddress" @Html.Raw(_Leads_List.EmailAddress.CellAttributes)>
 <span id="el@(_Leads_List.RowCount)__Leads_EmailAddress">

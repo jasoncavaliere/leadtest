@@ -2835,7 +2835,7 @@ namespace AspNetMaker2020.Models {
 			public static string CssClass = "breadcrumb float-sm-right ew-breadcrumbs";
 
 			// Constructor
-			public Breadcrumb() => Links.Add(new BreadcrumbLink("home", "HomePage", "Index", "ew-home")); // Home
+			public Breadcrumb() => Links.Add(new BreadcrumbLink("home", "HomePage", "/Applicationlist", "ew-home")); // Home
 
 			// Check if an item exists
 			protected bool Exists(string pageid, string table, string pageurl) => Links.Any(link => pageid == link.Id && table == link.TableVar && pageurl == link.Url);

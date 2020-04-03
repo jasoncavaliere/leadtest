@@ -804,15 +804,6 @@ namespace AspNetMaker2020.Models {
 				ListOption item;
 				string links = "";
 
-				// Add
-				item = option.Add("add");
-				string addcaption = HtmlTitle(Language.Phrase("ViewPageAddLink"));
-				if (IsModal) // Modal
-					item.Body = "<a class=\"ew-action ew-add\" title=\"" + addcaption + "\" data-caption=\"" + addcaption + "\" href=\"#\" onclick=\"return ew.modalDialogShow({lnk:this,url:'" + HtmlEncode(AppPath(AddUrl)) + "'});\">" + Language.Phrase("ViewPageAddLink") + "</a>";
-				else
-					item.Body = "<a class=\"ew-action ew-add\" title=\"" + addcaption + "\" data-caption=\"" + addcaption + "\" href=\"" + HtmlEncode(AppPath(AddUrl)) + "\">" + Language.Phrase("ViewPageAddLink") + "</a>";
-					item.Visible = (AddUrl != "");
-
 				// Edit
 				item = option.Add("edit");
 				var editcaption = HtmlTitle(Language.Phrase("ViewPageEditLink"));
@@ -821,23 +812,6 @@ namespace AspNetMaker2020.Models {
 				else
 					item.Body = "<a class=\"ew-action ew-edit\" title=\"" + editcaption + "\" data-caption=\"" + editcaption + "\" href=\"" + HtmlEncode(AppPath(EditUrl)) + "\">" + Language.Phrase("ViewPageEditLink") + "</a>";
 					item.Visible = (EditUrl != "");
-
-				// Copy
-				item = option.Add("copy");
-				var copycaption = HtmlTitle(Language.Phrase("ViewPageCopyLink"));
-				if (IsModal) // Modal
-					item.Body = "<a class=\"ew-action ew-copy\" title=\"" + copycaption + "\" data-caption=\"" + copycaption + "\" href=\"#\" onclick=\"return ew.modalDialogShow({lnk:this,url:'" + HtmlEncode(AppPath(CopyUrl)) + "'});\">" + Language.Phrase("ViewPageCopyLink") + "</a>";
-				else
-					item.Body = "<a class=\"ew-action ew-copy\" title=\"" + copycaption + "\" data-caption=\"" + copycaption + "\" href=\"" + HtmlEncode(AppPath(CopyUrl)) + "\">" + Language.Phrase("ViewPageCopyLink") + "</a>";
-					item.Visible = (CopyUrl != "");
-
-				// Delete
-				item = option.Add("delete");
-				if (IsModal) // Handle as inline delete
-					item.Body = "<a onclick=\"return ew.confirmDelete(this);\" class=\"ew-action ew-delete\" title=\"" + HtmlTitle(Language.Phrase("ViewPageDeleteLink")) + "\" data-caption=\"" + HtmlTitle(Language.Phrase("ViewPageDeleteLink")) + "\" href=\"" + HtmlEncode(UrlAddQuery(AppPath(DeleteUrl), "action=1")) + "\">" + Language.Phrase("ViewPageDeleteLink") + "</a>";
-				else
-					item.Body = "<a class=\"ew-action ew-delete\" title=\"" + HtmlTitle(Language.Phrase("ViewPageDeleteLink")) + "\" data-caption=\"" + HtmlTitle(Language.Phrase("ViewPageDeleteLink")) + "\" href=\"" + HtmlEncode(AppPath(DeleteUrl)) + "\">" + Language.Phrase("ViewPageDeleteLink") + "</a>";
-				item.Visible = (DeleteUrl != "");
 
 				// Set up action default
 				option = options["action"];
@@ -901,6 +875,7 @@ namespace AspNetMaker2020.Models {
 				BlobUrl.SetDbValue(row["BlobUrl"]);
 				EmailAddress.SetDbValue(row["EmailAddress"]);
 				PhoneNumber.SetDbValue(row["PhoneNumber"]);
+				string detailFilter;
 			}
 			#pragma warning restore 162, 168, 1998
 
@@ -945,7 +920,7 @@ namespace AspNetMaker2020.Models {
 				if (RowType == Config.RowTypeView) { // View row
 
 					// LeadId
-					LeadId.ViewValue = Convert.ToString(LeadId.CurrentValue); // DN
+					LeadId.ViewValue = LeadId.CurrentValue;
 					LeadId.ViewCustomAttributes = "";
 
 					// Name

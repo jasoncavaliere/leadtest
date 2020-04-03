@@ -128,6 +128,26 @@ ew.ready(["jquery", "widget", "scrollbars", "moment", "others"], [jqueryjs, ew.P
 ew.ready("makerjs", [cssjs, ew.PATH_BASE + "js/userfn.js"], "head");
 </script>
 <script>
+loadjs(ew.PATH_BASE + "css/tempusdominus-bootstrap-4.css");
+ew.ready("head", [ew.PATH_BASE + "js/tempusdominus-bootstrap-4.js", ew.PATH_BASE + "js/ewdatetimepicker.js"], "datetimepicker");
+loadjs.ready("datetimepicker", function() {
+	var $= jQuery;
+	$.fn.datetimepicker.Constructor.Default = $.extend({}, $.fn.datetimepicker.Constructor.Default, {
+		icons: {
+			time: 'far fa-clock',
+			date: 'far fa-calendar-alt',
+			up: 'fas fa-arrow-up',
+			down: 'fas fa-arrow-down',
+			previous: 'fas fa-chevron-left',
+			next: 'fas fa-chevron-right',
+			today: 'far fa-calendar-check',
+			clear: 'fas fa-trash',
+			close: 'fas fa-times'
+		}
+	});
+});
+</script>
+<script>
 loadjs.ready("head", function() {
 
 	// Global client script

@@ -85,19 +85,5 @@ namespace AspNetMaker2020.Controllers
 			// Run the page
 			return await BankBranch_Edit.Run();
 		}
-
-		// delete
-		[Route("BankBranchdelete/{Id?}")]
-		[Route("Home/BankBranchdelete/{Id?}")]
-
-		public async Task<IActionResult> BankBranchdelete()
-		{
-
-			// Create page object
-			BankBranch_Delete = new _BankBranch_Delete(this);
-
-			// Run the page
-			return await BankBranch_Delete.Run();
-		}
 	}
 }
